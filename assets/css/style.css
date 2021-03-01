@@ -142,7 +142,7 @@ nav {
     position: fixed;
     background: white;
     transition: .3s ease-in-out;
-    transform: translateY(-50vh);
+    transform: translateY(-100vh);
     z-index: 101;
 }
 #mobile_nav_input:checked ~ #mobile_nav_close {
