@@ -35,6 +35,49 @@ ul {
 }
 
 /*------------------------------------
+  Loading
+------------------------------------*/
+.loading {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    transition: opacity 1s;
+    background: #ffffff;
+    z-index: 10000;
+}
+.loading.hidden {
+    opacity: 0;
+}
+.loading_inner {
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    transform: translateY(-50%) translateX(-50%);
+}
+.loading_text {
+    margin: 0;
+    padding: 20px;
+    font-size: 4.5em;
+    font-family: 'Viga', sans-serif;
+}
+.loading_text span {
+    overflow: hidden;
+    display: inline-block;
+}
+.loading_text span span {
+    transform: translateX(100%);
+    transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.loading_text.in-right span span {
+    transform: translateX(0);
+}
+.loading_text.out-left span span {
+    transform: translateX(-100%);
+}
+
+/*------------------------------------
   Header
 ------------------------------------*/
 header {
@@ -43,7 +86,7 @@ header {
     position: fixed;
     background: white;
     border-bottom: 1px solid rgba(197, 197, 197, 0.5);
-    z-index: 1000;
+    z-index: 999;
 }
 .header_wrap {
     height: calc(var(--header-height) - 43px); /* height - padding */
@@ -141,7 +184,7 @@ nav {
     width: 100%;
     position: fixed;
     background: white;
-    transition: .3s ease-in-out;
+    transition: .5s ease-in-out;
     transform: translateY(-100vh);
     z-index: 101;
 }
@@ -177,7 +220,7 @@ nav {
     }
     .nav_list {
         padding: 0;
-        margin-top: 30px;
+        margin: 80px 0;
         display: flex;
         flex-direction: column;
         justify-content: space-around;
@@ -234,7 +277,7 @@ main {
 /* Section */
 section {
     width: 80%;
-    margin: 200px 0;
+    margin: 100px 0;
     padding: 0 10%;
 }
 .title {
@@ -440,6 +483,7 @@ section {
 .about_icon img {
     width: 100%;
     height: 100%;
+    border-radius: 50%;
 }
 
 /* Contact */
@@ -479,6 +523,7 @@ section {
     display: inline-block;
     border-radius: 5px;
     overflow: hidden;
+    visibility: hidden;
 }
 .button {
     padding: 20px 80px;
@@ -569,7 +614,10 @@ section {
     .about_container {
         flex-direction: column;
     }
-    .about_icon,
+    .about_icon {
+        width: 80%;
+        margin: 10px auto;
+    }
     .about_text {
         width: 100%;
         margin: 10px auto;
@@ -592,6 +640,7 @@ section {
     }
     section {
         width: 90%;
+        margin: 20px 0;
         padding: 0 5%;
     }
 }

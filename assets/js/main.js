@@ -1,6 +1,26 @@
+/* Loading */
+window.onload = () => {
+    const loading = document.getElementById('loading');
+    const loadingText = document.getElementById('loading_text');
+    
+    const loadingAnimation = (element, value, delay) => {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                element['classList'].toggle(value);
+                resolve();
+            }, delay)
+        });
+    }
+
+    loadingAnimation(loadingText, 'in-right', 500)
+        .then(() => loadingAnimation(loadingText, 'out-left', 1500))
+        .then(() => loadingAnimation(loading, 'hidden', 500))
+        .then(() => setTimeout(() => loading.style.display = 'none', 1000));
+}
+
 /* SmoothScroll */
 const duration = 1000;
-const header = 120;
+const header = 100;
 const Ease = { easeInOut: t => t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1 };
 
 window.addEventListener('DOMContentLoaded', () => {
