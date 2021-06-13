@@ -61,6 +61,7 @@ ul {
     padding: 20px;
     font-size: 4.5em;
     font-family: 'Viga', sans-serif;
+    text-align: center;
 }
 .loading_text span {
     overflow: hidden;
@@ -75,6 +76,15 @@ ul {
 }
 .loading_text.out-left span span {
     transform: translateX(-100%);
+}
+
+@media screen and (max-width: 768px) {
+    .loading_inner {
+        width: 100%;
+    }
+    .loading_text {
+        font-size: 3em;
+    }
 }
 
 /*------------------------------------
