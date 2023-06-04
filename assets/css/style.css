@@ -30,7 +30,7 @@ ul {
         --header-height: 60px;
     }
     html {
-        font-size: 42.5%;
+        font-size: 52.5%;
     }
 }
 
@@ -704,4 +704,44 @@ footer a {
         padding: 20px 0 0 0;
         float: unset;
     }
+}
+
+
+
+/*------------------------------------
+  Anime
+------------------------------------*/
+.anime_wrap {
+  background: linear-gradient(rgb(243, 165, 249), rgb(244, 221, 246));
+}
+.anime_list {
+  padding: 0;
+  display: flex;
+  flex-flow: wrap;
+  justify-content: center;
+}
+.anime_list a {
+  text-decoration: underline;
+}
+.anime_item {
+  min-width: 300px;
+  margin: 10px;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 2px 2px 5px 1px;
+  background: rgba(255, 255, 255, 0.5);
+}
+.anime_ranking {
+  margin: 0;
+  font-size: 2em;
+  font-weight: bold;
+}
+.anime_url {
+  font-size: .8em;
+}
+
+@media screen and (max-width: 768px) {
+  .anime_list {
+    flex-flow: column;
+  }
 }
