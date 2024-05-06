@@ -26,11 +26,16 @@ class SplashScreen extends Component {
 
     return (
       <div style={{ 
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '100vh',
-        backgroundColor: 'lightblue'
+        backgroundColor: 'lightblue',
+        zIndex: 1000,
       }}>
         <h1>Loading...</h1>
       </div>
