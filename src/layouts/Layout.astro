@@ -1,4 +1,6 @@
 ---
+import SplashScreen from '../components/SplashScreen';
+
 interface Props {
 	title: string;
 }
@@ -17,6 +19,7 @@ const { title } = Astro.props;
 		<title>{title}</title>
 	</head>
 	<body>
+		<SplashScreen client:load />
 		<slot />
 	</body>
 </html>
