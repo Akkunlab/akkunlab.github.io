@@ -10,7 +10,6 @@ class SplashScreen extends Component {
   componentDidMount() {
     this.timer = setTimeout(() => {
       this.setState({ visible: false });
-      console.log('aa');
     }, 2000);
   }
   
