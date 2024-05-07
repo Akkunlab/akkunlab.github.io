@@ -1,0 +1,19 @@
+<div id="splash-screen" class="fixed inset-0 flex items-center justify-center bg-blue-300 z-50">
+  <h1 class="text-xl">Loading...</h1>
+</div>
+
+<script>
+
+  /** スプラッシュスクリーンを2秒後，非表示にする */
+  const hideSplashScreen = (): void => {
+    const splashScreen = document.getElementById('splash-screen') as HTMLElement | null;
+    
+    if (!splashScreen) return;
+
+    setTimeout(() => {
+      splashScreen.remove();
+    }, 2000);
+  };
+
+  hideSplashScreen();
+</script>
