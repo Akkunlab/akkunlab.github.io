@@ -11,6 +11,9 @@ dependencies:
   '@astrojs/tailwind':
     specifier: ^5.1.0
     version: 5.1.0(astro@4.7.1)(tailwindcss@3.4.3)
+  '@fontsource/noto-sans-jp':
+    specifier: ^5.0.19
+    version: 5.0.19
   astro:
     specifier: ^4.7.1
     version: 4.7.1(typescript@5.4.5)
@@ -618,6 +621,10 @@ packages:
     requiresBuild: true
     dev: false
     optional: true
+
+  /@fontsource/noto-sans-jp@5.0.19:
+    resolution: {integrity: sha512-N0KUmSqX6tlAlnqFQnDywj9e+4RithtLgFGlcRt/85EI8rmDYJFYQCZVhc+xTIk5Kgr1gLtNToHZzK61BTsWqw==}
+    dev: false
 
   /@img/sharp-darwin-arm64@0.33.3:
     resolution: {integrity: sha512-FaNiGX1MrOuJ3hxuNzWgsT/mg5OHG/Izh59WW2mk1UwYHUwtfbhk5QNKYZgxf0pLOhx9ctGiGa2OykD71vOnSw==}
