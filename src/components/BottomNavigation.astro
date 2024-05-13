@@ -28,7 +28,7 @@ const items = [
 const getIconName = (icon: string) => `material-symbols-light:${icon}`;
 ---
 
-<div class="btm-nav">
+<div class="btm-nav rounded-t-xl backdrop-blur-lg shadow-xl bg-base-200/70 border border-base-200/70">
   {items.map(item => (
     <button>
       <Icon name={getIconName(item.isActive ? item.activeIcon : item.icon)} class="h-6 w-6" />
