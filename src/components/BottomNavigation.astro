@@ -1,0 +1,38 @@
+---
+import { Icon } from 'astro-icon/components'
+
+const items = [
+  {
+    label: 'Home',
+    icon: 'home-outline-rounded',
+    activeIcon: 'home-rounded',
+    isActive: true
+  }, {
+    label: 'Works',
+    icon: 'work-outline',
+    activeIcon: 'work',
+    isActive: false
+  }, {
+    label: 'About',
+    icon: 'account-circle-outline',
+    activeIcon: 'account-circle',
+    isActive: false
+  }, {
+    label: 'Contact',
+    icon: 'stacked-email-outline-rounded',
+    activeIcon: 'stacked-email-rounded',
+    isActive: false
+  }
+];
+
+const getIconName = (icon: string) => `material-symbols-light:${icon}`;
+---
+
+<div class="btm-nav">
+  {items.map(item => (
+    <button>
+      <Icon name={getIconName(item.isActive ? item.activeIcon : item.icon)} class="h-6 w-6" />
+      <span class="btm-nav-label">{item.label}</span>
+    </button>
+  ))}
+</div>
