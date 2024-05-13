@@ -10,6 +10,8 @@ module.exports = {
         theme: {
           'primary': '#0015ca',
           'primary-content': '#000',
+          'neutral': '#000',
+          'neutral-content': '#fff',
         },
       },
     ],
