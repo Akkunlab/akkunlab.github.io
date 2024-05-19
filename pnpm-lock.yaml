@@ -14,6 +14,9 @@ dependencies:
   '@fontsource/noto-sans-jp':
     specifier: ^5.0.19
     version: 5.0.19
+  '@fontsource/zen-old-mincho':
+    specifier: ^5.0.13
+    version: 5.0.13
   '@iconify-json/material-symbols-light':
     specifier: ^1.1.19
     version: 1.1.19
@@ -851,6 +854,10 @@ packages:
 
   /@fontsource/noto-sans-jp@5.0.19:
     resolution: {integrity: sha512-N0KUmSqX6tlAlnqFQnDywj9e+4RithtLgFGlcRt/85EI8rmDYJFYQCZVhc+xTIk5Kgr1gLtNToHZzK61BTsWqw==}
+    dev: false
+
+  /@fontsource/zen-old-mincho@5.0.13:
+    resolution: {integrity: sha512-dxdwI/4ANL3qdqUtNxISbRsq77KTunZttYE98RwhBYxzZelH0vqKXlV9nIrN82YeVQAIDSqT3CvQOMHZg1HJ5w==}
     dev: false
 
   /@iconify-json/material-symbols-light@1.1.19:

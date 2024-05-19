@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 
-import daisyui from 'daisyui'
+import daisyui from 'daisyui';
 
 module.exports = {
 	content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
@@ -18,6 +18,9 @@ module.exports = {
     ],
   },
   theme: {
+    fontFamily: {
+      'name': ['Zen Old Mincho', 'serif'],
+    },
     extend: {
       keyframes: {
         slideInRight: {
