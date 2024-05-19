@@ -2,82 +2,103 @@
 const name = '岸本 篤';
 const englishName = 'Atsushi Kishimoto';
 const summary = '2002年江蘇省生まれ。小学生の頃からモノづくりに取り組む。福島工業高等専門学校出身、茨城大学 工学部 人間情報工学研究室に在籍。パソコン甲子園、技育展、高専プロコンに出場し、2021年にAWS Robot Delivery Challenge準優勝を果たす。2023年には常陸frogs5期生に選抜される。';
+const qualifications = [
+  '応用情報技術者試験',
+  'ディジタル技術検定 1級情報',
+  '基本情報技術者試験',
+  '第二種電気工事士',
+];
+const allQualifications = [
+  '2022年 応用情報技術者試験',
+  '2022年 ディジタル技術検定 1級情報',
+  '2021年 基本情報技術者試験',
+  '2020年 ディジタル技術検定 2級情報',
+  '2020年 ディジタル技術検定 3級',
+  '2020年 第二種電気工事士',
+  '2019年 IT パスポート試験',
+];
+const media = [
+  {
+    title: '常陸frogs5期生決定！中学生から大学生までの次世代リーダー8名が挑む「社会課題を解決し、未来を創造する」ための半年間',
+    source: '常陸frogs',
+    date: '2023.7.5',
+    url: 'https://www.hitachifrogs.com/post/selection2023',
+  },
+  {
+    title: 'ディジタル技術検定試験で優秀賞及び団体優秀賞を受賞しました',
+    source: '福島高専',
+    date: '2023.2.10',
+    url: 'https://www.fukushima-nct.ac.jp/fk_news/post_632.html',
+  },
+  {
+    title: '「光の祭」を開催しました',
+    source: '福島高専',
+    date: '2023.2.3',
+    url: 'https://www.fukushima-nct.ac.jp/fk_news/post_625.html',
+  },
+  {
+    title: '【高専祭】福島高専の磐陽祭が楽しすぎた件。',
+    source: 'みんなの高専チャンネル',
+    date: '2023.1.28',
+    url: 'https://youtu.be/a5CpZ8VdtK0',
+  },
+  {
+    title: '【福島県磐梯町で開催】親子で学べる ドローンプログラミング教室',
+    source: 'PR TIMES',
+    date: '2022.8.25',
+    url: 'https://prtimes.jp/main/html/rd/p/000000001.000106546.html',
+  },
+  {
+    title: '自律走行ロボットで競う学生対抗「AWSロボットデリバリーチャレンジ」予選トップ通過チームにインタビュー　速く走るポイントは',
+    source: 'ロボスタ',
+    date: '2021.4.26',
+    url: 'https://robotstart.info/2021/04/26/aws-rdc-int.html',
+  },
+];
 ---
 
 <div class="m-5">
-  <div class="my-4 flex items-center text-2xl gap-2">
-    <h2 class="font-name font-medium">{name}</h2>
-    <span>/</span>
-    <p>{englishName}</p>
-  </div>
-
   <div>
+    <div class="my-4 flex items-center text-2xl gap-2">
+      <h2 class="font-name font-medium">{name}</h2>
+      <span>/</span>
+      <p>{englishName}</p>
+    </div>
     <p class="text-justify">{summary}</p>
   </div>
 
-  <h2 class="my-4 text-2xl">資格</h2>
-
   <div>
+    <h2 class="my-4 text-2xl">資格</h2>
     <ul class="list-disc px-8">
-      <li>応用情報技術者試験</li>
-      <li>ディジタル技術検定 1級情報</li>
-      <li>基本情報技術者試験</li>
-      <li>第二種電気工事士</li>
+      {qualifications.map(item => (
+        <li>{item}</li>
+      ))}
     </ul>
-  </div>
-
-  <div tabindex="0" class="collapse collapse-arrow">
-    <input type="checkbox" /> 
-    <div class="collapse-title text-base px-0">
-      全て見る
-    </div>
-    <div class="collapse-content"> 
-      <ul class="list-disc px-4">
-        <li>2022年 応用情報技術者試験</li>
-        <li>2022年 ディジタル技術検定 1級情報</li>
-        <li>2021年 基本情報技術者試験</li>
-        <li>2020年 ディジタル技術検定 2級情報</li>
-        <li>2020年 ディジタル技術検定 3級</li>
-        <li>2020年 第二種電気工事士</li>
-        <li>2019年 IT パスポート試験</li>
-      </ul>
+    <div tabindex="0" class="collapse collapse-arrow">
+      <input type="checkbox" /> 
+      <div class="collapse-title text-base px-0">
+        全て見る
+      </div>
+      <div class="collapse-content"> 
+        <ul class="list-disc px-4">
+          {allQualifications.map(item => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   </div>
-
-  <h2 class="my-4 text-2xl">メディア</h2>
 
   <div>
+    <h2 class="my-4 text-2xl">メディア</h2>
     <ul class="list-disc px-8">
-      <li class="text-justify my-2">
-        <a href="https://www.hitachifrogs.com/post/selection2023" class="underline hover:text-primary transition">
-          常陸frogs5期生決定！中学生から大学生までの次世代リーダー8名が挑む「社会課題を解決し、未来を創造する」ための半年間, 常陸frogs, 2023.7.5
-        </a>
-      </li>
-      <li class="text-justify my-2">
-        <a href="https://www.fukushima-nct.ac.jp/fk_news/post_632.html" class="underline hover:text-primary transition">
-          ディジタル技術検定試験で優秀賞及び団体優秀賞を受賞しました, 福島高専, 2023.2.10
-        </a>
-      </li>
-      <li class="text-justify my-2">
-        <a href="https://www.hitachifrogs.com/post/selection2023" class="underline hover:text-primary transition">
-          「光の祭」を開催しました, 福島高専, 2023.2.3
-        </a>
-      </li>
-      <li class="text-justify my-2">
-        <a href="https://youtu.be/a5CpZ8VdtK0" class="underline hover:text-primary transition">
-          【高専祭】福島高専の磐陽祭が楽しすぎた件。, みんなの高専チャンネル, 2023.1.28
-        </a>
-      </li>
-      <li class="text-justify my-2">
-        <a href="https://www.hitachifrogs.com/post/selection2023" class="underline hover:text-primary transition">
-          【福島県磐梯町で開催】親子で学べる ドローンプログラミング教室, PR TIMES, 2022.8.25
-        </a>
-      </li>
-      <li class="text-justify my-2">
-        <a href="https://www.hitachifrogs.com/post/selection2023" class="underline hover:text-primary transition">
-          自律走行ロボットで競う学生対抗「AWSロボットデリバリーチャレンジ」予選トップ通過チームにインタビュー　速く走るポイントは, ロボスタ, 2021.4.26
-        </a>
-      </li>
+      {media.map(item => (
+        <li class="text-justify my-2">
+          <a href={item.url} class="underline hover:text-primary transition">
+            {item.title}, {item.source}, {item.date}
+          </a>
+        </li>
+      ))}
     </ul>
   </div>
 </div>
