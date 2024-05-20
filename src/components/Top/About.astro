@@ -3,19 +3,35 @@ const name = '岸本 篤';
 const englishName = 'Atsushi Kishimoto';
 const summary = '2002年江蘇省生まれ。小学生の頃からモノづくりに取り組む。福島工業高等専門学校出身、茨城大学 工学部 人間情報工学研究室に在籍。パソコン甲子園、技育展、高専プロコンに出場し、2021年にAWS Robot Delivery Challenge準優勝を果たす。2023年には常陸frogs5期生に選抜される。';
 const qualifications = [
-  '応用情報技術者試験',
-  'ディジタル技術検定 1級情報',
-  '基本情報技術者試験',
-  '第二種電気工事士',
-];
-const allQualifications = [
-  '2022年 応用情報技術者試験',
-  '2022年 ディジタル技術検定 1級情報',
-  '2021年 基本情報技術者試験',
-  '2020年 ディジタル技術検定 2級情報',
-  '2020年 ディジタル技術検定 3級',
-  '2020年 第二種電気工事士',
-  '2019年 IT パスポート試験',
+  {
+    name: '応用情報技術者試験',
+    date: '2022年',
+    mark: true,
+  }, {
+    name: 'ディジタル技術検定 1級情報',
+    date: '2022年',
+    mark: true,
+  }, {
+    name: '基本情報技術者試験',
+    date: '2021年',
+    mark: true,
+  }, {
+    name: 'ディジタル技術検定 2級情報',
+    date: '2020年',
+    mark: false,
+  }, {
+    name: 'ディジタル技術検定 3級',
+    date: '2020年',
+    mark: false,
+  }, {
+    name: '第二種電気工事士',
+    date: '2020年',
+    mark: true,
+  }, {
+    name: 'IT パスポート試験',
+    date: '2019年',
+    mark: false,
+  },
 ];
 const media = [
   {
@@ -23,32 +39,27 @@ const media = [
     source: '常陸frogs',
     date: '2023.7.5',
     url: 'https://www.hitachifrogs.com/post/selection2023',
-  },
-  {
+  }, {
     title: 'ディジタル技術検定試験で優秀賞及び団体優秀賞を受賞しました',
     source: '福島高専',
     date: '2023.2.10',
     url: 'https://www.fukushima-nct.ac.jp/fk_news/post_632.html',
-  },
-  {
+  }, {
     title: '「光の祭」を開催しました',
     source: '福島高専',
     date: '2023.2.3',
     url: 'https://www.fukushima-nct.ac.jp/fk_news/post_625.html',
-  },
-  {
+  }, {
     title: '【高専祭】福島高専の磐陽祭が楽しすぎた件。',
     source: 'みんなの高専チャンネル',
     date: '2023.1.28',
     url: 'https://youtu.be/a5CpZ8VdtK0',
-  },
-  {
+  }, {
     title: '【福島県磐梯町で開催】親子で学べる ドローンプログラミング教室',
     source: 'PR TIMES',
     date: '2022.8.25',
     url: 'https://prtimes.jp/main/html/rd/p/000000001.000106546.html',
-  },
-  {
+  }, {
     title: '自律走行ロボットで競う学生対抗「AWSロボットデリバリーチャレンジ」予選トップ通過チームにインタビュー　速く走るポイントは',
     source: 'ロボスタ',
     date: '2021.4.26',
@@ -70,9 +81,12 @@ const media = [
   <div>
     <h2 class="my-4 text-2xl">資格</h2>
     <ul class="list-disc px-8">
-      {qualifications.map(item => (
-        <li>{item}</li>
-      ))}
+      {qualifications
+        .filter(item => item.mark)
+        .map(item => (
+          <li>{item.name}</li>
+        )
+      )}
     </ul>
     <div tabindex="0" class="collapse collapse-arrow">
       <input type="checkbox" aria-label="checkbox" /> 
@@ -81,8 +95,8 @@ const media = [
       </div>
       <div class="collapse-content"> 
         <ul class="list-disc px-4">
-          {allQualifications.map(item => (
-            <li>{item}</li>
+          {qualifications.map(item => (
+            <li>{item.date} {item.name}</li>
           ))}
         </ul>
       </div>
