@@ -1,4 +1,7 @@
 ---
+import { Image } from "astro:assets";
+import profile from '@/assets/images/profile.jpg';
+
 const name = '岸本 篤';
 const englishName = 'Atsushi Kishimoto';
 const summary = '2002年江蘇省生まれ。小学生の頃からモノづくりに取り組む。福島工業高等専門学校出身、茨城大学 工学部 人間情報工学研究室に在籍。パソコン甲子園、技育展、高専プロコンに出場し、2021年にAWS Robot Delivery Challenge準優勝を果たす。2023年には常陸frogs5期生に選抜される。';
@@ -69,8 +72,14 @@ const media = [
 ---
 
 <div class="m-5">
+  <div class="avatar flex justify-center mb-8">
+    <div class="rounded-full">
+      <Image src={profile} alt="プロフィール写真" width={350}/>
+    </div>
+  </div>
+
   <div>
-    <div class="my-4 flex items-center text-2xl gap-2">
+    <div class="my-4 flex text-2xl gap-2">
       <h2 class="font-name font-medium">{name}</h2>
       <span>/</span>
       <p>{englishName}</p>
