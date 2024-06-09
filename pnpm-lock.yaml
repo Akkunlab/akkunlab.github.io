@@ -20,6 +20,9 @@ dependencies:
   '@iconify-json/material-symbols-light':
     specifier: ^1.1.19
     version: 1.1.19
+  '@iconify-json/prime':
+    specifier: ^1.1.12
+    version: 1.1.12
   '@playform/compress':
     specifier: 0.0.4
     version: 0.0.4(typescript@5.4.5)
@@ -865,6 +868,12 @@ packages:
 
   /@iconify-json/material-symbols-light@1.1.19:
     resolution: {integrity: sha512-UOhYHM9OtXe9oHFGj9rIGryZa7Qpu0bbC4wXr3VClUPrUAibA8jl9u8OzwsbENIV3MCrShDdLv6bCXo+0J1qNw==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: false
+
+  /@iconify-json/prime@1.1.12:
+    resolution: {integrity: sha512-4EeLD/K0i4txPkxguzFZExqQtCafthKVXgW47fkhkcdOgDApaDhjgIq7cCXV/QrjqwWCO98OQv/iMq4TmtzLzg==}
     dependencies:
       '@iconify/types': 2.0.0
     dev: false

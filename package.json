@@ -15,6 +15,7 @@
     "@fontsource/noto-sans-jp": "^5.0.19",
     "@fontsource/zen-old-mincho": "^5.0.13",
     "@iconify-json/material-symbols-light": "^1.1.19",
+    "@iconify-json/prime": "^1.1.12",
     "@playform/compress": "0.0.4",
     "astro": "^4.7.1",
     "astro-icon": "1.1.0",

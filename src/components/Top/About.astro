@@ -1,10 +1,32 @@
 ---
 import { Image } from "astro:assets";
+import { Icon } from 'astro-icon/components';
 import profile from '@/assets/images/profile.jpg';
 
 const name = '岸本 篤';
 const englishName = 'Atsushi Kishimoto';
 const summary = '2002年江蘇省生まれ。小学生の頃からモノづくりに取り組む。福島工業高等専門学校出身、茨城大学 工学部 人間情報工学研究室に在籍。パソコン甲子園、技育展、高専プロコンに出場し、2021年にAWS Robot Delivery Challenge準優勝を果たす。2023年には常陸frogs5期生に選抜される。';
+const sns = [
+  {
+    icon: 'twitter',
+    url: 'https://x.com/akkun_lab',
+  }, {
+    icon: 'instagram',
+    url: 'https://www.instagram.com/akkunlab/',
+  }, {
+    icon: 'facebook',
+    url: 'https://www.facebook.com/akkunlab',
+  }, {
+    icon: 'github',
+    url: 'https://github.com/Akkunlab',
+  }, {
+    icon: 'youtube',
+    url: 'https://www.youtube.com/@akkunlab',
+  }, {
+    icon: 'envelope',
+    url: 'mailto:akkunlab@gmail.com',
+  }
+];
 const timeline = [
   {
     date: '2023/04 -',
@@ -80,6 +102,8 @@ const media = [
     url: 'https://robotstart.info/2021/04/26/aws-rdc-int.html',
   },
 ];
+
+const getIconName = (icon: string) => `prime:${icon}`;
 ---
 
 <div class="m-5">
@@ -96,6 +120,21 @@ const media = [
       <p>{englishName}</p>
     </div>
     <p class="text-justify">{summary}</p>
+  </div>
+
+  <div>
+    <div class="mt-2 mb-4 flex">
+      {sns.map(item => (
+        <a
+          class="btn btn-circle bg-transparent border-0"
+          href={item.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Icon name={getIconName(item.icon)} size={item.icon === 'twitter' ? 24 : 32} />
+        </a>
+      ))}
+    </div>
   </div>
 
   <div>
