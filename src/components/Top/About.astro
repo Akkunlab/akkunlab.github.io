@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import { Icon } from 'astro-icon/components';
+import { getIconName } from '@/utils/icon'
 import profile from '@/assets/images/profile.jpg';
 
 const name = '岸本 篤';
@@ -102,8 +103,6 @@ const media = [
     url: 'https://robotstart.info/2021/04/26/aws-rdc-int.html',
   },
 ];
-
-const getIconName = (icon: string) => `prime:${icon}`;
 ---
 
 <div class="m-5">
@@ -131,7 +130,7 @@ const getIconName = (icon: string) => `prime:${icon}`;
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Icon name={getIconName(item.icon)} size={item.icon === 'twitter' ? 24 : 32} />
+          <Icon name={getIconName('prime', item.icon)} size={item.icon === 'twitter' ? 24 : 32} />
         </a>
       ))}
     </div>
