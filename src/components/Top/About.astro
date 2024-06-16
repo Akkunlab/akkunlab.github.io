@@ -4,6 +4,9 @@ import { Icon } from 'astro-icon/components';
 import { getIconName } from '@/utils/icon'
 import profile from '@/assets/images/profile.jpg';
 
+const sectionProps = {
+  class: 'my-6 text-2xl',
+};
 const name = '岸本 篤';
 const englishName = 'Atsushi Kishimoto';
 const summary = '2002年江蘇省生まれ。小学生の頃からモノづくりに取り組む。福島工業高等専門学校出身、茨城大学 工学部 人間情報工学研究室に在籍。パソコン甲子園、技育展、高専プロコンに出場し、2021年にAWS Robot Delivery Challenge準優勝を果たす。2023年には常陸frogs5期生に選抜される。';
@@ -113,7 +116,7 @@ const media = [
   </div>
 
   <div>
-    <div class="my-4 flex text-2xl gap-2">
+    <div class="my-6 flex text-2xl gap-2">
       <h2 class="font-name font-medium">{name}</h2>
       <span>/</span>
       <p>{englishName}</p>
@@ -138,7 +141,7 @@ const media = [
   </div>
 
   <div>
-    <h2 class="my-4 text-2xl">経歴</h2>
+    <h2 {...sectionProps}>経歴</h2>
     <ul class="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical px-1.5">
       {timeline.map(item => (
         <li>
@@ -157,7 +160,7 @@ const media = [
   </div>
 
   <div>
-    <h2 class="my-4 text-2xl">資格</h2>
+    <h2 {...sectionProps}>資格</h2>
     <ul class="list-disc px-8">
       {qualifications
         .filter(item => item.mark)
@@ -182,7 +185,7 @@ const media = [
   </div>
 
   <div>
-    <h2 class="my-4 text-2xl">メディア</h2>
+    <h2 {...sectionProps}>メディア</h2>
     <ul class="list-disc px-8">
       {media.map(item => (
         <li class="text-justify my-2">
