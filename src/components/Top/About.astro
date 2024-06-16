@@ -44,8 +44,185 @@ const timeline = [
 ];
 const skills = [
   {
-    name: 'AWS',
-    icon: 'devicon:amazonwebservices-wordmark',
+    name: 'Android',
+    icon: 'android',
+  }, {
+    name: 'Android Studio',
+    icon: 'androidstudio',
+  }, {
+    name: 'Arduino',
+    icon: 'arduino',
+  }, {
+    name: 'Astro',
+    icon: 'astro',
+  }, {
+    name: 'Babel',
+    icon: 'babel',
+  }, {
+    name: 'Blender',
+    icon: 'blender',
+  }, {
+    name: 'Bootstrap',
+    icon: 'bootstrap',
+  }, {
+    name: 'C',
+    icon: 'c',
+  }, {
+    name: 'Canva',
+    icon: 'canva',
+  }, {
+    name: 'Chakra UI',
+    icon: 'chakraui',
+  }, {
+    name: 'Google Chrome',
+    icon: 'chrome',
+  }, {
+    name: 'C++',
+    icon: 'cplusplus',
+  }, {
+    name: 'C#',
+    icon: 'csharp',
+  }, {
+    name: 'CSS',
+    icon: 'css3',
+  }, {
+    name: 'Debian',
+    icon: 'debian',
+  }, {
+    name: 'Deno',
+    icon: 'denojs',
+  }, {
+    name: 'Docker',
+    icon: 'docker',
+  }, {
+    name: 'ESLint',
+    icon: 'eslint',
+  }, {
+    name: 'Express',
+    icon: 'express',
+  }, {
+    name: 'Figma',
+    icon: 'figma',
+  }, {
+    name: 'Firebase',
+    icon: 'firebase',
+  }, {
+    name: 'Flutter',
+    icon: 'flutter',
+  }, {
+    name: 'GIMP',
+    icon: 'gimp',
+  }, {
+    name: 'Git',
+    icon: 'git',
+  }, {
+    name: 'GitHub',
+    icon: 'github',
+  }, {
+    name: 'Heroku',
+    icon: 'heroku',
+  }, {
+    name: 'HTML',
+    icon: 'html5',
+  }, {
+    name: 'IFTTT',
+    icon: 'ifttt',
+  }, {
+    name: 'JQuery',
+    icon: 'jquery',
+  }, {
+    name: 'Kotlin',
+    icon: 'kotlin',
+  }, {
+    name: 'LaTeX',
+    icon: 'latex',
+  }, {
+    name: 'Markdown',
+    icon: 'markdown',
+  }, {
+    name: 'MySQL',
+    icon: 'mysql',
+  }, {
+    name: 'Next.js',
+    icon: 'nextjs',
+  }, {
+    name: 'Node.js',
+    icon: 'nodejs',
+  }, {
+    name: 'Notion',
+    icon: 'notion',
+  }, {
+    name: 'npm',
+    icon: 'npm-wordmark',
+  }, {
+    name: 'Nuxt.js',
+    icon: 'nuxtjs',
+  }, {
+    name: 'OpenCV',
+    icon: 'opencv',
+  }, {
+    name: 'pnpm',
+    icon: 'pnpm',
+  }, {
+    name: 'Postman',
+    icon: 'postman',
+  }, {
+    name: 'Python',
+    icon: 'python',
+  }, {
+    name: 'Raspberry Pi',
+    icon: 'raspberrypi',
+  }, {
+    name: 'React',
+    icon: 'react',
+  }, {
+    name: 'ROS',
+    icon: 'ros',
+  }, {
+    name: 'Sass',
+    icon: 'sass',
+  }, {
+    name: 'Slack',
+    icon: 'slack',
+  }, {
+    name: 'Socket.io',
+    icon: 'socketio',
+  }, {
+    name: 'Tailwind CSS',
+    icon: 'tailwindcss',
+  }, {
+    name: 'Three.js',
+    icon: 'threejs',
+  }, {
+    name: 'TypeScript',
+    icon: 'typescript',
+  }, {
+    name: 'Unity',
+    icon: 'unity',
+  }, {
+    name: 'Vercel',
+    icon: 'vercel',
+  }, {
+    name: 'Visual Studio',
+    icon: 'visualstudio',
+  }, {
+    name: 'Vite',
+    icon: 'vitejs',
+  }, {
+    name: 'Visual Studio Code',
+    icon: 'vscode',
+  }, {
+    name: 'Vue.js',
+    icon: 'vuejs',
+  }, {
+    name: 'Vuetify',
+    icon: 'vuetify',
+  }, {
+    name: 'webpack',
+    icon: 'webpack',
+  }, {
+    name: 'WordPress',
+    icon: 'wordpress',
   },
 ];
 const qualifications = [
@@ -169,9 +346,9 @@ const media = [
     <h2 {...sectionProps}>スキル</h2>
     <div class="grid grid-cols-[repeat(auto-fill,minmax(theme(spacing.24),1fr))] gap-5">
       {skills.map(item => (
-        <div class="card shadow-lg card-compact ">
+        <div class="card shadow-lg card-compact">
           <div class="card-body">
-            <Icon name={item.icon} style="width: 100%; height:100%;" />
+            <Icon name={getIconName('devicon', item.icon)} style="width: 100%; height:100%;" />
             <p class="text-center">{item.name}</p>
           </div>
         </div>
