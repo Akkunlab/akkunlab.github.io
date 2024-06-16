@@ -17,6 +17,9 @@ dependencies:
   '@fontsource/zen-old-mincho':
     specifier: ^5.0.13
     version: 5.0.13
+  '@iconify-json/devicon':
+    specifier: ^1.1.43
+    version: 1.1.43
   '@iconify-json/material-symbols-light':
     specifier: ^1.1.19
     version: 1.1.19
@@ -864,6 +867,12 @@ packages:
 
   /@fontsource/zen-old-mincho@5.0.13:
     resolution: {integrity: sha512-dxdwI/4ANL3qdqUtNxISbRsq77KTunZttYE98RwhBYxzZelH0vqKXlV9nIrN82YeVQAIDSqT3CvQOMHZg1HJ5w==}
+    dev: false
+
+  /@iconify-json/devicon@1.1.43:
+    resolution: {integrity: sha512-YOz/uZfh+mIzXTQI4Kh6IKHs5h8QJN9lCDXDejof6r8F3ICAVivJcrDSnR/9pMuecvGsxdB41wipvpC0roCPcg==}
+    dependencies:
+      '@iconify/types': 2.0.0
     dev: false
 
   /@iconify-json/material-symbols-light@1.1.19:

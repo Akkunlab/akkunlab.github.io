@@ -14,6 +14,7 @@
     "@astrojs/tailwind": "^5.1.0",
     "@fontsource/noto-sans-jp": "^5.0.19",
     "@fontsource/zen-old-mincho": "^5.0.13",
+    "@iconify-json/devicon": "^1.1.43",
     "@iconify-json/material-symbols-light": "^1.1.19",
     "@iconify-json/prime": "^1.1.12",
     "@playform/compress": "0.0.4",
