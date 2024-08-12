@@ -1,0 +1,396 @@
+---
+import { Image } from "astro:assets";
+import { Icon } from 'astro-icon/components';
+import { getIconName } from '@/utils/icon'
+import profile from '@/assets/images/profile.jpg';
+
+const sectionProps = {
+  class: 'my-6 text-2xl',
+};
+const name = '岸本 篤';
+const englishName = 'Atsushi Kishimoto';
+const summary = '2002年江蘇省生まれ。小学生の頃からモノづくりに取り組む。福島工業高等専門学校出身、茨城大学 工学部 人間情報工学研究室に在籍。パソコン甲子園、技育展、高専プロコンに出場し、2021年にAWS Robot Delivery Challenge準優勝を果たす。2023年には常陸frogs5期生に選抜される。';
+const sns = [
+  {
+    icon: 'twitter',
+    url: 'https://x.com/akkun_lab',
+  }, {
+    icon: 'instagram',
+    url: 'https://www.instagram.com/akkunlab/',
+  }, {
+    icon: 'facebook',
+    url: 'https://www.facebook.com/akkunlab',
+  }, {
+    icon: 'github',
+    url: 'https://github.com/Akkunlab',
+  }, {
+    icon: 'youtube',
+    url: 'https://www.youtube.com/@akkunlab',
+  }, {
+    icon: 'envelope',
+    url: 'mailto:akkunlab@gmail.com',
+  }
+];
+const timeline = [
+  {
+    date: '2023/04 -',
+    title: '茨城大学',
+    description: '工学部 電気電子システム工学科',
+  }, {
+    date: '2018/04 - 2023/03',
+    title: '福島工業高等専門学校',
+    description: '電気電子システム工学科',
+  },
+];
+const skills = [
+  {
+    name: 'Android',
+    icon: 'android',
+  }, {
+    name: 'Android Studio',
+    icon: 'androidstudio',
+  }, {
+    name: 'Arduino',
+    icon: 'arduino',
+  }, {
+    name: 'Astro',
+    icon: 'astro',
+  }, {
+    name: 'Babel',
+    icon: 'babel',
+  }, {
+    name: 'Blender',
+    icon: 'blender',
+  }, {
+    name: 'Bootstrap',
+    icon: 'bootstrap',
+  }, {
+    name: 'C',
+    icon: 'c',
+  }, {
+    name: 'Canva',
+    icon: 'canva',
+  }, {
+    name: 'Chakra UI',
+    icon: 'chakraui',
+  }, {
+    name: 'Google Chrome',
+    icon: 'chrome',
+  }, {
+    name: 'C++',
+    icon: 'cplusplus',
+  }, {
+    name: 'C#',
+    icon: 'csharp',
+  }, {
+    name: 'CSS',
+    icon: 'css3',
+  }, {
+    name: 'Debian',
+    icon: 'debian',
+  }, {
+    name: 'Deno',
+    icon: 'denojs',
+  }, {
+    name: 'Docker',
+    icon: 'docker',
+  }, {
+    name: 'ESLint',
+    icon: 'eslint',
+  }, {
+    name: 'Express',
+    icon: 'express',
+  }, {
+    name: 'Figma',
+    icon: 'figma',
+  }, {
+    name: 'Firebase',
+    icon: 'firebase',
+  }, {
+    name: 'Flutter',
+    icon: 'flutter',
+  }, {
+    name: 'GIMP',
+    icon: 'gimp',
+  }, {
+    name: 'Git',
+    icon: 'git',
+  }, {
+    name: 'GitHub',
+    icon: 'github',
+  }, {
+    name: 'Heroku',
+    icon: 'heroku',
+  }, {
+    name: 'HTML',
+    icon: 'html5',
+  }, {
+    name: 'IFTTT',
+    icon: 'ifttt',
+  }, {
+    name: 'JQuery',
+    icon: 'jquery',
+  }, {
+    name: 'Kotlin',
+    icon: 'kotlin',
+  }, {
+    name: 'LaTeX',
+    icon: 'latex',
+  }, {
+    name: 'Markdown',
+    icon: 'markdown',
+  }, {
+    name: 'MySQL',
+    icon: 'mysql',
+  }, {
+    name: 'Next.js',
+    icon: 'nextjs',
+  }, {
+    name: 'Node.js',
+    icon: 'nodejs',
+  }, {
+    name: 'Notion',
+    icon: 'notion',
+  }, {
+    name: 'npm',
+    icon: 'npm-wordmark',
+  }, {
+    name: 'Nuxt.js',
+    icon: 'nuxtjs',
+  }, {
+    name: 'OpenCV',
+    icon: 'opencv',
+  }, {
+    name: 'pnpm',
+    icon: 'pnpm',
+  }, {
+    name: 'Postman',
+    icon: 'postman',
+  }, {
+    name: 'Python',
+    icon: 'python',
+  }, {
+    name: 'Raspberry Pi',
+    icon: 'raspberrypi',
+  }, {
+    name: 'React',
+    icon: 'react',
+  }, {
+    name: 'ROS',
+    icon: 'ros',
+  }, {
+    name: 'Sass',
+    icon: 'sass',
+  }, {
+    name: 'Slack',
+    icon: 'slack',
+  }, {
+    name: 'Socket.io',
+    icon: 'socketio',
+  }, {
+    name: 'Tailwind CSS',
+    icon: 'tailwindcss',
+  }, {
+    name: 'Three.js',
+    icon: 'threejs',
+  }, {
+    name: 'TypeScript',
+    icon: 'typescript',
+  }, {
+    name: 'Unity',
+    icon: 'unity',
+  }, {
+    name: 'Vercel',
+    icon: 'vercel',
+  }, {
+    name: 'Visual Studio',
+    icon: 'visualstudio',
+  }, {
+    name: 'Vite',
+    icon: 'vitejs',
+  }, {
+    name: 'Visual Studio Code',
+    icon: 'vscode',
+  }, {
+    name: 'Vue.js',
+    icon: 'vuejs',
+  }, {
+    name: 'Vuetify',
+    icon: 'vuetify',
+  }, {
+    name: 'webpack',
+    icon: 'webpack',
+  }, {
+    name: 'WordPress',
+    icon: 'wordpress',
+  },
+];
+const qualifications = [
+  {
+    name: '応用情報技術者試験',
+    date: '2022年',
+    mark: true,
+  }, {
+    name: 'ディジタル技術検定 1級情報',
+    date: '2022年',
+    mark: true,
+  }, {
+    name: '基本情報技術者試験',
+    date: '2021年',
+    mark: true,
+  }, {
+    name: 'ディジタル技術検定 2級情報',
+    date: '2020年',
+    mark: false,
+  }, {
+    name: 'ディジタル技術検定 3級',
+    date: '2020年',
+    mark: false,
+  }, {
+    name: '第二種電気工事士',
+    date: '2020年',
+    mark: true,
+  }, {
+    name: 'IT パスポート試験',
+    date: '2019年',
+    mark: false,
+  },
+];
+const media = [
+  {
+    title: '常陸frogs5期生決定！中学生から大学生までの次世代リーダー8名が挑む「社会課題を解決し、未来を創造する」ための半年間',
+    source: '常陸frogs',
+    date: '2023.7.5',
+    url: 'https://www.hitachifrogs.com/post/selection2023',
+  }, {
+    title: 'ディジタル技術検定試験で優秀賞及び団体優秀賞を受賞しました',
+    source: '福島高専',
+    date: '2023.2.10',
+    url: 'https://www.fukushima-nct.ac.jp/fk_news/post_632.html',
+  }, {
+    title: '「光の祭」を開催しました',
+    source: '福島高専',
+    date: '2023.2.3',
+    url: 'https://www.fukushima-nct.ac.jp/fk_news/post_625.html',
+  }, {
+    title: '【高専祭】福島高専の磐陽祭が楽しすぎた件。',
+    source: 'みんなの高専チャンネル',
+    date: '2023.1.28',
+    url: 'https://youtu.be/a5CpZ8VdtK0',
+  }, {
+    title: '【福島県磐梯町で開催】親子で学べる ドローンプログラミング教室',
+    source: 'PR TIMES',
+    date: '2022.8.25',
+    url: 'https://prtimes.jp/main/html/rd/p/000000001.000106546.html',
+  }, {
+    title: '自律走行ロボットで競う学生対抗「AWSロボットデリバリーチャレンジ」予選トップ通過チームにインタビュー　速く走るポイントは',
+    source: 'ロボスタ',
+    date: '2021.4.26',
+    url: 'https://robotstart.info/2021/04/26/aws-rdc-int.html',
+  },
+];
+---
+
+<div class="m-5">
+  <div class="avatar flex justify-center mb-8">
+    <div class="rounded-full">
+      <Image src={profile} alt="プロフィール写真" loading="eager" width={350} />
+    </div>
+  </div>
+
+  <div>
+    <div class="my-6 flex text-2xl gap-2">
+      <h2 class="font-name font-medium">{name}</h2>
+      <span>/</span>
+      <p>{englishName}</p>
+    </div>
+    <p class="text-justify">{summary}</p>
+  </div>
+
+  <div>
+    <div class="mt-2 mb-4 flex flex-wrap">
+      {sns.map(item => (
+        <a
+          class="btn btn-circle bg-transparent border-0 shadow-none"
+          href={item.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={item.icon}
+        >
+          <Icon name={getIconName('prime', item.icon)} size={item.icon === 'twitter' ? 24 : 32} />
+        </a>
+      ))}
+    </div>
+  </div>
+
+  <div>
+    <h2 {...sectionProps}>経歴</h2>
+    <ul class="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical px-1.5">
+      {timeline.map(item => (
+        <li>
+          <div class="timeline-middle">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
+          </div>
+          <div class="timeline-start md:text-end mb-8">
+            <time>{item.date}</time>
+            <p class="text-lg font-bold">{item.title}</p>
+            <p>{item.description}</p>
+          </div>
+          <hr/>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <div>
+    <h2 {...sectionProps}>スキル</h2>
+    <div class="grid grid-cols-[repeat(auto-fill,minmax(theme(spacing.24),1fr))] gap-5">
+      {skills.map(item => (
+        <div class="card shadow-lg card-compact">
+          <div class="card-body">
+            <Icon name={getIconName('devicon', item.icon)} style="width: 100%; height:100%;" />
+            <p class="text-center">{item.name}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div>
+    <h2 {...sectionProps}>資格</h2>
+    <ul class="list-disc px-8">
+      {qualifications
+        .filter(item => item.mark)
+        .map(item => (
+          <li>{item.name}</li>
+        )
+      )}
+    </ul>
+    <div tabindex="0" class="collapse collapse-arrow">
+      <input type="checkbox" aria-label="checkbox" /> 
+      <div class="collapse-title text-base px-0">
+        全て見る
+      </div>
+      <div class="collapse-content"> 
+        <ul class="list-disc px-4">
+          {qualifications.map(item => (
+            <li>{item.date} {item.name}</li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <h2 {...sectionProps}>メディア</h2>
+    <ul class="list-disc px-8">
+      {media.map(item => (
+        <li class="text-justify my-2">
+          <a href={item.url} class="underline hover:text-primary transition">
+            {item.title}, {item.source}, {item.date}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>

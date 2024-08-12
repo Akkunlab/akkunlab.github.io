@@ -1,0 +1,31 @@
+{
+  "name": "akkunlab.github.io",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.1",
+    "@astrojs/tailwind": "^5.1.0",
+    "@fontsource/noto-sans-jp": "^5.0.19",
+    "@fontsource/zen-old-mincho": "^5.0.13",
+    "@iconify-json/devicon": "^1.1.43",
+    "@iconify-json/material-symbols-light": "^1.1.19",
+    "@iconify-json/prime": "^1.1.12",
+    "@playform/compress": "0.0.4",
+    "astro": "^4.13.1",
+    "astro-icon": "1.1.0",
+    "sharp": "^0.33.4",
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5.4.5"
+  },
+  "packageManager": "pnpm@8.15.5+sha1.a58c038faac410c947dbdb93eb30994037d0fce2",
+  "devDependencies": {
+    "daisyui": "^4.10.5"
+  }
+}

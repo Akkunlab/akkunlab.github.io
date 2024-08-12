@@ -1,0 +1,34 @@
+---
+const text = 'ATSUSHI KISHIMOTO';
+---
+
+<div id="splash-screen" class="fixed inset-0 flex items-center justify-center bg-primary z-50 animate-fadeOut">
+  <p class="text-5xl md:text-8xl font-bold">
+    {text.split(' ').map((part, index) => (
+      <>
+        {part.split('').map(letter => (
+          <span class="inline-block overflow-hidden">
+            <span class="inline-block animate-slideInOut">{letter}</span>
+          </span>
+        ))}
+        {index < text.split(' ').length - 1 && <br />}
+      </>
+    ))}
+  </p>
+</div>
+
+<script>
+
+  /** スプラッシュスクリーンを4秒後，非表示にする */
+  const hideSplashScreen = (): void => {
+    const splashScreen = document.getElementById('splash-screen') as HTMLElement | null;
+    
+    if (!splashScreen) return;
+
+    setTimeout(() => {
+      splashScreen.remove();
+    }, 4000);
+  };
+
+  hideSplashScreen();
+</script>
