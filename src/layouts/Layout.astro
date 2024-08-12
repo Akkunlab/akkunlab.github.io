@@ -1,6 +1,9 @@
 ---
 import '@fontsource/noto-sans-jp/400.css';
 import '@fontsource/noto-sans-jp/700.css';
+import '@fontsource/zen-old-mincho/400.css';
+import '@fontsource/zen-old-mincho/500.css';
+
 import SplashScreen from '@/components/SplashScreen.astro';
 import Header from '@/components/Header.astro';
 import BottomNavigation from '@/components/BottomNavigation.astro';
@@ -22,40 +25,10 @@ const { title } = Astro.props;
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 	</head>
-	<body>
+	<body class="font-body">
 		<SplashScreen />
 		<Header />
 		<slot />
 		<BottomNavigation />
 	</body>
 </html>
-<style is:global>
-	:root {
-		--accent: 136, 58, 234;
-		--accent-light: 224, 204, 250;
-		--accent-dark: 49, 10, 101;
-		--accent-gradient: linear-gradient(
-			45deg,
-			rgb(var(--accent)),
-			rgb(var(--accent-light)) 30%,
-			white 60%
-		);
-	}
-	html {
-		font-family: 'Noto Sans JP', sans-serif;
-		font-weight: 700;
-		background: #13151a;
-		background-size: 224px;
-	}
-	code {
-		font-family:
-			Menlo,
-			Monaco,
-			Lucida Console,
-			Liberation Mono,
-			DejaVu Sans Mono,
-			Bitstream Vera Sans Mono,
-			Courier New,
-			monospace;
-	}
-</style>
