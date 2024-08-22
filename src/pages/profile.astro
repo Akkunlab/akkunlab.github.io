@@ -1,0 +1,89 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { Image } from "astro:assets";
+import { Icon } from 'astro-icon/components';
+import { getIconName } from '@/utils/icon'
+import profile from '@/assets/images/profile.jpg';
+import akkunlab from '@/assets/images/akkunlab.png';
+const summary = '2002年江蘇省生まれ。小学生の頃からモノづくりに取り組む。福島工業高等専門学校出身、茨城大学 工学部 人間情報工学研究室に在籍。パソコン甲子園、技育展、高専プロコンに出場し、2021年にAWS Robot Delivery Challenge準優勝を果たす。2023年には常陸frogs5期生に選抜される。';
+
+const sns = [
+  {
+    name: 'X',
+    icon: 'twitter',
+    url: 'https://x.com/akkun_lab',
+    color: 'bg-black',
+  }, {
+    name: 'Instagram',
+    icon: 'instagram',
+    url: 'https://www.instagram.com/akkunlab/',
+    color: 'bg-pink-500',
+  }, {
+    name: 'Facebook',
+    icon: 'facebook',
+    url: 'https://www.facebook.com/akkunlab',
+    color: 'bg-blue-600',
+  }, {
+    name: 'GitHub',
+    icon: 'github',
+    url: 'https://github.com/Akkunlab',
+    color: 'bg-gray-800',
+  }, {
+    name: 'YouTube',
+    icon: 'youtube',
+    url: 'https://www.youtube.com/@akkunlab',
+    color: 'bg-red-600',
+  }, {
+    name: 'Mail',
+    icon: 'envelope',
+    url: 'mailto:akkunlab@gmail.com',
+    color: 'bg-green-500',
+  }
+];
+---
+
+<Layout title="岸本篤 / Atsushi Kishimoto Portfolio">
+	<main>
+    <div class="bg-gray-900 text-white rounded-none p-6 w-full h-screen shadow-lg flex flex-col items-center justify-start">
+      <!-- プロフィールヘッダー -->
+      <div class="flex items-center mb-6 mt-6">
+        <div class="avatar">
+          <div class="w-20 h-20 rounded-full">
+            <Image src={profile} alt="プロフィール写真" loading="eager" />
+          </div>
+        </div>
+        <div class="ml-4">
+          <h2 class="text-xl font-bold">岸本 篤</h2>
+          <p class="text-gray-500 text-xs mt-1">電気・情報・人間系</p>
+        </div>
+      </div>
+
+      <div>
+        <p class="text-gray-400 text-sm ">{summary}</p>
+      </div>
+
+      <div>
+        <div class="mt-2 mb-4 flex flex-wrap -mx-4">
+          {sns.map(item => (
+            <a href={item.url} class={`m-4 flex flex-col items-center justify-center ${item.color} text-white py-2 rounded-lg text-sm w-[calc(33.333%-2rem)] md:w-[calc(25%-2rem)]`}>
+              <Icon name={getIconName('prime', item.icon)} size={item.icon === 'twitter' ? 24 : 32} />
+              <p class="font-bold mt-1">{item.name}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- 活動リンク -->
+      <div class="text-center w-full px-6">
+        <div class="flex flex-col items-center">
+          <a href="https://akkunlab.dev" target="_blank" rel="noopener noreferrer">
+            <Image src={akkunlab} alt="Website Link Image" loading="eager"  class="rounded-lg shadow-lg hover:opacity-75 transition-opacity duration-300" />
+          </a>
+          <p class="mt-4 text-gray-700">クリックしてウェブサイトに移動</p>
+        </div>
+        <p class="my-10 text-gray-400 text-sm">&copy; Akkunlab</p>
+      </div>
+    </div>
+    </div>
+	</main>
+</Layout>
