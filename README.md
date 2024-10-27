@@ -18,15 +18,25 @@ All commands are run from the root of the project, from a terminal:
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
 
 ## Built With
-- Languages
+
+- **Languages**
   - [TypeScript](https://www.typescriptlang.org/)
-- Frontend
+
+- **Frontend**
   - [Astro](https://astro.build/)
   - [Tailwind CSS](https://tailwindcss.com/)
   - [daisyUI](https://daisyui.com/)
   - [Iconify](https://iconify.design/)
   - [Google Fonts](https://fonts.google.com/)
-- Backend
-    - [Node.js](https://nodejs.org/)
-- Infrastructure
-    - [Cloudflare Pages](https://www.cloudflare.com/ja-jp/developer-platform/pages/)
+
+- **Backend**
+  - [Node.js](https://nodejs.org/) 
+
+- **Content & Utilities**
+  - [Notion](https://www.notion.so/) 
+  - [Notion-to-MD](https://github.com/souvikinator/notion-to-md)
+  - [Sharp](https://sharp.pixelplumbing.com/)
+  - [Remark](https://remark.js.org/)
+
+- **Infrastructure**
+  - [Cloudflare Pages](https://www.cloudflare.com/ja-jp/developer-platform/pages/)
