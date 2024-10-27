@@ -50,6 +50,9 @@ dependencies:
   remark:
     specifier: ^15.0.1
     version: 15.0.1
+  remark-html:
+    specifier: ^16.0.1
+    version: 16.0.1
   sharp:
     specifier: ^0.33.4
     version: 0.33.4
@@ -3474,6 +3477,14 @@ packages:
       zwitch: 2.0.4
     dev: false
 
+  /hast-util-sanitize@5.0.2:
+    resolution: {integrity: sha512-3yTWghByc50aGS7JlGhk61SPenfE/p1oaFeNwkOOyrscaOkMGrcW9+Cy/QAIOBpZxP1yqDIzFMR0+Np0i0+usg==}
+    dependencies:
+      '@types/hast': 3.0.4
+      '@ungap/structured-clone': 1.2.0
+      unist-util-position: 5.0.0
+    dev: false
+
   /hast-util-to-html@9.0.1:
     resolution: {integrity: sha512-hZOofyZANbyWo+9RP75xIDV/gq+OUKx+T46IlwERnKmfpwp81XBFbT9mi26ws+SJchA4RVUQwIBJpqEOBhMzEQ==}
     dependencies:
@@ -4985,6 +4996,16 @@ packages:
       unified: 11.0.5
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /remark-html@16.0.1:
+    resolution: {integrity: sha512-B9JqA5i0qZe0Nsf49q3OXyGvyXuZFDzAP2iOFLEumymuYJITVpiH1IgsTEwTpdptDmZlMDMWeDmSawdaJIGCXQ==}
+    dependencies:
+      '@types/mdast': 4.0.3
+      hast-util-sanitize: 5.0.2
+      hast-util-to-html: 9.0.1
+      mdast-util-to-hast: 13.1.0
+      unified: 11.0.5
     dev: false
 
   /remark-parse@11.0.0:
