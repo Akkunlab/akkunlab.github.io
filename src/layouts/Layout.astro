@@ -4,6 +4,16 @@ import '@fontsource/noto-sans-jp/700.css';
 import '@fontsource/zen-old-mincho/400.css';
 import '@fontsource/zen-old-mincho/500.css';
 
+import {
+  SITE_TITLE,
+  SITE_DESCRIPTION,
+  SITE_URL,
+  SITE_IMAGE,
+  AUTHOR,
+  X_ID,
+  PRIMARY_COLOR
+} from '@/constants';
+
 import SplashScreen from '@/components/SplashScreen.astro';
 import Header from '@/components/Header.astro';
 import BottomNavigation from '@/components/BottomNavigation.astro';
@@ -15,15 +25,36 @@ interface Props {
 const { title } = Astro.props;
 ---
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="description" content="Astro description" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="generator" content={Astro.generator} />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="max-image-preview:large">
+
     <title>{title}</title>
+
+    <meta name="description" content={SITE_DESCRIPTION}>
+    <meta name="author" content={AUTHOR}>
+    <meta name="theme-color" content={PRIMARY_COLOR}>
+
+    <meta property="og:locale" content="ja_JP">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content={SITE_TITLE}>
+    <meta property="og:description" content={SITE_DESCRIPTION}>
+    <meta property="og:site_name" content={SITE_TITLE}>
+    <meta property="og:url" content={SITE_URL}>
+    <meta property="og:image" content={SITE_IMAGE}>
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content={SITE_IMAGE}>
+    <meta name="twitter:title" content={SITE_TITLE}>
+    <meta name="twitter:site" content={X_ID}>
+
+    <link rel="canonical" href={SITE_URL}>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
+    <link rel="icon" type="image/png" href="/android-touch-icon.png" sizes="192x192">
   </head>
   <body class="font-body">
     <!-- <SplashScreen /> -->
