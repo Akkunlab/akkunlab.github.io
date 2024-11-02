@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config';
+import { SITE_URL } from './src/constants';
 
 import tailwind from "@astrojs/tailwind";
 import playformCompress from "@playform/compress";
@@ -8,7 +9,7 @@ import robotsTxt from "astro-robots-txt";
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://akkunlab.pages.dev/',
+  site: SITE_URL,
   integrations: [
     tailwind(),
     playformCompress(),
@@ -17,7 +18,7 @@ export default defineConfig({
     robotsTxt({
       policy: [{
         userAgent: '*',
-        disallow: '/'
+        allow: '/'
       }]
     }),
   ]
