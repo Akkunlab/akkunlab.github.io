@@ -5,7 +5,7 @@ const notion = new Client({ auth: import.meta.env.NOTION_TOKEN });
 const n2m = new NotionToMarkdown({ notionClient: notion });
 
 /**
- * NotionデータベースからページIDのリストを取得
+ * NotionデータベースからPublishedがtrueのページIDのリストを取得
  * @returns ページIDの配列
  */
 export const fetchNotionPageIds = async (): Promise<string[]> => {
@@ -17,6 +17,12 @@ export const fetchNotionPageIds = async (): Promise<string[]> => {
 
   const response = await notion.databases.query({
     database_id: databaseId,
+    filter: {
+      property: 'Published',
+      checkbox: {
+        equals: true,
+      },
+    },
   });
 
   return response.results.map((page) => page.id);
