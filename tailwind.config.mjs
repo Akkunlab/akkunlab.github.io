@@ -23,6 +23,10 @@ module.exports = {
       'name': ['Zen Old Mincho', 'serif'],
     },
     extend: {
+      colors: {
+        'button-active': '#1f1f1f',
+        'button-active-content': '#f2f2f2',
+      },
       keyframes: {
         slideInRight: {
           '0%': { transform: 'translateX(120%)' },
