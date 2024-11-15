@@ -1,27 +1,9 @@
 ---
 import Layout from '@/layouts/Layout.astro';
-import { fetchNotionPageIds } from '@/utils/notion';
-import type { Card } from '@/types';
+import { fetchNotionPageList } from '@/utils/notion';
 import { TAGS } from '@/constants';
 
-// const pages = await fetchNotionPageIds();
-
-const cards: Card[] = [
-  {
-    id: 'test',
-    types: '作品',
-    title: 'タイトル',
-    summary: '説明',
-    tags: [
-      { id: 'design', name: 'Design' },
-      { id: 'development', name: 'Development' },
-    ],
-    year: '2021',
-    link: '#',
-    publication: '20240101',
-    image: '/ogp.png',
-  }
-];
+const pages = await fetchNotionPageList();
 ---
 
 <Layout title="Welcome to Astro.">
@@ -45,10 +27,10 @@ const cards: Card[] = [
         ))}
       </section>
 
-      <!-- カード一覧 -->
+      <!-- ページ一覧 -->
       <section class="my-6">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
-          {cards.map((card) => (
+          {pages.map((card) => (
             <a href={card.link} class="card card-item" data-tags={card.tags.map(tag => tag.id).join(',')}>
               <figure>
                 <img src={card.image} alt={card.title} class="rounded-xl" />
