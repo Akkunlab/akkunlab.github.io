@@ -9,7 +9,7 @@ module.exports = {
       {
         theme: {
           'primary': '#0015ca',
-          'primary-content': '#000',
+          'primary-content': '#fff',
           'neutral': '#000',
           'neutral-content': '#fff',
           'base-200': '#e5e7eb',
