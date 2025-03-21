@@ -1,0 +1,11 @@
+---
+interface Props {
+  text: string;
+}
+
+const { text } = Astro.props as Props;
+---
+
+<button class="btn btn-primary btn-wide h-14 rounded-full block text-base mx-auto">
+  {text}
+</button>
