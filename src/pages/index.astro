@@ -11,6 +11,51 @@ const heroTitleLines = [
   'アートの融合で',
   '人々を幸せに'
 ];
+
+const works = [
+  {
+    id: 1,
+    title: "Awesome Project",
+    summary: "テクノロジーとアートの融合を実現したプロジェクト",
+    image: "/assets/works/work1.jpg",
+    link: "#",
+  },
+  {
+    id: 2,
+    title: "Creative Design",
+    summary: "独創的なUI/UXを追求したデザインプロジェクト",
+    image: "/assets/works/work2.jpg",
+    link: "#",
+  },
+  {
+    id: 3,
+    title: "Innovative App",
+    summary: "新しい技術を活用したモバイルアプリケーション",
+    image: "/assets/works/work3.jpg",
+    link: "#",
+  },
+  {
+    id: 4,
+    title: "Web Development",
+    summary: "最新のWeb技術を駆使した開発プロジェクト",
+    image: "/assets/works/work4.jpg",
+    link: "#",
+  },
+  {
+    id: 5,
+    title: "Digital Marketing",
+    summary: "デジタルマーケティングを活用したプロモーション",
+    image: "/assets/works/work5.jpg",
+    link: "#",
+  },
+  {
+    id: 6,
+    title: "Social Media",
+    summary: "SNSを活用したコミュニケーションプロジェクト",
+    image: "/assets/works/work6.jpg",
+    link: "#",
+  }
+];
 ---
 
 <Layout title="岸本篤 / Atsushi Kishimoto Portfolio">
@@ -25,6 +70,27 @@ const heroTitleLines = [
         ))}
       </h2>
     </div>
+  </section>
+
+  <!-- 作品セクション -->
+  <section class="my-20 px-4 md:px-16">
+    <h2 class="text-3xl font-bold text-center">My Works</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16 mb-8">
+      {works.map((work) => (
+        <article>
+          <a href={work.link} class="card card-item">
+            <figure>
+              <Image src={heroImage} alt={work.title} class="rounded-xl" />
+            </figure>
+            <div class="card-body p-0 pt-2">
+              <h2 class="card-title">{work.title}</h2>
+              <p>{work.summary}</p>
+            </div>
+          </a>
+        </article>
+      ))}
+    </div>
+    <button class="btn btn-wide rounded-full block text-base mx-auto">もっと見る</button>
   </section>
 
 	<About />
