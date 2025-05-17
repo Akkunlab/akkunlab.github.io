@@ -1,5 +1,5 @@
 export const SITE_TITLE: string = '岸本篤 / Atsushi Kishimoto Portfolio';
-export const SITE_DESCRIPTION: string = 'テクノロジーとアートの融合で、人々に感動と幸せを届けるクリエイター、岸本篤のポートフォリオサイト。';
+export const SITE_DESCRIPTION: string = 'テクノロジーとデザインの融合で、人々に感動と幸せを届けるクリエイター、岸本篤のポートフォリオサイト。';
 export const SITE_URL: string = 'https://akkunlab.pages.dev/';
 
 export const AUTHOR: string = '岸本 篤';
@@ -11,6 +11,6 @@ export const PRIMARY_COLOR: string = '#0015ca';
 
 export const HERO_TITLE_LINES: Array<string> = [
   'テクノロジーと',
-  'アートの融合で',
+  'デザインの融合で',
   '人々を幸せに'
 ];
