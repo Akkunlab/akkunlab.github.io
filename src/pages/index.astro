@@ -7,7 +7,7 @@ import Layout from '@/layouts/Layout.astro';
 import SectionHeading from '@/components/SectionHeading.astro';
 import Button from '@/components/Button.astro';
 
-import heroImage from '@/assets/images/hero-image.png';
+import heroImage from '@/assets/images/hero-image.jpg';
 import profile from '@/assets/images/profile.jpg';
 
 import {
@@ -143,40 +143,40 @@ const media = [
 const sns = [
   {
     name: 'X',
-    description: 'aaa',
+    description: '日常の気づきをつぶやいています！',
     url: 'https://x.com/akkun_lab',
     icon: 'twitter',
-    color: 'bg-black',
+    color: '#000000',
   }, {
     name: 'Instagram',
-    description: 'aaa',
+    description: 'アートや日々の活動をシェアしています！',
     url: 'https://www.instagram.com/akkunlab',
     icon: 'instagram',
-    color: 'bg-pink-500',
+    color: '#E1306C',
   }, {
     name: 'Facebook',
-    description: 'aaa',
+    description: '活動報告をお届けしています！',
     url: 'https://www.facebook.com/akkunlab',
     icon: 'facebook',
-    color: 'bg-blue-600',
+    color: '#1877F2',
   }, {
     name: 'GitHub',
-    description: 'aaa',
+    description: '作品のソースコードを公開しています！',
     url: 'https://github.com/Akkunlab',
     icon: 'github',
-    color: 'bg-gray-800',
+    color: '#24292E',
   }, {
     name: 'YouTube',
-    description: 'aaa',
+    description: '作品の紹介動画を配信しています！',
     url: 'https://www.youtube.com/@akkunlab',
     icon: 'youtube',
-    color: 'bg-red-600',
+    color: '#FF0000',
   }, {
     name: 'Email',
-    description: 'aaa',
+    description: 'お問い合わせはこちらから！',
     url: 'mailto:akkunlab@gmail.com',
     icon: 'envelope',
-    color: 'bg-green-500',
+    color: '#00C951',
   },
 ];
 ---
@@ -189,7 +189,7 @@ const sns = [
     <div class="absolute inset-0 flex items-end pl-[3%] pb-8">
       <h2 class="text-8xl font-bold text-primary-content">
         {HERO_TITLE_LINES.map(line => (
-          <span class="block bg-neutral pt-0 pb-3 px-5 m-3">{line}</span>
+          <span class="block bg-neutral pt-0 pb-3 px-5 m-3 w-fit">{line}</span>
         ))}
       </h2>
     </div>
@@ -290,7 +290,7 @@ const sns = [
         <ul class="list-disc list-outside pl-8 space-y-1">
           {media.map(item => (
             <li class="text-justify my-2">
-              <a href={item.url} class="underline hover:text-primary transition">
+              <a href={item.url} class="underline hover:text-primary transition" target="_blank" rel="noopener noreferrer">
                 {item.title}, {item.source}, {item.date}
               </a>
             </li>
@@ -306,8 +306,8 @@ const sns = [
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 my-20">
       {sns.map((item) => (
         <article>
-          <a href={item.url} class="group">
-            <div class={`${item.color} text-primary-content py-4 aspect-video relative overflow-hidden rounded-xl transition-transform duration-500 transform group-hover:scale-105 group-hover:rotate-3 group-hover:shadow-2xl flex flex-col items-center justify-center`}>
+          <a href={item.url} class="group" target={item.name !== 'Email' ? "_blank" : undefined} rel={item.name !== 'Email' ? "noopener noreferrer" : undefined}>
+            <div class={`bg-[${item.color}] text-primary-content py-4 aspect-video relative overflow-hidden rounded-xl transition-transform duration-500 transform group-hover:scale-105 group-hover:rotate-3 group-hover:shadow-2xl flex flex-col items-center justify-center`}>
               <Icon name={getIconName('prime', item.icon)} size={128} style={{ transform: item.icon === 'twitter' ? 'scale(0.625)' : 'scale(1)' }} />
               <p class="text-2xl xl:text-3xl font-bold">{item.name}</p>
               <div class="absolute inset-0 bg-gradient-to-t from-black opacity-0 group-hover:opacity-30 transition-opacity duration-500"></div>
