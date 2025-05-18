@@ -39,12 +39,18 @@ module.exports = {
         fadeOut: {
           from: { opacity: 1 },
           to: { opacity: 0 }
+        },
+        textReveal: {
+          '0%': { visibility: 'hidden', clipPath: 'inset(0 100% 0 0)' },
+          '1%': { visibility: 'visible' },
+          '100%': { visibility: 'visible', clipPath: 'inset(0 0 0 0)' }
         }
       },
       animation: {
         slideInOut: 'slideInRight 1.5s cubic-bezier(0.18, 0.9, 0.18, 0.9) forwards,' +
                     'slideOutLeft 1.5s cubic-bezier(0.18, 0.9, 0.18, 0.9) 1.5s forwards',
         fadeOut: 'fadeOut 1.5s 2s forwards',
+        textReveal: 'textReveal 1.5s cubic-bezier(0.77, 0, 0.18, 1) forwards'
       }
     }
   },
