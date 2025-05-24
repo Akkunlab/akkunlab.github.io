@@ -3,14 +3,15 @@ export const setupScrollAnimations = (): void => {
   /* Intersection Observerの設定 */
   const options: IntersectionObserverInit = {
     root: null,
-    rootMargin: '0px',
-    threshold: 0.1 // 要素の10%が見えたら実行
+    rootMargin: '0px 0px -10% 0px',
+    threshold: 0.01 // 要素の1%が見えたら実行
   };
 
   /* 監視する対象の要素 */
   const workItems: NodeListOf<Element> = document.querySelectorAll('.work-item');
-  
-  /* アニメーション関数を定義 */
+  const heroTexts: NodeListOf<Element> = document.querySelectorAll('.hero-text span');
+
+  /* Workアニメーション関数を定義 */
   const animateWorkItem = (element: Element): void => {
     const curtain: HTMLElement | null = element.querySelector('.curtain-animation');
     const image: HTMLElement | null = element.querySelector('.image-animation');
@@ -36,14 +37,28 @@ export const setupScrollAnimations = (): void => {
     }
   };
   
+  /* ヒーローテキストのアニメーション関数を定義 */
+  const animateHeroText = (element: Element): void => {
+    const index = element.getAttribute('data-index');
+    const delay = index ? parseFloat(index) * 0.7 + 0.5 : 0.5;
+    
+    // アニメーションクラスを追加
+    element.classList.add('animate-textReveal');
+    (element as HTMLElement).style.animationDelay = `${delay}s`;
+  };
+
   /* Intersection Observerの作成と設定 */
   const observer: IntersectionObserver = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
     entries.forEach(entry => {
 
       // 要素が表示領域に入った場合
       if (entry.isIntersecting) {
-        animateWorkItem(entry.target);
-        observer.unobserve(entry.target);
+        if (entry.target.parentElement?.classList.contains('hero-text')) {
+          animateHeroText(entry.target);
+        } else if (entry.target.classList.contains('work-item')) {
+          animateWorkItem(entry.target);
+        }
+        observer.unobserve(entry.target); // 監視を解除
       }
     });
   }, options);
@@ -68,4 +83,26 @@ export const setupScrollAnimations = (): void => {
       observer.observe(item);
     }
   });
+  
+  /* ヒーローテキストのアニメーション設定 */
+  const heroImage = document.getElementById('hero-image') as HTMLImageElement;
+  
+  // 画像のロードイベントを設定
+  if (heroImage) {
+    if (heroImage.complete) {
+      setupHeroTextAnimation();
+    } else {
+      heroImage.addEventListener('load', setupHeroTextAnimation);
+    }
+  } else {
+    setupHeroTextAnimation();
+  }
+  
+  // ヒーローテキストのアニメーション設定関数
+  function setupHeroTextAnimation() {
+    heroTexts.forEach((item: Element) => {
+      observer.observe(item);
+      item.classList.remove('animate-textReveal');
+    });
+  }
 };
