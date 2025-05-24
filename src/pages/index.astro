@@ -6,6 +6,7 @@ import { getIconName } from '@/utils/icon'
 import Layout from '@/layouts/Layout.astro';
 import SectionHeading from '@/components/SectionHeading.astro';
 import Button from '@/components/Button.astro';
+import AnimatedImage from '@/components/AnimatedImage.astro';
 
 import heroImage from '@/assets/images/hero-image.jpg';
 import profile from '@/assets/images/profile.jpg';
@@ -185,18 +186,17 @@ const sns = [
 
   <!-- ヒーローセクション -->
   <section class="relative h-screen">
-    <Image src={heroImage} alt="メインビジュアル" class="h-full object-cover" />
+    <Image src={heroImage} alt="メインビジュアル" class="h-full object-cover" loading="eager" />
     <div class="absolute inset-0 flex items-end pl-[3%] pb-8">
       <h2 class="text-4xl sm:text-6xl lg:text-8xl font-bold text-primary-content">
         {HERO_TITLE_LINES.map((line, index) => (
-          <span class="block bg-neutral pt-0 pb-1 sm:pb-3 px-2 sm:px-5 m-3 w-fit animate-textReveal invisible" style={`animation-delay: ${0.5 + index * 0.7}s;`}>
+          <span class="block bg-base-300 pt-0 pb-1 sm:pb-3 px-2 sm:px-5 m-3 w-fit animate-textReveal invisible" style={`animation-delay: ${0.5 + index * 0.7}s;`}>
             {line}
           </span>
         ))}
       </h2>
     </div>
   </section>
-
   <!-- 作品セクション -->
   <section class="my-20 px-4 md:px-16">
     <SectionHeading title="作品" />
@@ -204,16 +204,7 @@ const sns = [
       {works.map((work) => (
         <article class="work-item">
           <a href={work.link} class="card card-item">
-            <div class="rounded-xl overflow-hidden relative">
-              <figure class="relative w-full h-full image-wrapper">
-                <Image
-                  src={heroImage}
-                  alt={work.title}
-                  class="transition-transform duration-500 hover:scale-110 image-animation opacity-0 w-full h-full object-cover"
-                />
-              </figure>
-              <div class="absolute inset-0 bg-neutral curtain-animation opacity-0"></div>
-            </div>
+            <AnimatedImage src={heroImage} alt={work.title} />
             <div class="card-body p-0 pt-2">
               <h2 class="card-title">{work.title}</h2>
               <p>{work.summary}</p>
@@ -229,10 +220,10 @@ const sns = [
   <section class="my-20 px-4 md:px-[10%]">
     <SectionHeading title="プロフィール" />
     <div class="flex flex-col md:flex-row items-start justify-center my-20">
-
+      
       <!-- プロフィール写真 -->
-      <div class="avatar flex justify-center md:w-1/2">
-        <Image src={profile} alt="プロフィール写真" loading="eager" />
+      <div class="avatar flex justify-center md:w-1/2 work-item">
+        <AnimatedImage src={profile} alt="プロフィール写真" loading="eager" noScale={true} />
       </div>
 
       <!-- プロフィール情報 -->

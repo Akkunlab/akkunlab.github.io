@@ -13,6 +13,7 @@ module.exports = {
           'neutral': '#000',
           'neutral-content': '#fff',
           'base-200': '#e5e7eb',
+          'base-300': '#0a0a0a',
         },
       },
     ],

@@ -1,0 +1,25 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  class?: string;
+  loading?: "eager" | "lazy";
+  noScale?: boolean;
+}
+
+const { src, alt, class: className, loading = 'lazy', noScale = false } = Astro.props;
+---
+
+<div class="animated-image-container relative overflow-hidden rounded-xl">
+  <figure class="relative w-full h-full image-wrapper">
+    <Image
+      src={src}
+      alt={alt}
+      class={`transition-transform duration-500 ${noScale ? '' : 'hover:scale-110'} image-animation opacity-0 w-full h-full object-cover ${className || ''}`}
+      loading={loading}
+    />
+  </figure>
+  <div class="absolute inset-0 bg-base-300 curtain-animation opacity-0"></div>
+</div>
