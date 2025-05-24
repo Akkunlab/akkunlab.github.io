@@ -202,15 +202,18 @@ const sns = [
     <SectionHeading title="作品" />
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20 mb-12">
       {works.map((work) => (
-        <article>
+        <article class="work-item">
           <a href={work.link} class="card card-item">
-            <figure class="rounded-xl overflow-hidden">
-              <Image
-                src={heroImage}
-                alt={work.title}
-                class="transition-transform duration-500 hover:scale-110"
-              />
-            </figure>
+            <div class="rounded-xl overflow-hidden relative">
+              <figure class="relative w-full h-full image-wrapper">
+                <Image
+                  src={heroImage}
+                  alt={work.title}
+                  class="transition-transform duration-500 hover:scale-110 image-animation opacity-0 w-full h-full object-cover"
+                />
+              </figure>
+              <div class="absolute inset-0 bg-neutral curtain-animation opacity-0"></div>
+            </div>
             <div class="card-body p-0 pt-2">
               <h2 class="card-title">{work.title}</h2>
               <p>{work.summary}</p>

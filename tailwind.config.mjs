@@ -36,6 +36,10 @@ module.exports = {
           '0%': { transform: 'translateX(0%)' },
           '100%': { transform: 'translateX(-120%)' }
         },
+        fadeIn: {
+          from: { opacity: 0 },
+          to: { opacity: 1 }
+        },
         fadeOut: {
           from: { opacity: 1 },
           to: { opacity: 0 }
@@ -43,13 +47,20 @@ module.exports = {
         textReveal: {
           '0%': { visibility: 'hidden', clipPath: 'inset(0 100% 0 0)' },
           '100%': { visibility: 'visible', clipPath: 'inset(0 0 0 0)' }
-        }
+        },
+        imageCurtain: {
+          '0%': { transform: 'translateX(-100%)' },
+          '50%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(100%)' }
+        },
       },
       animation: {
         slideInOut: 'slideInRight 1.5s cubic-bezier(0.18, 0.9, 0.18, 0.9) forwards,' +
                     'slideOutLeft 1.5s cubic-bezier(0.18, 0.9, 0.18, 0.9) 1.5s forwards',
         fadeOut: 'fadeOut 1.5s 2s forwards',
-        textReveal: 'textReveal 1s cubic-bezier(0.77, 0, 0.18, 1) forwards'
+        textReveal: 'textReveal 1s cubic-bezier(0.77, 0, 0.18, 1) forwards',
+        imageCurtain: 'imageCurtain 1.8s cubic-bezier(0.77, 0, 0.18, 1) forwards',
+        imageFadeIn: 'fadeIn 1.8s cubic-bezier(0.77, 0, 0.18, 1) forwards'
       }
     }
   },
