@@ -62,6 +62,50 @@ const works = [
     link: "#",
   }
 ];
+const activities = [
+  {
+    id: 1,
+    title: "ドローンプログラミング教室",
+    summary: "小中学生向けのプログラミング教室を企画・運営",
+    image: "/assets/works/work1.jpg",
+    link: "#",
+  },
+  {
+    id: 2,
+    title: "常陸frogs",
+    summary: "社会課題を解決するリーダーシッププログラムに参加",
+    image: "/assets/works/work2.jpg",
+    link: "#",
+  },
+  {
+    id: 3,
+    title: "光の祭",
+    summary: "プロジェクションマッピングイベントの企画運営",
+    image: "/assets/works/work3.jpg",
+    link: "#",
+  },
+  {
+    id: 4,
+    title: "AWSロボットデリバリーチャレンジ",
+    summary: "自律走行ロボットの開発と競技会での優勝",
+    image: "/assets/works/work4.jpg",
+    link: "#",
+  },
+  {
+    id: 5,
+    title: "研究活動",
+    summary: "エレクトロニクスと情報技術を融合した研究を推進",
+    image: "/assets/works/work5.jpg",
+    link: "#",
+  },
+  {
+    id: 6,
+    title: "ボランティア活動",
+    summary: "地域コミュニティへの技術支援と教育活動",
+    image: "/assets/works/work6.jpg",
+    link: "#",
+  }
+];
 const timeline = [
   {
     date: '2025/04 -',
@@ -209,6 +253,25 @@ const sns = [
             <div class="card-body p-0 pt-2">
               <h2 class="card-title">{work.title}</h2>
               <p>{work.summary}</p>
+            </div>
+          </a>
+        </article>
+      ))}
+    </div>
+    <Button text="もっと見てみる！" />
+  </section>
+
+  <!-- 活動セクション -->
+  <section class="my-20 px-4 md:px-16">
+    <SectionHeading title="活動" />
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20 mb-12">
+      {activities.map((activity) => (
+        <article class="work-item">
+          <a href={activity.link} class="card card-item">
+            <AnimatedImage src={heroImage} alt={activity.title} />
+            <div class="card-body p-0 pt-2">
+              <h2 class="card-title">{activity.title}</h2>
+              <p>{activity.summary}</p>
             </div>
           </a>
         </article>
