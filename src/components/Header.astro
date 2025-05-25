@@ -1,7 +1,22 @@
 ---
-const text = 'ATSUSHI KISHIMOTO';
+import { AUTHOR_ENGLISH } from '@/constants/siteData';
+
+const text = AUTHOR_ENGLISH.toUpperCase();
+const navItems = [
+  { label: '作品', href: '/works' },
+  { label: '活動', href: '/activity' },
+  { label: 'プロフィール', href: '/profile' },
+  { label: 'リンク', href: '/links' }
+];
 ---
 
-<div class="h-12 text-center bg-neutral">
-  <a class="btn btn-ghost text-lg text-neutral-content" href="/">{text}</a>
+<div class="fixed top-0 w-full h-16 flex justify-between items-center px-6 z-50 backdrop-blur-lg bg-black/70 border-b border-white/10 shadow-xl">
+  <a class="btn btn-ghost text-xl text-white" href="/">{text}</a>
+  <nav class="flex gap-4">
+    {navItems.map(item => (
+      <a class="btn btn-ghost text-xl hover:bg-white/10 text-white" href={item.href}>
+        {item.label}
+      </a>
+    ))}
+  </nav>
 </div>
