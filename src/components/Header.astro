@@ -10,9 +10,9 @@ const navItems = [
 ];
 ---
 
-<div class="fixed top-0 w-full h-16 flex justify-between items-center px-6 z-50 backdrop-blur-lg bg-header-bg border-b border-header-border shadow-xl">
+<div class="fixed top-0 w-full h-16 flex justify-center md:justify-between items-center px-6 z-50 backdrop-blur-lg bg-header-bg border-b border-header-border shadow-xl">
   <a class="btn btn-ghost text-xl text-primary-content" href="/">{text}</a>
-  <nav class="flex gap-4">
+  <nav class="hidden md:flex gap-4">
     {navItems.map(item => (
       <a class="btn btn-ghost text-xl hover:bg-header-hover text-primary-content" href={item.href}>
         {item.label}
