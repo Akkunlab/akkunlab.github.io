@@ -1,0 +1,111 @@
+---
+import { Icon } from 'astro-icon/components';
+import { getIconName } from '@/utils/icon';
+import {
+  AUTHOR,
+  AUTHOR_ENGLISH,
+} from '@/constants';
+import CyberInfoPanel from './CyberInfoPanel.astro';
+
+const currentYear = new Date().getFullYear();
+
+const footerLinks = [
+  { label: '作品', href: '/#works' },
+  { label: '活動', href: '/#activities' },
+  { label: 'プロフィール', href: '/#profile' },
+  { label: 'リンク', href: '/#links' }
+];
+
+const sns = [
+  {
+    name: 'X',
+    url: 'https://x.com/akkun_lab',
+    icon: 'twitter',
+  }, {
+    name: 'Instagram',
+    url: 'https://www.instagram.com/akkunlab',
+    icon: 'instagram',
+  }, {
+    name: 'Facebook',
+    url: 'https://www.facebook.com/akkunlab',
+    icon: 'facebook',
+  }, {
+    name: 'GitHub',
+    url: 'https://github.com/Akkunlab',
+    icon: 'github',
+  }, {
+    name: 'YouTube',
+    url: 'https://www.youtube.com/@akkunlab',
+    icon: 'youtube',
+  }, {
+    name: 'Email',
+    url: 'mailto:akkunlab@gmail.com',
+    icon: 'envelope',
+  },
+];
+---
+
+<footer class="bg-footer-bg text-primary-content pt-16 pb-8">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+      <!-- インフォメーション -->
+      <div class="md:col-span-1">
+        <h2 class="text-2xl font-bold mb-3">{AUTHOR_ENGLISH.toUpperCase()}</h2>
+        <p class="mb-4">
+          テクノロジーとデザインの融合で<br />
+          人々に感動と幸せを届けるクリエイター
+        </p>
+        <div class="flex space-x-2">
+          {sns.map(item => (
+            <a 
+              href={item.url} 
+              class="btn btn-circle bg-transparent hover:bg-primary-content hover:text-base-300 border border-primary-content text-primary-content"
+              target="_blank" 
+              rel="noopener noreferrer"
+              aria-label={item.name}
+              title={item.name}
+            >
+              <Icon name={getIconName('prime', item.icon)} size={24} style={{ transform: item.icon === 'twitter' ? 'scale(0.625)' : 'scale(1)' }} />
+            </a>
+          ))}
+        </div>
+      </div>
+      
+      <!-- リンク -->
+      <div class="md:col-span-1 pl-0 lg:pl-4">
+        <h3 class="text-xl font-bold mb-3">リンク</h3>
+        <ul class="space-y-0">
+          {footerLinks.map(link => (
+            <li class="mb-0">
+              <a
+                href={link.href}
+                class="btn btn-ghost hover:bg-header-hover text-primary-content transition-colors h-9 min-h-9 text-base"
+                data-scroll={link.href.startsWith('/#') ? 'true' : 'false'}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- サイバーインフォメーション -->
+      <CyberInfoPanel
+        title="思考システム"
+        systemMessage="システム起動中..."
+        statusItems={[
+          { id: "01", name: "ハッカー思考", status: "稼働中", statusColor: "text-green-400" },
+          { id: "02", name: "デザイン思考", status: "同期中", statusColor: "text-amber-400" },
+          { id: "03", name: "創発エンジン", status: "出力中", statusColor: "text-green-400" }
+        ]}
+      />
+    </div>
+    
+    <!-- Copyright -->
+    <div class="border-t border-gray-700 mt-12 pt-8 text-center">
+      <p>&copy; {currentYear} {AUTHOR} / {AUTHOR_ENGLISH}</p>
+    </div>
+
+  </div>
+</footer>

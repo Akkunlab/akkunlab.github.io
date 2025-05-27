@@ -1,0 +1,60 @@
+---
+interface StatusItem {
+  id: string;
+  name: string;
+  status: string;
+  statusColor?: string;
+}
+
+interface Props {
+  title: string;
+  systemMessage: string;
+  statusItems: StatusItem[];
+}
+
+const { title, systemMessage, statusItems } = Astro.props;
+---
+
+<div class="md:col-span-1">
+
+  <!-- タイトル -->
+  <h3 class="text-xl font-bold mb-3">
+    <span class="inline-block relative">
+      <span class="relative z-10">{title}</span>
+      <span class="absolute -bottom-1 left-0 w-full h-[2px] bg-cyan-400 opacity-70"></span>
+      <span class="absolute -bottom-1 left-0 w-1/2 h-[2px] bg-cyan-400 animate-[ping_3s_ease-in-out_infinite]"></span>
+    </span>
+  </h3>
+  <div class="relative overflow-hidden border border-cyan-500/30 rounded-md bg-[#050811] before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-cyan-400 before:to-transparent before:animate-glitch backdrop-blur-sm hover:border-cyan-400/50 transition-all duration-500">
+
+    <!-- サイバー装飾要素 -->
+    <div class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-500/50"></div>
+    <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-cyan-500/50"></div>
+    <div class="absolute top-0 left-0 w-2 h-2 bg-cyan-500 animate-pulse"></div>
+    <div class="absolute bottom-0 right-0 w-1 h-1 bg-cyan-500 animate-ping"></div>
+    <div class="absolute top-1/2 right-0 w-6 h-[1px] bg-cyan-500/30"></div>
+    <div class="absolute top-1/4 left-0 w-4 h-[1px] bg-cyan-500/30"></div>
+    
+    <!-- デジタル風メインコンテンツ -->
+    <div class="p-4 pt-6 bg-gradient-to-b from-transparent to-blue-900/20">
+      <div class="flex items-center mb-3">
+        <div class="w-3 h-3 bg-cyan-500 animate-pulse mr-2"></div>
+        <div class="animate-typing text-cyan-400 text-xs tracking-[0.2em] uppercase font-mono whitespace-nowrap overflow-hidden border-r-2 border-cyan-400">{systemMessage}</div>
+      </div>
+      
+      <!-- データ表示 -->
+      <div class="text-sm grid gap-2 font-mono relative">
+        {statusItems.map((item) => (
+          <div class="group flex flex-wrap items-center gap-2 hover:bg-cyan-900/20 px-2 py-1 rounded cursor-pointer transition-all duration-300 hover:translate-x-1">
+            <span class="text-cyan-500 group-hover:animate-pulse">[{item.id}]</span>
+            <span class="text-primary-content/80 group-hover:text-cyan-400 transition-colors">{item.name}</span>
+            <span class={`ml-auto ${item.statusColor} group-hover:scale-105 transition-transform`}>{item.status}</span>
+          </div>
+        ))}
+      </div>
+
+      <!-- アニメーションスキャンライン -->
+      <div class="absolute top-0 left-0 w-full h-[1px] bg-cyan-500/30 animate-scan"></div>
+    </div>
+  </div>
+</div>
