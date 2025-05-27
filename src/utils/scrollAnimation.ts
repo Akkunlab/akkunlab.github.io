@@ -1,4 +1,39 @@
+
+const HEADER_HEIGHT: number = 64; // ヘッダーの高さ
+
+/* スムーススクロール機能の設定 */
+const setupSmoothScroll = (): void => {
+  const scrollLinks = document.querySelectorAll('a[data-scroll="true"]');
+  
+  // 各リンクにクリックイベントリスナーを追加
+  scrollLinks.forEach((link: Element) => {
+    link.addEventListener('click', (e: Event) => {
+      e.preventDefault();
+      
+      // リンクのhref属性からターゲットIDを取得
+      const href = (link as HTMLAnchorElement).getAttribute('href') || '';
+      const targetId = href.split('#')[1];
+      
+      if (targetId) {
+        const targetElement = document.getElementById(targetId);
+        
+        if (targetElement) {
+          const elementPosition = targetElement.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - HEADER_HEIGHT;
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      }
+    });
+  });
+};
+
 export const setupScrollAnimations = (): void => {
+
+  setupSmoothScroll(); // スムーススクロールの設定
 
   /* Intersection Observerの設定 */
   const options: IntersectionObserverInit = {
