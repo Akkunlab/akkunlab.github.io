@@ -127,29 +127,6 @@ const createIntersectionObserver = (heroTexts: NodeListOf<Element>): Intersectio
 };
 
 /**
- * スクロールに関する全アニメーションの設定を行う
- */
-export const setupScrollAnimations = (): void => {
-
-  // スムーススクロールの設定
-  setupSmoothScroll();
-
-  // 監視する対象の要素を取得
-  const workItems: NodeListOf<Element> = document.querySelectorAll('.work-item');
-  const heroTextContainer: Element | null = document.querySelector('.hero-text');
-  const heroTexts: NodeListOf<Element> = document.querySelectorAll('.hero-text span');
-
-  // Intersection Observerの作成
-  const observer: IntersectionObserver = createIntersectionObserver(heroTexts);
-
-  // Workアイテムの監視とアニメーション設定
-  setupWorkItemsAnimation(workItems, observer);
-
-  // ヒーローテキストのアニメーション設定
-  setupHeroImageAndText(heroTextContainer, heroTexts, observer);
-};
-
-/**
  * Workアイテムのアニメーション設定
  * @param workItems - 対象となる要素のリスト
  * @param observer - Intersection Observer
@@ -203,4 +180,27 @@ const setupHeroImageAndText = (
   } else {
     setupHeroTextAnimation(heroTextContainer, heroTexts, observer);
   }
+};
+
+/**
+ * スクロールに関する全アニメーションの設定を行う
+ */
+export const setupScrollAnimations = (): void => {
+
+  // スムーススクロールの設定
+  setupSmoothScroll();
+
+  // 監視する対象の要素を取得
+  const workItems: NodeListOf<Element> = document.querySelectorAll('.work-item');
+  const heroTextContainer: Element | null = document.querySelector('.hero-text');
+  const heroTexts: NodeListOf<Element> = document.querySelectorAll('.hero-text span');
+
+  // Intersection Observerの作成
+  const observer: IntersectionObserver = createIntersectionObserver(heroTexts);
+
+  // Workアイテムの監視とアニメーション設定
+  setupWorkItemsAnimation(workItems, observer);
+
+  // ヒーローテキストのアニメーション設定
+  setupHeroImageAndText(heroTextContainer, heroTexts, observer);
 };
