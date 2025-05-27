@@ -1,16 +1,25 @@
-
 const HEADER_HEIGHT: number = 64; // ヘッダーの高さ
+const STAGGER_DELAY: number = 150; // 要素間の遅延（ミリ秒）
 
-/* スムーススクロール機能の設定 */
+/**
+ * Intersection Observerのオプション
+ */
+const observerOptions: IntersectionObserverInit = {
+  root: null,
+  rootMargin: '0px 0px -10% 0px',
+  threshold: 0.01 // 要素の1%が見えたら実行
+};
+
+/**
+ * スムーススクロール機能の設定
+ */
 const setupSmoothScroll = (): void => {
   const scrollLinks = document.querySelectorAll('a[data-scroll="true"]');
   
-  // 各リンクにクリックイベントリスナーを追加
   scrollLinks.forEach((link: Element) => {
     link.addEventListener('click', (e: Event) => {
       e.preventDefault();
       
-      // リンクのhref属性からターゲットIDを取得
       const href = (link as HTMLAnchorElement).getAttribute('href') || '';
       const targetId = href.split('#')[1];
       
@@ -19,7 +28,7 @@ const setupSmoothScroll = (): void => {
         
         if (targetElement) {
           const elementPosition = targetElement.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.pageYOffset - HEADER_HEIGHT;
+          const offsetPosition = elementPosition + window.scrollY - HEADER_HEIGHT;
 
           window.scrollTo({
             top: offsetPosition,
@@ -31,78 +40,125 @@ const setupSmoothScroll = (): void => {
   });
 };
 
-export const setupScrollAnimations = (): void => {
+/**
+ * Workアイテムのアニメーション
+ * @param element - アニメーションを適用する要素
+ */
+const animateWorkItem = (element: Element): void => {
+  const curtain: HTMLElement | null = element.querySelector('.curtain-animation');
+  const image: HTMLElement | null = element.querySelector('.image-animation');
+  const imageWrapper: HTMLElement | null = element.querySelector('.image-wrapper');
+  
+  // カーテンアニメーションの開始
+  if (curtain) {
+    curtain.classList.remove('opacity-0');
+    curtain.classList.add('animate-imageCurtain');
+  }
+  
+  // 画像アニメーション
+  if (image) {
+    setTimeout(() => {
+      image.classList.add('animate-imageFadeIn');
+      image.classList.remove('opacity-0');
 
-  setupSmoothScroll(); // スムーススクロールの設定
-
-  /* Intersection Observerの設定 */
-  const options: IntersectionObserverInit = {
-    root: null,
-    rootMargin: '0px 0px -10% 0px',
-    threshold: 0.01 // 要素の1%が見えたら実行
-  };
-
-  /* 監視する対象の要素 */
-  const workItems: NodeListOf<Element> = document.querySelectorAll('.work-item');
-  const heroTextContainer: Element | null = document.querySelector('.hero-text');
-  const heroTexts: NodeListOf<Element> = document.querySelectorAll('.hero-text span');
-
-  /* Workアニメーション関数を定義 */
-  const animateWorkItem = (element: Element): void => {
-    const curtain: HTMLElement | null = element.querySelector('.curtain-animation');
-    const image: HTMLElement | null = element.querySelector('.image-animation');
-    const imageWrapper: HTMLElement | null = element.querySelector('.image-wrapper');
-    
-    // カーテンアニメーションの開始
-    if (curtain) {
-      curtain.classList.remove('opacity-0');
-      curtain.classList.add('animate-imageCurtain');
-    }
-    
-    // 画像アニメーション
-    if (image) {
       setTimeout(() => {
-        image.classList.add('animate-imageFadeIn');
-        image.classList.remove('opacity-0');
+        if (imageWrapper) imageWrapper.classList.add('z-30');
+        if (curtain) curtain.style.display = 'none';
+      }, 1800);
+    }, 500);
+  }
+};
 
-        setTimeout(() => {
-          if (imageWrapper) imageWrapper.classList.add('z-30');
-          if (curtain) curtain.style.display = 'none';
-        }, 1800);
-      }, 500);
-    }
-  };
+/**
+ * ヒーローテキストのアニメーション
+ * @param heroTexts - アニメーションを適用するテキスト要素のリスト
+ */
+const animateHeroText = (heroTexts: NodeListOf<Element>): void => {
+  heroTexts.forEach((item: Element) => {
+    const index: string | null = item.getAttribute('data-index');
+    const delay: number = index ? parseFloat(index) * 0.7 + 0.5 : 0.5;
+    
+    item.classList.add('animate-textReveal');
+    (item as HTMLElement).style.animationDelay = `${delay}s`;
+  });
+};
 
-  /* ヒーローテキストのアニメーション関数を定義 */
-  const animateHeroText = (): void => {
-    heroTexts.forEach((item: Element) => {
-      const index: string | null = item.getAttribute('data-index');
-      const delay: number = index ? parseFloat(index) * 0.7 + 0.5 : 0.5;
-      
-      item.classList.add('animate-textReveal');
-      (item as HTMLElement).style.animationDelay = `${delay}s`;
-    });
-  };
+/**
+ * ヒーローテキストアニメーションのセットアップ
+ * @param heroTextContainer - コンテナ要素
+ * @param heroTexts - テキスト要素のリスト
+ * @param observer - Intersection Observer
+ */
+const setupHeroTextAnimation = (
+  heroTextContainer: Element | null, 
+  heroTexts: NodeListOf<Element>,
+  observer: IntersectionObserver
+): void => {
+  if (heroTextContainer) observer.observe(heroTextContainer);
+  
+  // アニメーションクラスをリセット
+  heroTexts.forEach((item: Element) => item.classList.remove('animate-textReveal'));
+};
 
-  /* Intersection Observerの作成と設定 */
-  const observer: IntersectionObserver = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
+/**
+ * Intersection Observerの作成
+ * @param heroTexts - ヒーローテキスト要素のリスト
+ * @returns 設定済みのIntersection Observer
+ */
+const createIntersectionObserver = (heroTexts: NodeListOf<Element>): IntersectionObserver => {
+  const observer = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
     entries.forEach(entry => {
 
       // 要素が表示領域に入った場合
       if (entry.isIntersecting) {
         if (entry.target.classList.contains('hero-text')) {
-          animateHeroText();
+          animateHeroText(heroTexts);
         } else if (entry.target.classList.contains('work-item')) {
           animateWorkItem(entry.target);
         }
-        observer.unobserve(entry.target); // 監視を解除
+
+        // 一度アニメーションが実行されたら監視を解除
+        observer.unobserve(entry.target);
       }
     });
-  }, options);
+  }, observerOptions);
+  
+  return observer;
+};
 
-  /* 各要素を監視対象に追加し、表示済み要素のアニメーションを開始 */
+/**
+ * スクロールに関する全アニメーションの設定を行う
+ */
+export const setupScrollAnimations = (): void => {
+
+  // スムーススクロールの設定
+  setupSmoothScroll();
+
+  // 監視する対象の要素を取得
+  const workItems: NodeListOf<Element> = document.querySelectorAll('.work-item');
+  const heroTextContainer: Element | null = document.querySelector('.hero-text');
+  const heroTexts: NodeListOf<Element> = document.querySelectorAll('.hero-text span');
+
+  // Intersection Observerの作成
+  const observer: IntersectionObserver = createIntersectionObserver(heroTexts);
+
+  // Workアイテムの監視とアニメーション設定
+  setupWorkItemsAnimation(workItems, observer);
+
+  // ヒーローテキストのアニメーション設定
+  setupHeroImageAndText(heroTextContainer, heroTexts, observer);
+};
+
+/**
+ * Workアイテムのアニメーション設定
+ * @param workItems - 対象となる要素のリスト
+ * @param observer - Intersection Observer
+ */
+const setupWorkItemsAnimation = (
+  workItems: NodeListOf<Element>, 
+  observer: IntersectionObserver
+): void => {
   let delay: number = 0;
-  const STAGGER_DELAY: number = 150; // 要素間の遅延（ミリ秒）
 
   workItems.forEach((item: Element) => {
 
@@ -120,26 +176,31 @@ export const setupScrollAnimations = (): void => {
       observer.observe(item);
     }
   });
+};
 
-  /* ヒーローテキストのアニメーション設定 */
+/**
+ * ヒーロー画像とテキストのアニメーション設定
+ * @param heroTextContainer - テキストコンテナ要素
+ * @param heroTexts - テキスト要素のリスト
+ * @param observer - Intersection Observer
+ */
+const setupHeroImageAndText = (
+  heroTextContainer: Element | null,
+  heroTexts: NodeListOf<Element>,
+  observer: IntersectionObserver
+): void => {
   const heroImage: HTMLImageElement | null = document.getElementById('hero-image') as HTMLImageElement;
   
   // 画像のロードイベントを設定
   if (heroImage) {
     if (heroImage.complete) {
-      setupHeroTextAnimation();
+      setupHeroTextAnimation(heroTextContainer, heroTexts, observer);
     } else {
-      heroImage.addEventListener('load', setupHeroTextAnimation);
+      heroImage.addEventListener('load', () => {
+        setupHeroTextAnimation(heroTextContainer, heroTexts, observer);
+      });
     }
   } else {
-    setupHeroTextAnimation();
-  }
-  
-  // ヒーローテキストのアニメーション設定関数
-  function setupHeroTextAnimation(): void {
-    if (heroTextContainer) observer.observe(heroTextContainer);
-    
-    // アニメーションクラスをリセット
-    heroTexts.forEach((item: Element) => item.classList.remove('animate-textReveal'));
+    setupHeroTextAnimation(heroTextContainer, heroTexts, observer);
   }
 };
