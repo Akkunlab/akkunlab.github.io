@@ -5,41 +5,14 @@ import {
   AUTHOR,
   AUTHOR_ENGLISH,
   NAV_ITEMS,
+  SNS_LINKS,
 } from '@/constants';
 import CyberInfoPanel from './CyberInfoPanel.astro';
 
 const currentYear = new Date().getFullYear();
-
-const sns = [
-  {
-    name: 'X',
-    url: 'https://x.com/akkun_lab',
-    icon: 'twitter',
-  }, {
-    name: 'Instagram',
-    url: 'https://www.instagram.com/akkunlab',
-    icon: 'instagram',
-  }, {
-    name: 'Facebook',
-    url: 'https://www.facebook.com/akkunlab',
-    icon: 'facebook',
-  }, {
-    name: 'GitHub',
-    url: 'https://github.com/Akkunlab',
-    icon: 'github',
-  }, {
-    name: 'YouTube',
-    url: 'https://www.youtube.com/@akkunlab',
-    icon: 'youtube',
-  }, {
-    name: 'Email',
-    url: 'mailto:akkunlab@gmail.com',
-    icon: 'envelope',
-  },
-];
 ---
 
-<footer class="bg-footer-bg text-primary-content pt-16 pb-8">
+<footer class="bg-footer-bg text-primary-content pt-16 pb-24 md:pb-8">
   <div class="container mx-auto px-4">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
@@ -51,7 +24,7 @@ const sns = [
           人々に感動と幸せを届けるクリエイター
         </p>
         <div class="flex space-x-2">
-          {sns.map(item => (
+          {SNS_LINKS.map(item => (
             <a 
               href={item.url} 
               class="btn btn-circle bg-transparent hover:bg-primary-content hover:text-base-300 border border-primary-content text-primary-content"
