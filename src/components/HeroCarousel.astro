@@ -1,0 +1,28 @@
+---
+import { Image } from 'astro:assets';
+
+import heroImage from '@/assets/images/hero-image.jpg';
+import akkunlab from '@/assets/images/akkunlab.png';
+
+const heroImages = [
+  {
+    src: heroImage,
+    alt: 'メインビジュアル 1',
+  }, {
+    src: akkunlab,
+    alt: 'メインビジュアル 2',
+  }
+];
+---
+
+<div class="relative inset-0">
+  {heroImages.map((item, index) => (
+    <Image 
+      src={item.src}
+      alt={item.alt}
+      class="absolute animate-carousel h-screen w-full object-cover" 
+      style={{ animationDelay: `${index * 2.5}s` }}
+      loading={index === 1 ? "eager" : "lazy"} 
+    />
+  ))}
+</div>

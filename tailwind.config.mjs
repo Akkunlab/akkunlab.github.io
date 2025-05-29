@@ -49,6 +49,13 @@ module.exports = {
           from: { opacity: 1 },
           to: { opacity: 0 }
         },
+        carousel: {
+          '0%': { transform: 'translateX(10%)', opacity: 1, clipPath: 'inset(0 0 0 100%)' },
+          '10%': { transform: 'translateX(0)', opacity: 1, clipPath: 'inset(0 0 0 0)' },
+          '50%': { transform: 'translateX(0)', opacity: 1, clipPath: 'inset(0 0 0 0)' },
+          '60%': { transform: 'translateX(-10%)', opacity: 1, clipPath: 'inset(0 100% 0 0)' },
+          '61%, 100%': { transform: 'translateX(0%)', opacity: 0 },
+        },
         textReveal: {
           '0%': { visibility: 'hidden', clipPath: 'inset(0 100% 0 0)' },
           '100%': { visibility: 'visible', clipPath: 'inset(0 0 0 0)' }
@@ -85,7 +92,8 @@ module.exports = {
         imageFadeIn: 'fadeIn 1.8s cubic-bezier(0.77, 0, 0.18, 1) forwards',
         scan: 'scan 2s linear infinite',
         glitch: 'glitch 2s linear infinite',
-        typing: 'typing 3.5s steps(40, end), blinkCaret 0.75s step-end infinite'
+        typing: 'typing 3.5s steps(40, end), blinkCaret 0.75s step-end infinite',
+        carousel: 'carousel 5s cubic-bezier(0.77, 0, 0.18, 1) infinite'
       }
     }
   },

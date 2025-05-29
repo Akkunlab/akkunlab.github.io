@@ -4,6 +4,7 @@ import { Icon } from 'astro-icon/components';
 import { getIconName } from '@/utils/icon'
 
 import Layout from '@/layouts/Layout.astro';
+import HeroCarousel from '@/components/HeroCarousel.astro';
 import SectionHeading from '@/components/SectionHeading.astro';
 import Button from '@/components/Button.astro';
 import AnimatedImage from '@/components/AnimatedImage.astro';
@@ -192,7 +193,7 @@ const media = [
   
   <!-- ヒーローセクション -->
    <section class="relative h-screen">
-    <Image src={heroImage} alt="メインビジュアル" class="h-full object-cover" id="hero-image" loading="eager" />
+    <HeroCarousel />
     <div class="absolute inset-0 flex items-end pl-[3%] pb-8">
       <h2 class="text-4xl sm:text-6xl lg:text-8xl font-bold text-primary-content hero-text">
         {HERO_TITLE_LINES.map((line, index) => (
