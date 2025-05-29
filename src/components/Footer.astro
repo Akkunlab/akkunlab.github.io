@@ -4,17 +4,11 @@ import { getIconName } from '@/utils/icon';
 import {
   AUTHOR,
   AUTHOR_ENGLISH,
+  NAV_ITEMS,
 } from '@/constants';
 import CyberInfoPanel from './CyberInfoPanel.astro';
 
 const currentYear = new Date().getFullYear();
-
-const footerLinks = [
-  { label: '作品', href: '/#works' },
-  { label: '活動', href: '/#activities' },
-  { label: 'プロフィール', href: '/#profile' },
-  { label: 'リンク', href: '/#links' }
-];
 
 const sns = [
   {
@@ -76,14 +70,14 @@ const sns = [
       <div class="md:col-span-1 pl-0 lg:pl-4">
         <h3 class="text-xl font-bold mb-3">リンク</h3>
         <ul class="space-y-0">
-          {footerLinks.map(link => (
+          {NAV_ITEMS.map(item => (
             <li class="mb-0">
               <a
-                href={link.href}
+                href={item.href}
                 class="btn btn-ghost hover:bg-header-hover text-primary-content transition-colors h-9 min-h-9 text-base"
-                data-scroll={link.href.startsWith('/#') ? 'true' : 'false'}
+                data-scroll={item.href.startsWith('/#') ? 'true' : 'false'}
               >
-                {link.label}
+                {item.label}
               </a>
             </li>
           ))}

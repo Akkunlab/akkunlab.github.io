@@ -14,3 +14,30 @@ export const HERO_TITLE_LINES: Array<string> = [
   'デザインの融合で',
   '人々を幸せに'
 ];
+
+export const NAV_ITEMS = [
+  {
+    label: '作品',
+    href: '/#works',
+    icon: 'work-outline',
+    activeIcon: 'work'
+  },
+  {
+    label: '活動',
+    href: '/#activities',
+    icon: 'event-available-outline-rounded',
+    activeIcon: 'event-available-rounded'
+  },
+  {
+    label: 'プロフィール',
+    href: '/#profile',
+    icon: 'account-circle-outline',
+    activeIcon: 'account-circle'
+  },
+  {
+    label: 'リンク',
+    href: '/#links',
+    icon: 'link-rounded',
+    activeIcon: 'link-rounded'
+  }
+];
