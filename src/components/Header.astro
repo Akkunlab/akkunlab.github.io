@@ -6,7 +6,8 @@ const isHomePage = currentPath === '/' || currentPath === '';
 ---
 
 <header id="header" class="fixed top-0 w-full h-16 flex justify-center md:justify-between items-center px-6 z-50 backdrop-blur-lg bg-header-bg border-b border-header-border shadow-xl transition-transform duration-300">
-  <a class="btn btn-ghost text-xl text-primary-content" href="/">{AUTHOR_ENGLISH.toUpperCase()}</a>  <nav class="hidden md:flex gap-4">
+  <a class="btn btn-ghost text-xl text-primary-content" href="/">{AUTHOR_ENGLISH.toUpperCase()}</a>
+  <nav class="hidden md:flex gap-4">
     {NAV_ITEMS.map(item => (
       <a 
         class="btn btn-ghost text-xl hover:bg-header-hover text-primary-content" 
