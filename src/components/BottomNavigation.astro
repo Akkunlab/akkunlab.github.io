@@ -1,37 +1,41 @@
 ---
 import { Icon } from 'astro-icon/components'
 import { getIconName } from '@/utils/icon'
+import { NAV_ITEMS } from '@/constants/siteData'
 
-const items = [
-  {
-    label: 'Home',
-    icon: 'home-outline-rounded',
-    activeIcon: 'home-rounded',
-    isActive: true
-  }, {
-    label: 'Works',
-    icon: 'work-outline',
-    activeIcon: 'work',
-    isActive: false
-  }, {
-    label: 'About',
-    icon: 'account-circle-outline',
-    activeIcon: 'account-circle',
-    isActive: false
-  }, {
-    label: 'Contact',
-    icon: 'stacked-email-outline-rounded',
-    activeIcon: 'stacked-email-rounded',
-    isActive: false
-  }
-];
+const currentPath = Astro.url.pathname;
+const isHomePage = currentPath === '/' || currentPath === '';
 ---
 
-<div class="btm-nav rounded-t-xl backdrop-blur-lg shadow-xl bg-base-200/70 border border-base-200/70">
-  {items.map(item => (
-    <button>
-      <Icon name={getIconName('material-symbols-light', item.isActive ? item.activeIcon : item.icon)} class="h-6 w-6" />
+<div class="md:hidden btm-nav rounded-t-xl backdrop-blur-lg shadow-xl bg-header-bg border-t border-header-border z-50">
+  {NAV_ITEMS.map((item) => (
+    <a 
+      class="group text-primary-content"
+      href={item.href}
+      data-scroll={isHomePage && item.href.startsWith('/#') ? 'true' : 'false'}
+    >
+      <Icon
+        name={getIconName('material-symbols-light', item.icon)}
+        class="h-6 w-6 icon-default group-[.is-active]:hidden"
+      />
+      <Icon
+        name={getIconName('material-symbols-light', item.activeIcon)}
+        class="h-6 w-6 icon-active hidden group-[.is-active]:block"
+      />
       <span class="btm-nav-label">{item.label}</span>
-    </button>
-  ))}
+    </a>
+    ))}
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const links = document.querySelectorAll('.btm-nav a');
+
+    links.forEach(link => {
+      link.addEventListener('click', () => {
+        links.forEach(item => item.classList.remove('is-active', 'bg-transparent', 'border-transparent'));
+        link.classList.add('is-active', 'bg-transparent', 'border-transparent');
+      });
+    });
+  });
+</script>
