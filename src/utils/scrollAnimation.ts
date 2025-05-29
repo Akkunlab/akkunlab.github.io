@@ -1,5 +1,36 @@
-const HEADER_HEIGHT: number = 64; // ヘッダーの高さ
+const HEADER_HEIGHT: number = 64;  // ヘッダーの高さ
 const STAGGER_DELAY: number = 150; // 要素間の遅延（ミリ秒）
+const BREAKPOINT_MD: number = 768; // MD以下のブレークポイント
+
+/**
+ * ヘッダーのスクロール制御
+ * MD以下のサイズでスクロールに応じてヘッダーを表示/非表示
+ */
+const setupHeaderScrollControl = (): void => {
+  const header = document.getElementById('header');
+
+  if (!header) return;
+  
+  let lastScrollTop = 0;
+  const isMobile = () => window.innerWidth < BREAKPOINT_MD;
+
+  const handleScroll = () => {
+    if (!isMobile()) return;
+    
+    const currentScrollTop = window.scrollY || document.documentElement.scrollTop;
+    
+    // スクロール方向の判定
+    header.style.transform = currentScrollTop > lastScrollTop ? 'translateY(-100%)' : 'translateY(0)';
+    lastScrollTop = currentScrollTop;
+  };
+  
+  const handleResize = () => {
+    if (!isMobile()) header.style.transform = 'translateY(0)';
+  };
+
+  window.addEventListener('scroll', handleScroll);
+  window.addEventListener('resize', handleResize);
+};
 
 /**
  * Intersection Observerのオプション
@@ -189,6 +220,9 @@ export const setupScrollAnimations = (): void => {
 
   // スムーススクロールの設定
   setupSmoothScroll();
+
+  // ヘッダーのスクロール制御を設定
+  setupHeaderScrollControl();
 
   // 監視する対象の要素を取得
   const workItems: NodeListOf<Element> = document.querySelectorAll('.work-item');
