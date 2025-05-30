@@ -85,13 +85,13 @@ module.exports = {
         slideInOut: 'slideInRight 1.5s cubic-bezier(0.18, 0.9, 0.18, 0.9) forwards,' +
                     'slideOutLeft 1.5s cubic-bezier(0.18, 0.9, 0.18, 0.9) 1.5s forwards',
         fadeOut: 'fadeOut 1.5s 2s forwards',
+        carousel: 'carousel 14s cubic-bezier(0.77, 0, 0.18, 1) infinite',
         textReveal: 'textReveal 1s cubic-bezier(0.77, 0, 0.18, 1) forwards',
         imageCurtain: 'imageCurtain 1.8s cubic-bezier(0.77, 0, 0.18, 1) forwards',
         imageFadeIn: 'fadeIn 1.8s cubic-bezier(0.77, 0, 0.18, 1) forwards',
         scan: 'scan 2s linear infinite',
         glitch: 'glitch 2s linear infinite',
-        typing: 'typing 3.5s steps(40, end), blinkCaret 0.75s step-end infinite',
-        carousel: 'carousel 14s cubic-bezier(0.77, 0, 0.18, 1) infinite'
+        typing: 'typing 3.5s steps(40, end), blinkCaret 0.75s step-end infinite'
       }
     }
   },
