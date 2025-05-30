@@ -1,11 +1,69 @@
 ---
 interface Props {
   title: string;
+  subTitle: string;
 }
 
-const { title } = Astro.props as Props;
+const { title, subTitle } = Astro.props as Props;
 ---
 
-<h2 class="text-3xl sm:text-5xl font-bold text-center">
-  {title}
-</h2>
+<div class="relative overflow-hidden py-4 px-4 max-w-[500px] w-full mx-auto">
+  
+  <!-- グラデーション背景 -->
+  <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-gray-900 to-black opacity-95 rounded-full">
+    <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30 rounded-2xl"></div>
+  </div>
+
+  <!-- ホログラフィックデータストリーム -->
+  <div class="absolute inset-0 opacity-30">
+    <div class="absolute top-8 left-12 w-2 h-2 bg-cyan-400 rounded-full animate-ping shadow-lg shadow-cyan-400/50"></div>
+    <div class="absolute top-8 right-12 w-2 h-2 bg-purple-400 rounded-full animate-pulse delay-100 shadow-lg shadow-purple-400/50"></div>
+    <div class="absolute bottom-8 left-12 w-2 h-2 bg-blue-400 rounded-full animate-bounce delay-200 shadow-lg shadow-blue-400/50"></div>
+    <div class="absolute bottom-8 right-12 w-2 h-2 bg-pink-400 rounded-full animate-ping delay-300 shadow-lg shadow-pink-400/50"></div>
+  </div>
+
+  <!-- ライン -->
+  <div class="absolute inset-0 opacity-40">
+    <div class="absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500 to-transparent animate-pulse shadow-sm shadow-cyan-500/30"></div>
+    <div class="absolute top-0 bottom-0 left-1/2 w-px bg-gradient-to-b from-transparent via-purple-500 to-transparent animate-pulse delay-500 shadow-sm shadow-purple-500/30"></div>
+  </div>
+
+  <!-- ホログラフィックフレーム -->
+  <div class="absolute inset-2 border border-cyan-400/20 opacity-0 animate-fadeIn delay-500 rounded-full">
+    <div class="absolute -top-px -left-px w-3 h-3 border-l-2 border-t-2 border-cyan-400 animate-pulse rounded-tl-full"></div>
+    <div class="absolute -top-px -right-px w-3 h-3 border-r-2 border-t-2 border-purple-400 animate-pulse delay-200 rounded-tr-full"></div>
+    <div class="absolute -bottom-px -left-px w-3 h-3 border-l-2 border-b-2 border-purple-400 animate-pulse delay-400 rounded-bl-full"></div>
+    <div class="absolute -bottom-px -right-px w-3 h-3 border-r-2 border-b-2 border-pink-400 animate-pulse delay-600 rounded-br-full"></div>
+  </div>
+
+  <!-- メインコンテンツコンテナ -->
+  <div class="relative z-10 text-center flex flex-col justify-center">
+
+    <!-- サブタイトル -->
+    <div class="mb-2 overflow-hidden">
+      <p class="font-mono text-gray-300 font-medium tracking-wide opacity-0 animate-fadeInUp animation-delay-[400ms] drop-shadow-lg">
+        <span class="inline-block animate-bounce animation-delay-[500ms] text-cyan-400">◇</span>
+        <span class="text-white font-semibold">{subTitle}</span>
+        <span class="inline-block animate-bounce animation-delay-[700ms] text-cyan-400">◇</span>
+      </p>
+    </div>
+
+    <!-- メインタイトル -->
+    <h2 class="relative text-3xl sm:text-5xl font-black text-white animate-fadeInScale transition-transform filter drop-shadow-[0_0_15px_rgba(0,255,255,0.5)]">
+      {title}
+    </h2>
+
+    <!-- プログレスバー -->
+    <div class="mt-3 flex justify-center">
+      <div class="w-80 h-0.5 bg-gray-800 rounded-full overflow-hidden">
+        <div class="h-full bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 rounded-full w-0 animate-expandWidth animation-delay-[1000ms]"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- コーナースキャン -->
+  <div class="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-cyan-400 opacity-0 animation-delay-[100ms] animate-pulse rounded-tl-full"></div>
+  <div class="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-purple-400 opacity-0 animation-delay-[200ms] animate-pulse rounded-tr-full"></div>
+  <div class="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-purple-400 opacity-0 animation-delay-[300ms] animate-pulse rounded-bl-full"></div>
+  <div class="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-pink-400 opacity-0 animation-delay-[400ms] animate-pulse rounded-br-full"></div>
+</div>

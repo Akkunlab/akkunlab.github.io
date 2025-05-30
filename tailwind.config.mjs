@@ -45,6 +45,14 @@ module.exports = {
           from: { opacity: 0 },
           to: { opacity: 1 }
         },
+        fadeInUp: {
+          from: { opacity: '0', transform: 'translateY(20px)' },
+          to: { opacity: '1', transform: 'translateY(0)' }
+        },
+        fadeInScale: {
+          from: { opacity: '0', transform: 'scale(0.9)' },
+          to: { opacity: '1', transform: 'scale(1)' }
+        },
         fadeOut: {
           from: { opacity: 1 },
           to: { opacity: 0 }
@@ -80,10 +88,17 @@ module.exports = {
           '0%, 100%': { borderColor: 'transparent' },
           '50%': { borderColor: 'rgba(34, 211, 238, 0.7)' }
         },
+        expandWidth: {
+          from: { width: '0' },
+          to: { width: '20rem' }
+        },
       },
       animation: {
         slideInOut: 'slideInRight 1.5s cubic-bezier(0.18, 0.9, 0.18, 0.9) forwards,' +
                     'slideOutLeft 1.5s cubic-bezier(0.18, 0.9, 0.18, 0.9) 1.5s forwards',
+        fadeIn: 'fadeIn 0.8s ease-out forwards',
+        fadeInUp: 'fadeInUp 0.8s ease-out forwards',
+        fadeInScale: 'fadeInScale 0.8s ease-out forwards',
         fadeOut: 'fadeOut 1.5s 2s forwards',
         carousel: 'carousel 14s cubic-bezier(0.77, 0, 0.18, 1) infinite',
         textReveal: 'textReveal 1s cubic-bezier(0.77, 0, 0.18, 1) forwards',
@@ -91,7 +106,8 @@ module.exports = {
         imageFadeIn: 'fadeIn 1.8s cubic-bezier(0.77, 0, 0.18, 1) forwards',
         scan: 'scan 2s linear infinite',
         glitch: 'glitch 2s linear infinite',
-        typing: 'typing 3.5s steps(40, end), blinkCaret 0.75s step-end infinite'
+        typing: 'typing 3.5s steps(40, end), blinkCaret 0.75s step-end infinite',
+        expandWidth: 'expandWidth 1.5s ease-out forwards',
       }
     }
   },
