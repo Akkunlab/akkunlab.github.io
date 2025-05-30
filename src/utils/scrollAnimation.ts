@@ -1,6 +1,7 @@
-const HEADER_HEIGHT: number = 64;  // ヘッダーの高さ
-const STAGGER_DELAY: number = 150; // 要素間の遅延（ミリ秒）
-const BREAKPOINT_MD: number = 768; // MD以下のブレークポイント
+const HEADER_HEIGHT: number = 64;     // ヘッダーの高さ
+const STAGGER_DELAY: number = 150;    // 要素間の遅延（ミリ秒）
+const BREAKPOINT_MD: number = 768;    // MD以下のブレークポイント
+const PARALLAX_SPEED: number = 0.05;  // パララックス効果の速度
 
 /**
  * ヘッダーのスクロール制御
@@ -214,15 +215,55 @@ const setupHeroImageAndText = (
 };
 
 /**
+ * パララックス背景効果の設定
+ */
+const setupParallaxEffect = (): void => {
+  const parallaxElements = document.querySelectorAll('.parallax-bg');
+  
+  if (parallaxElements.length === 0) return;
+  
+  const handleScroll = () => {
+    const scrollPosition = window.scrollY;
+    
+    parallaxElements.forEach((element: Element) => {
+      const elementTop = element.getBoundingClientRect().top + scrollPosition;
+      const elementHeight = (element as HTMLElement).offsetHeight;
+      const viewportHeight = window.innerHeight;
+      
+      // 画面内に要素が表示されている場合のみ計算
+      if (
+        scrollPosition + viewportHeight > elementTop && 
+        scrollPosition < elementTop + elementHeight
+      ) {
+        const distance = scrollPosition - elementTop;
+        const yPos = distance * PARALLAX_SPEED;
+        
+        const imageElement = element.querySelector('img');
+        if (imageElement) {
+          (imageElement as HTMLElement).style.transform = `translateY(${yPos}px)`;
+        }
+      }
+    });
+  };
+
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        handleScroll();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+  
+  handleScroll();
+};
+
+/**
  * スクロールに関する全アニメーションの設定を行う
  */
 export const setupScrollAnimations = (): void => {
-
-  // スムーススクロールの設定
-  setupSmoothScroll();
-
-  // ヘッダーのスクロール制御を設定
-  setupHeaderScrollControl();
 
   // 監視する対象の要素を取得
   const workItems: NodeListOf<Element> = document.querySelectorAll('.work-item');
@@ -237,4 +278,13 @@ export const setupScrollAnimations = (): void => {
 
   // ヒーローテキストのアニメーション設定
   setupHeroImageAndText(heroTextContainer, heroTexts, observer);
+
+  // スムーススクロールの設定
+  setupSmoothScroll();
+
+  // ヘッダーのスクロール制御を設定
+  setupHeaderScrollControl();
+
+  // パララックス効果の設定
+  setupParallaxEffect();
 };

@@ -225,22 +225,40 @@ const media = [
   </section>
 
   <!-- 活動セクション -->
-  <section id="activities" class="mb-20 px-4 md:px-16 pt-24 mt-8">
-    <SectionHeading title="活動" />
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20 mb-12">
-      {activities.map((activity) => (
-        <article class="work-item">
-          <a href={activity.link} class="card card-item">
-            <AnimatedImage src={heroImage} alt={activity.title} />
-            <div class="card-body p-0 pt-2">
-              <h2 class="card-title">{activity.title}</h2>
-              <p>{activity.summary}</p>
-            </div>
-          </a>
-        </article>
-      ))}
+   <section id="activities" class="mb-20 mt-24 pt-8 relative">
+    
+    <!-- 背景画像 -->
+    <div class="absolute inset-0 h-[600px] z-0 parallax-bg overflow-hidden" style="top: -50px;">
+      <Image 
+        src={heroImage} 
+        alt="活動背景画像" 
+        class="w-full h-full object-cover transform transition-transform ease-out duration-1000 will-change-transform" 
+      />
+      <div class="absolute inset-0 bg-gradient-to-b from-white/20 via-white/80 to-white"></div>
     </div>
-    <Button text="もっと見てみる！" />
+    
+    <!-- ヘッダー -->
+    <div class="relative z-10 flex items-center justify-center">
+      <SectionHeading title="活動" />
+    </div>
+
+    <!-- 活動コンテンツ -->
+    <div class="relative z-10 px-4 md:px-16">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20 mb-12">
+        {activities.map((activity) => (
+          <article class="work-item">
+            <a href={activity.link} class="card card-item">
+              <AnimatedImage src={heroImage} alt={activity.title} />
+              <div class="card-body p-0 pt-2">
+                <h2 class="card-title">{activity.title}</h2>
+                <p>{activity.summary}</p>
+              </div>
+            </a>
+          </article>
+        ))}
+      </div>
+      <Button text="もっと見てみる！" />
+    </div>
   </section>
 
   <!-- プロフィールセクション -->
