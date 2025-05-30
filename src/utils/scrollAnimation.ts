@@ -1,4 +1,3 @@
-const HEADER_HEIGHT: number = 64;     // ヘッダーの高さ
 const STAGGER_DELAY: number = 150;    // 要素間の遅延（ミリ秒）
 const BREAKPOINT_MD: number = 768;    // MD以下のブレークポイント
 const PARALLAX_SPEED: number = 0.05;  // パララックス効果の速度
@@ -60,7 +59,7 @@ const setupSmoothScroll = (): void => {
         
         if (targetElement) {
           const elementPosition = targetElement.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.scrollY - HEADER_HEIGHT;
+          const offsetPosition = elementPosition + window.scrollY;
 
           window.scrollTo({
             top: offsetPosition,
