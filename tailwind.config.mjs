@@ -49,10 +49,6 @@ module.exports = {
           from: { opacity: '0', transform: 'translateY(20px)' },
           to: { opacity: '1', transform: 'translateY(0)' }
         },
-        fadeInScale: {
-          from: { opacity: '0', transform: 'scale(0.9)' },
-          to: { opacity: '1', transform: 'scale(1)' }
-        },
         fadeOut: {
           from: { opacity: 1 },
           to: { opacity: 0 }
@@ -80,17 +76,47 @@ module.exports = {
           '0%': { transform: 'translateX(-100%)' },
           '100%': { transform: 'translateX(100%)' }
         },
-        typing: {
-          from: { width: '0' },
-          to: { width: '100%' }
-        },
         blinkCaret: {
           '0%, 100%': { borderColor: 'transparent' },
           '50%': { borderColor: 'rgba(34, 211, 238, 0.7)' }
         },
         expandWidth: {
           from: { width: '0' },
-          to: { width: '20rem' }
+          to: { width: '100%' }
+        },
+        glowPulse: {
+          '0%, 100%': { 
+            filter: 'drop-shadow(0 0 3px rgba(34,211,238,0.2))',
+            textShadow: '0 0 6px rgba(34,211,238,0.15), 0 0 12px rgba(34,211,238,0.1), 0 0 18px rgba(34,211,238,0.05)'
+          },
+          '50%': { 
+            filter: 'drop-shadow(0 0 12px rgba(34,211,238,0.6))',
+            textShadow: '0 0 20px rgba(34,211,238,0.4), 0 0 40px rgba(34,211,238,0.3), 0 0 60px rgba(34,211,238,0.2)'
+          }
+        },
+        fadeInUpGlow: {
+          '0%': { 
+            opacity: '0', 
+            transform: 'translateY(20px)',
+            filter: 'none',
+            textShadow: 'none'
+          },
+          '100%': { 
+            opacity: '1', 
+            transform: 'translateY(0)',
+            filter: 'none',
+            textShadow: 'none'
+          }
+        },
+        glowStart: {
+          '0%': { 
+            filter: 'none',
+            textShadow: 'none'
+          },
+          '100%': { 
+            filter: 'drop-shadow(0 0 3px rgba(34,211,238,0.2))',
+            textShadow: '0 0 6px rgba(34,211,238,0.15), 0 0 12px rgba(34,211,238,0.1), 0 0 18px rgba(34,211,238,0.05)'
+          }
         },
       },
       animation: {
@@ -98,7 +124,6 @@ module.exports = {
                     'slideOutLeft 1.5s cubic-bezier(0.18, 0.9, 0.18, 0.9) 1.5s forwards',
         fadeIn: 'fadeIn 0.8s ease-out forwards',
         fadeInUp: 'fadeInUp 0.8s ease-out forwards',
-        fadeInScale: 'fadeInScale 0.8s ease-out forwards',
         fadeOut: 'fadeOut 1.5s 2s forwards',
         carousel: 'carousel 14s cubic-bezier(0.77, 0, 0.18, 1) infinite',
         textReveal: 'textReveal 1s cubic-bezier(0.77, 0, 0.18, 1) forwards',
@@ -106,8 +131,11 @@ module.exports = {
         imageFadeIn: 'fadeIn 1.8s cubic-bezier(0.77, 0, 0.18, 1) forwards',
         scan: 'scan 2s linear infinite',
         glitch: 'glitch 2s linear infinite',
-        typing: 'typing 3.5s steps(40, end), blinkCaret 0.75s step-end infinite',
+        typing: 'expandWidth 3.5s steps(40, end), blinkCaret 0.75s step-end infinite',
         expandWidth: 'expandWidth 1.5s ease-out forwards',
+        glowPulse: 'glowPulse 6s ease-in-out infinite',
+        fadeInUpGlow: 'fadeInUpGlow 0.8s ease-out forwards, glowStart 0.5s ease-out 2s forwards, glowPulse 6s ease-in-out 3s infinite',
+        glowStart: 'glowStart 0.5s ease-out forwards',
       }
     }
   },
