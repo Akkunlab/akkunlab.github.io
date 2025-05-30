@@ -13,16 +13,17 @@ const heroImages = [
     alt: 'メインビジュアル 2',
   }
 ];
+const carouselDuration = 14; // seconds
 ---
 
 <div class="relative inset-0">
-  {heroImages.map((item, index) => (
+  {[0, 1, 0].map((imageIndex, sequenceIndex) => (
     <Image 
-      src={item.src}
-      alt={item.alt}
-      class="absolute animate-carousel h-screen w-full object-cover" 
-      style={{ animationDelay: `${index * 2.5}s` }}
-      loading={index === 1 ? "eager" : "lazy"} 
+      src={heroImages[imageIndex].src}
+      alt={heroImages[imageIndex].alt}
+      class="absolute animate-carousel h-screen w-full object-cover"
+      style={{ animationDelay: `${carouselDuration * (0.9 - 0.45 * sequenceIndex)}s` }}
+      loading={sequenceIndex === 1 ? "eager" : "lazy"}
     />
   ))}
 </div>
