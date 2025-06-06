@@ -9,7 +9,9 @@ import SectionHeading from '@/components/SectionHeading.astro';
 import Button from '@/components/Button.astro';
 import AnimatedImage from '@/components/AnimatedImage.astro';
 
-import heroImage from '@/assets/images/hero-image.jpg';
+import heroImage_1 from '@/assets/images/hero-image_1.jpg';
+import activityImage from '@/assets/images/activity-image.jpg';
+import linkImage from '@/assets/images/link-image.jpg';
 import profile from '@/assets/images/profile.jpg';
 
 import {
@@ -214,7 +216,7 @@ const sectionClass = 'py-40 px-4 md:px-16';
       {works.map((work) => (
         <article class="work-item">
           <a href={work.link} class="card card-item">
-            <AnimatedImage src={heroImage} alt={work.title} />
+            <AnimatedImage src={heroImage_1} alt={work.title} />
             <div class="card-body p-0 pt-2">
               <h2 class="card-title">{work.title}</h2>
               <p>{work.summary}</p>
@@ -232,7 +234,7 @@ const sectionClass = 'py-40 px-4 md:px-16';
     <!-- 背景画像 -->
     <div class="absolute inset-0 h-[600px] z-0 parallax-bg overflow-hidden">
       <Image 
-        src={heroImage} 
+        src={activityImage} 
         alt="活動背景画像" 
         class="w-full h-full object-cover transform transition-transform ease-out duration-1000 will-change-transform" 
       />
@@ -247,7 +249,7 @@ const sectionClass = 'py-40 px-4 md:px-16';
       {activities.map((activity) => (
         <article class="work-item">
           <a href={activity.link} class="card card-item">
-            <AnimatedImage src={heroImage} alt={activity.title} />
+            <AnimatedImage src={heroImage_1} alt={activity.title} />
             <div class="card-body p-0 pt-2">
               <h2 class="card-title">{activity.title}</h2>
               <p>{activity.summary}</p>
@@ -346,7 +348,7 @@ const sectionClass = 'py-40 px-4 md:px-16';
     <!-- 背景画像 -->
     <div class="absolute inset-0 h-[600px] z-0 parallax-bg overflow-hidden">
       <Image 
-        src={heroImage} 
+        src={linkImage} 
         alt="リンク背景画像" 
         class="w-full h-full object-cover transform transition-transform ease-out duration-1000 will-change-transform" 
       />
