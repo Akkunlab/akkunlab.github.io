@@ -1,34 +1,50 @@
-import type { Card, Tag } from '@/types';
+import type { NotionRecord, Tag } from '@/types';
 import { Client } from '@notionhq/client';
 import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 import { NotionToMarkdown } from 'notion-to-md';
 
 const notion = new Client({ auth: import.meta.env.NOTION_TOKEN });
+const databaseId = import.meta.env.DATABASE_ID;
 const n2m = new NotionToMarkdown({ notionClient: notion });
 
+/* ヘルパー */
+const getProperty = <T>(property: any, type: string, fallback: T, extract: (prop: any) => T): T =>
+  property?.type === type ? extract(property) : fallback;
+
+const getRichText = (p: any) => getProperty(p, 'rich_text', '', prop => prop.rich_text[0]?.plain_text || '');
+const getSelect = (p: any) => getProperty(p, 'select', '', prop => prop.select?.name || '');
+const getTitle = (p: any) => getProperty(p, 'title', '', prop => prop.title[0]?.plain_text || '');
+const getMultiSelect = (p: any) => getProperty(p, 'multi_select', [], prop => prop.multi_select.map((tag: Tag) => ({ id: tag.id, name: tag.name })));
+const getNumber = (p: any) => getProperty(p, 'number', '', prop => prop.number?.toString() || '');
+const getUrl = (p: any) => getProperty(p, 'url', '', prop => prop.url || '');
+const getDate = (p: any) => getProperty(p, 'date', '', prop => prop.date?.start || '');
+const getCheckbox = (p: any) => getProperty(p, 'checkbox', false, prop => prop.checkbox === true);
+const getImage = (property: any): string =>
+  property?.type === 'files' && property.files.length > 0 && property.files[0].type === 'file'
+    ? property.files[0].file.url
+    : '/ogp.png';
+
 /**
- * ページをCardオブジェクトにマッピング
+ * ページをNotionRecordオブジェクトに変換
  * @param page Notionページ
- * @returns Cardオブジェクト
+ * @returns NotionRecordオブジェクト
  */
-const mapNotionPageToCard = ({ id, properties }: PageObjectResponse): Card => {
-  const { path, types, title, summary, tags, year, link, publication, image } = properties;
+const pageToNotionRecord = ({ id, properties }: PageObjectResponse): NotionRecord => {
+  const { slug, types, title, summary, tags, year, link, publication, image, category, published } = properties;
 
   return {
     id,
-    path: path.type === 'rich_text' ? path.rich_text[0]?.plain_text || '' : '',
-    types: types?.type === 'select' ? types.select?.name || '' : '',
-    title: title.type === 'title' ? title.title[0]?.plain_text || '' : '',
-    summary: summary.type === 'rich_text' ? summary.rich_text[0]?.plain_text || '' : '',
-    tags: tags?.type === 'multi_select'
-      ? tags.multi_select.map((tag: Tag) => ({ id: tag.id, name: tag.name }))
-      : [],
-    year: year?.type === 'number' ? year.number?.toString() || '' : '',
-    link: link?.type === 'url' ? link.url || '' : '',
-    publication: publication?.type === 'date' ? publication.date?.start || '' : '',
-    image: image?.type === 'files' && image.files.length > 0
-      ? image.files[0].type === 'file' ? image.files[0].file.url : '/ogp.png'
-      : '/ogp.png',
+    slug: getRichText(slug),
+    types: getSelect(types),
+    title: getTitle(title),
+    summary: getRichText(summary),
+    tags: getMultiSelect(tags),
+    year: getNumber(year),
+    link: getUrl(link),
+    publication: getDate(publication),
+    image: getImage(image),
+    category: getSelect(category),
+    published: getCheckbox(published),
   };
 };
 
@@ -36,9 +52,7 @@ const mapNotionPageToCard = ({ id, properties }: PageObjectResponse): Card => {
  * NotionデータベースからPublishedがtrueのページのリストを取得
  * @returns Notionページのリスト
  */
-export const fetchNotionPageList = async (): Promise<Card[]> => {
-  const databaseId = import.meta.env.DATABASE_ID;
-  
+export const fetchNotionPageList = async (): Promise<NotionRecord[]> => {
   if (!databaseId) {
     throw new Error('DATABASE_ID is not defined in the environment variables.');
   }
@@ -53,7 +67,7 @@ export const fetchNotionPageList = async (): Promise<Card[]> => {
     },
   });
 
-  return response.results.map(page => mapNotionPageToCard(page as PageObjectResponse));
+  return response.results.map(page => pageToNotionRecord(page as PageObjectResponse));
 };
 
 /**

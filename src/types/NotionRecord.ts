@@ -1,14 +1,16 @@
-import type { Tag } from "./Tag";
+import type { Tag } from './Tag';
 
-export interface Card {
+export interface NotionRecord {
   id: string;
-  path: string;
+  slug: string;
   types: string;
   title: string;  
   summary: string;
+  category: Tag[];
   tags: Tag[];
   year: string;
   link: string;
   publication: string;
+  published: boolean;
   image: string;
 }
