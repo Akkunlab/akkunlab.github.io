@@ -21,7 +21,7 @@ const carouselDuration = 14; // seconds
     <Image 
       src={heroImages[imageIndex].src}
       alt={heroImages[imageIndex].alt}
-      class="absolute animate-carousel h-screen w-full object-cover"
+      class="absolute animate-carousel h-screen w-full object-cover opacity-0"
       style={{ animationDelay: `${carouselDuration * (0.9 - 0.45 * sequenceIndex)}s` }}
       loading={sequenceIndex === 1 ? "eager" : "lazy"}
     />

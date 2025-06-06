@@ -54,7 +54,7 @@ module.exports = {
           to: { opacity: 0 }
         },
         carousel: {
-          '0%, 45%': { transform: 'translateX(0)', clipPath: 'inset(0 0 0 0)' },
+          '0%, 45%': { transform: 'translateX(0)', clipPath: 'inset(0 0 0 0)', opacity: 1 },
           '55%': { transform: 'translateX(-10%)', opacity: 1, clipPath: 'inset(0 100% 0 0)' },
           '55.001%, 100%': { transform: 'translateX(0%)', opacity: 0 },
         },
