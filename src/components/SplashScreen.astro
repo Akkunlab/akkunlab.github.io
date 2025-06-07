@@ -1,34 +1,223 @@
 ---
-const text = 'ATSUSHI KISHIMOTO';
+import { AUTHOR_ENGLISH } from '@/constants';
+
+const currentDate = new Date();
+const currentYear = currentDate.getFullYear();
+const currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0');
+const currentDay = String(currentDate.getDate()).padStart(2, '0');
+
+const SYSTEM_INIT_TEXT = '[ SYSTEM INITIALIZATION ]';
+const SUB_TEXT = 'LOADING SYSTEM...';
+const VERSION_TEXT = `VERSION ${currentYear}.${currentMonth}.${currentDay}`;
+const INTERFACE_READY_TEXT = 'INTERFACE READY';
+const STATUS_ONLINE_TEXT = 'STATUS: ONLINE';
+const NET_SECURE_TEXT = 'NET: SECURE';
+const ID_TEXT = `ID: AK-${currentYear}`;
+const MODE_TEXT = 'MODE: PROD';
 ---
 
-<div id="splash-screen" class="fixed inset-0 flex items-center justify-center bg-primary z-50 animate-fadeOut">
-  <p class="text-5xl md:text-8xl font-bold">
-    {text.split(' ').map((part, index) => (
-      <>
-        {part.split('').map(letter => (
-          <span class="inline-block overflow-hidden">
-            <span class="inline-block animate-slideInOut">{letter}</span>
-          </span>
+<div id="splash-screen" class="fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-primary z-[9999] overflow-hidden">
+  
+  <!-- 背景マトリックス効果 -->
+  <div class="absolute inset-0 opacity-20">
+    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent animate-scanLine"></div>
+    <div class="absolute top-0 left-0 w-full h-full">
+      {Array.from({ length: 20 }).map((_, i) => (
+        <div 
+          class="absolute w-px bg-gradient-to-b from-transparent via-cyan-400/30 to-transparent animate-dataFlow"
+          style={`left: ${(i + 1) * 5}%; height: 100%; animation-delay: ${i * 0.05}s;`}
+        ></div>
+      ))}
+    </div>
+  </div>
+
+  <!-- サイバーグリッド -->
+  <div class="absolute inset-0 opacity-30">
+    <div class="w-full h-full" style="background-image: linear-gradient(rgba(34, 211, 238, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(34, 211, 238, 0.1) 1px, transparent 1px); background-size: 50px 50px; animation: pulse 2s ease-in-out infinite;"></div>
+  </div>
+
+  <!-- 中央コンテンツコンテナ -->
+  <div class="relative flex flex-col items-center justify-center h-full px-8">
+    
+    <!-- グリッチボーダーフレーム -->
+    <div class="absolute inset-8 border-2 border-cyan-400/50 animate-pulse">
+      <div class="absolute -top-px -left-px w-8 h-8 border-t-2 border-l-2 border-cyan-400 animate-glow"></div>
+      <div class="absolute -top-px -right-px w-8 h-8 border-t-2 border-r-2 border-cyan-400 animate-glow"></div>
+      <div class="absolute -bottom-px -left-px w-8 h-8 border-b-2 border-l-2 border-cyan-400 animate-glow"></div>
+      <div class="absolute -bottom-px -right-px w-8 h-8 border-b-2 border-r-2 border-cyan-400 animate-glow"></div>
+    </div>
+    
+    <!-- システムステータス -->
+    <div class="mb-6 text-center">
+      <div class="text-cyan-400 text-sm font-mono tracking-wider mb-2 animate-fadeInUpGlow">
+        {SYSTEM_INIT_TEXT}
+      </div>
+      <div class="text-cyan-300/70 text-xs font-mono tracking-widest animate-typing overflow-hidden whitespace-nowrap border-r-2 border-cyan-400">
+        {SUB_TEXT}
+      </div>
+    </div>
+    
+    <!-- サイバー効果付きメインテキスト -->
+    <div class="relative mb-6">
+      
+      <!-- グロー効果背景 -->
+      <div class="absolute -inset-4 bg-cyan-400/20 blur-xl rounded-lg animate-glowPulse"></div>
+      
+      <!-- メインテキスト -->
+      <h1 class="relative text-4xl md:text-7xl lg:text-8xl font-bold text-white">
+        {AUTHOR_ENGLISH.toUpperCase().split(' ').map((part, partIndex) => (
+          <div class="block mb-2">
+            {part.split('').map((letter, letterIndex) => (
+              <span 
+                class="inline-block overflow-hidden hover:text-cyan-400 transition-colors duration-300"
+                style={`animation-delay: ${(partIndex * part.length + letterIndex) * 0.03}s;`}
+              >
+                <span class="inline-block animate-slideInOut relative">
+                  {letter}
+
+                  {/* 文字グリッチ効果 */}
+                  <span class="absolute inset-0 text-cyan-400 opacity-0 animate-glitch" style={`animation-delay: ${Math.random() * 1.5}s;`}>
+                    {letter}
+                  </span>
+                </span>
+              </span>
+            ))}
+          </div>
         ))}
-        {index < text.split(' ').length - 1 && <br />}
-      </>
-    ))}
-  </p>
+      </h1>
+    </div>
+    
+    <!-- プログレスバー -->
+    <div class="w-64 md:w-96 bg-gray-800 h-1 rounded-full overflow-hidden mb-4">
+      <div class="h-full bg-gradient-to-r from-cyan-400 to-blue-500 animate-expandWidth"></div>
+    </div>
+
+    <!-- ローディングインジケーター -->
+    <div class="flex space-x-2 mb-6">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div 
+          class="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"
+          style={`animation-delay: ${i * 0.15}s;`}
+        ></div>
+      ))}
+    </div>
+    
+    <!-- システム情報 -->
+    <div class="text-center space-y-1 opacity-70">
+      <div class="text-cyan-300 text-xs font-mono tracking-wider animate-fadeInUp" style="animation-delay: 1.2s;">
+        {VERSION_TEXT}
+      </div>
+      <div class="text-cyan-300/50 text-xs font-mono tracking-wider animate-fadeInUp" style="animation-delay: 1.4s;">
+        {INTERFACE_READY_TEXT}
+      </div>
+    </div>
+  </div>
+
+  <!-- コーナーHUD要素 -->
+  <div class="absolute top-16 left-16 text-cyan-400 font-mono text-xs opacity-60">
+    <div class="animate-fadeInUp">{STATUS_ONLINE_TEXT}</div>
+    <div class="animate-fadeInUp" style="animation-delay: 0.3s;">{NET_SECURE_TEXT}</div>
+  </div>
+  
+  <div class="absolute top-16 right-16 text-cyan-400 font-mono text-xs opacity-60 text-right">
+    <div class="animate-fadeInUp">{ID_TEXT}</div>
+    <div class="animate-fadeInUp" style="animation-delay: 0.3s;">{MODE_TEXT}</div>
+  </div>
+
+  <!-- 下部テックライン -->
+  <div class="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-glowPulse"></div>
+  
+  <!-- 終了アニメーション円 -->
+  <div id="exit-circle" class="absolute top-1/2 left-1/2 w-4 h-4 -translate-x-1/2 -translate-y-1/2 bg-primary rounded-full opacity-0 pointer-events-none"></div>
 </div>
 
 <script>
 
-  /** スプラッシュスクリーンを4秒後，非表示にする */
-  const hideSplashScreen = (): void => {
+  /** スプラッシュスクリーンのサイバー効果と制御 */
+  const initializeSplashScreen = (): void => {
     const splashScreen = document.getElementById('splash-screen') as HTMLElement | null;
+    const exitCircle = document.getElementById('exit-circle') as HTMLElement | null;
     
-    if (!splashScreen) return;
+    // システム起動効果
+    if (!splashScreen || !exitCircle) return;
 
-    setTimeout(() => {
-      splashScreen.remove();
-    }, 4000);
+    const createSystemBoot = (): void => {
+
+      // プログレスバーの速度調整
+      const progressBar = splashScreen.querySelector('.animate-expandWidth') as HTMLElement;
+      if (progressBar) progressBar.style.animationDuration = '2s';
+
+      // HUD要素のタイピング効果
+      const typingElements = splashScreen.querySelectorAll('.animate-typing');
+      typingElements.forEach((element: Element, index: number) => {
+        const htmlElement = element as HTMLElement;
+        setTimeout(() => {
+          htmlElement.style.animation = 'expandWidth 1.5s steps(40, end), blinkCaret 0.75s step-end infinite';
+        }, 300 + index * 100);
+      });
+    };
+
+    // グリッチ効果の追加
+    const addGlitchEffects = (): void => {
+      const letters = splashScreen.querySelectorAll('h1 span span');
+      letters.forEach((letter: Element) => {
+        const htmlLetter = letter as HTMLElement;
+        
+        // ランダムなグリッチタイミング
+        const glitchDelay = Math.random() * 2000 + 500;
+        setTimeout(() => {
+          htmlLetter.style.filter = 'hue-rotate(180deg)';
+          setTimeout(() => {
+            htmlLetter.style.filter = 'none';
+          }, 50);
+        }, glitchDelay);
+      });
+    };
+
+    // データストリーム効果の強化
+    const enhanceDataFlow = (): void => {
+      const dataLines = splashScreen.querySelectorAll('.animate-dataFlow');
+      dataLines.forEach((line: Element) => {
+        const htmlLine = line as HTMLElement;
+        
+        // ランダムな高さとスピード
+        const randomHeight = Math.random() * 50 + 50;
+        const randomDelay = Math.random() * 1;
+        
+        htmlLine.style.height = `${randomHeight}%`;
+        htmlLine.style.animationDelay = `${randomDelay}s`;
+        htmlLine.style.animationDuration = `${1 + Math.random()}s`;
+      });
+    };
+    
+    // 中央から広がる終了エフェクト
+    const startExitAnimation = (): void => {
+      
+      // 円の拡大アニメーション開始
+      exitCircle.classList.add('animate-circleExpand');
+      
+      // 円拡大アニメーション完了を監視
+      exitCircle.addEventListener('animationend', () => {
+        splashScreen.classList.add('animate-fadeOut');
+      
+        // スプラッシュスクリーンを削除
+        setTimeout(() => splashScreen.remove(), 2000);
+      }, { once: true });
+    };
+
+    // 初期化実行
+    createSystemBoot();
+    addGlitchEffects();
+    enhanceDataFlow();
+
+    // 2秒後に終了アニメーション開始
+    setTimeout(startExitAnimation, 2000);
   };
 
-  hideSplashScreen();
+  // DOM読み込み完了後に実行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeSplashScreen);
+  } else {
+    initializeSplashScreen();
+  }
 </script>

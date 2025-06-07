@@ -139,26 +139,66 @@ module.exports = {
             boxShadow: '0 0 10px currentColor'
           }
         },
+        glow: {
+          '0%, 100%': {
+            boxShadow: '0 0 5px currentColor, 0 0 10px currentColor',
+            opacity: '0.7'
+          },
+          '50%': {
+            boxShadow: '0 0 20px currentColor, 0 0 30px currentColor',
+            opacity: '1'
+          }
+        },
+        bounce: {
+          '0%, 20%, 53%, 80%, 100%': {
+            transform: 'translateY(0px)'
+          },
+          '40%, 43%': {
+            transform: 'translateY(-15px)'
+          },
+          '70%': {
+            transform: 'translateY(-7px)'
+          },
+          '90%': {
+            transform: 'translateY(-3px)'
+          }
+        },
+        circleExpand: {
+          '0%': {
+            transform: 'scale(0)',
+            opacity: '0.8'
+          },
+          '50%': {
+            opacity: '0.9'
+          },
+          '100%': {
+            transform: 'scale(150)',
+            opacity: '1'
+          }
+        },
       },
       animation: {
-        slideInOut: 'slideInRight 1.5s cubic-bezier(0.18, 0.9, 0.18, 0.9) forwards,' +
-                    'slideOutLeft 1.5s cubic-bezier(0.18, 0.9, 0.18, 0.9) 1.5s forwards',
-        fadeIn: 'fadeIn 0.8s ease-out forwards',
-        fadeInUp: 'fadeInUp 1.2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards',
-        fadeOut: 'fadeOut 1.5s 2s forwards',
+        slideInOut: 'slideInRight 1.8s cubic-bezier(0.18, 0.9, 0.18, 0.9) forwards,' +
+                    'slideOutLeft 1.8s cubic-bezier(0.18, 0.9, 0.18, 0.9) 1.8s forwards',
+        fadeIn: 'fadeIn 0.5s ease-out forwards',
+        fadeInUp: 'fadeInUp 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards',
+        fadeOut: 'fadeOut 1.5s ease-out forwards',
         carousel: 'carousel 14s cubic-bezier(0.77, 0, 0.18, 1) infinite',
         textReveal: 'textReveal 1s cubic-bezier(0.77, 0, 0.18, 1) forwards',
         imageCurtain: 'imageCurtain 1.8s cubic-bezier(0.77, 0, 0.18, 1) forwards',
         imageFadeIn: 'fadeIn 1.8s cubic-bezier(0.77, 0, 0.18, 1) forwards',
-        scan: 'scan 2s linear infinite',
-        glitch: 'glitch 2s linear infinite',
-        typing: 'expandWidth 3.5s steps(40, end), blinkCaret 0.75s step-end infinite',
-        expandWidth: 'expandWidth 1.5s ease-out forwards',
-        fadeInUpGlow: 'fadeInUpGlow 0.8s ease-out forwards, glowStart 0.5s ease-out 2s forwards, glowPulse 6s ease-in-out 3s infinite',
-        glowPulse: 'glowPulse 6s ease-in-out infinite',
+        scan: 'scan 1.5s linear infinite',
+        glitch: 'glitch 1.5s linear infinite',
+        typing: 'expandWidth 2s steps(40, end), blinkCaret 0.75s step-end infinite',
+        expandWidth: 'expandWidth 1.8s ease-out forwards',
+        fadeInUpGlow: 'fadeInUpGlow 0.6s ease-out forwards, glowStart 0.3s ease-out 1.5s forwards, glowPulse 4s ease-in-out 2s infinite',
+        glowPulse: 'glowPulse 4s ease-in-out infinite',
         glowStart: 'glowStart 0.5s ease-out forwards',
-        scanLine: 'scanLine 3s ease-in-out infinite',
-        dataFlow: 'dataFlow 2s ease-in-out infinite',
+        scanLine: 'scanLine 2s ease-in-out infinite',
+        dataFlow: 'dataFlow 1.5s ease-in-out infinite',
+        glow: 'glow 2s ease-in-out infinite',
+        bounce: 'bounce 2s infinite',
+        circleExpand: 'circleExpand 1s cubic-bezier(0.77, 0, 0.18, 1) forwards',
       }
     }
   },
