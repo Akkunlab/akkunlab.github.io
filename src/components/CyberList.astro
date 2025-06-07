@@ -7,7 +7,7 @@ interface Props {
 const { items, class: className } = Astro.props;
 ---
 
-<ul class={`cyber-list space-y-3 ${className}`}>
+<ul class={`cyber-list space-y-3 max-w-[575px] pl-4 ${className}`}>
   {items.map((item) => (
     <li class="cyber-list-item fade-in-text opacity-0 translate-y-8 group">
       
