@@ -72,6 +72,15 @@ const setupSmoothScroll = (): void => {
 };
 
 /**
+ * テキスト要素のふんわりアニメーション
+ * @param element - アニメーションを適用する要素
+ */
+const animateTextFadeIn = (element: Element): void => {
+  element.classList.add('animate-fadeInUp');
+  element.classList.remove('opacity-0', 'translate-y-8');
+};
+
+/**
  * Workアイテムのアニメーション
  * @param element - アニメーションを適用する要素
  */
@@ -146,6 +155,8 @@ const createIntersectionObserver = (heroTexts: NodeListOf<Element>): Intersectio
           animateHeroText(heroTexts);
         } else if (entry.target.classList.contains('work-item')) {
           animateWorkItem(entry.target);
+        } else if (entry.target.classList.contains('fade-in-text')) {
+          animateTextFadeIn(entry.target);
         }
 
         // 一度アニメーションが実行されたら監視を解除
@@ -260,6 +271,32 @@ const setupParallaxEffect = (): void => {
 };
 
 /**
+ * テキスト要素のアニメーション設定
+ * @param textElements - 対象となるテキスト要素のリスト
+ * @param observer - Intersection Observer
+ */
+const setupTextAnimation = (
+  textElements: NodeListOf<Element>, 
+  observer: IntersectionObserver
+): void => {
+  textElements.forEach((element: Element) => {
+
+    // 要素が画面内にあるかをチェック
+    const rect: DOMRect = element.getBoundingClientRect();
+    const isVisible: boolean = 
+      rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.bottom >= 0;
+    
+    // 画面内にない要素のみ監視対象に追加
+    if (!isVisible) {
+      observer.observe(element);
+    } else {
+      animateTextFadeIn(element);
+    }
+  });
+};
+
+/**
  * スクロールに関する全アニメーションの設定を行う
  */
 export const setupScrollAnimations = (): void => {
@@ -268,6 +305,7 @@ export const setupScrollAnimations = (): void => {
   const workItems: NodeListOf<Element> = document.querySelectorAll('.work-item');
   const heroTextContainer: Element | null = document.querySelector('.hero-text');
   const heroTexts: NodeListOf<Element> = document.querySelectorAll('.hero-text span');
+  const fadeInTexts: NodeListOf<Element> = document.querySelectorAll('.fade-in-text');
 
   // Intersection Observerの作成
   const observer: IntersectionObserver = createIntersectionObserver(heroTexts);
@@ -277,6 +315,9 @@ export const setupScrollAnimations = (): void => {
 
   // ヒーローテキストのアニメーション設定
   setupHeroImageAndText(heroTextContainer, heroTexts, observer);
+
+  // テキストのフェードインアニメーション設定
+  setupTextAnimation(fadeInTexts, observer);
 
   // スムーススクロールの設定
   setupSmoothScroll();

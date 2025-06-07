@@ -1,0 +1,40 @@
+---
+export interface Props {
+  text: string;
+  color: 'blue' | 'green' | 'red';
+  class?: string;
+}
+
+const { text, color, class: className } = Astro.props;
+
+const colorConfig = {
+  blue: {
+    background: 'from-cyan-900 via-blue-900 to-purple-900',
+    backgroundHover: 'hover:from-purple-900 hover:via-blue-900 hover:to-cyan-900',
+    border: 'border-cyan-500',
+    borderHover: 'hover:border-purple-500',
+    gradientOverlay: 'from-cyan-900/80 via-blue-900/80 to-purple-900/80'
+  },
+  green: {
+    background: 'from-emerald-900 via-teal-900 to-cyan-900',
+    backgroundHover: 'hover:from-cyan-900 hover:via-teal-900 hover:to-emerald-900',
+    border: 'border-emerald-500',
+    borderHover: 'hover:border-cyan-500',
+    gradientOverlay: 'from-emerald-900/80 via-teal-900/80 to-cyan-900/80'
+  },
+  red: {
+    background: 'from-pink-900 via-red-900 to-orange-900',
+    backgroundHover: 'hover:from-orange-900 hover:via-red-900 hover:to-pink-900',
+    border: 'border-pink-500',
+    borderHover: 'hover:border-orange-500',
+    gradientOverlay: 'from-pink-900/80 via-red-900/80 to-orange-900/80'
+  }
+};
+
+const config = colorConfig[color];
+---
+
+<h3 class={`relative text-2xl font-bold mt-8 mb-4 fade-in-text opacity-0 translate-y-8 text-white bg-gradient-to-r ${config.background} ${config.backgroundHover} transition-all duration-500 px-4 py-2 rounded-lg border ${config.border} ${config.borderHover} shadow-lg ${className}`}>
+  <span class="relative z-10">{text}</span>
+  <div class={`absolute inset-0 bg-gradient-to-r ${config.gradientOverlay} rounded-lg`}></div>
+</h3>

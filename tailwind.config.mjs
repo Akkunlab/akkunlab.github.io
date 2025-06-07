@@ -46,7 +46,7 @@ module.exports = {
           to: { opacity: 1 }
         },
         fadeInUp: {
-          from: { opacity: '0', transform: 'translateY(20px)' },
+          from: { opacity: '0', transform: 'translateY(30px)' },
           to: { opacity: '1', transform: 'translateY(0)' }
         },
         fadeOut: {
@@ -118,12 +118,33 @@ module.exports = {
             textShadow: '0 0 6px rgba(34,211,238,0.15), 0 0 12px rgba(34,211,238,0.1), 0 0 18px rgba(34,211,238,0.05)'
           }
         },
+        scanLine: {
+          '0%, 100%': {
+            transform: 'translateY(-100%)',
+            opacity: '0'
+          },
+          '50%': {
+            transform: 'translateY(100vh)',
+            opacity: '1'
+          }
+        },
+        dataFlow: {
+          '0%, 100%': {
+            opacity: '0.3',
+            transform: 'scale(0.8)'
+          },
+          '50%': {
+            opacity: '1',
+            transform: 'scale(1.2)',
+            boxShadow: '0 0 10px currentColor'
+          }
+        },
       },
       animation: {
         slideInOut: 'slideInRight 1.5s cubic-bezier(0.18, 0.9, 0.18, 0.9) forwards,' +
                     'slideOutLeft 1.5s cubic-bezier(0.18, 0.9, 0.18, 0.9) 1.5s forwards',
         fadeIn: 'fadeIn 0.8s ease-out forwards',
-        fadeInUp: 'fadeInUp 0.8s ease-out forwards',
+        fadeInUp: 'fadeInUp 1.2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards',
         fadeOut: 'fadeOut 1.5s 2s forwards',
         carousel: 'carousel 14s cubic-bezier(0.77, 0, 0.18, 1) infinite',
         textReveal: 'textReveal 1s cubic-bezier(0.77, 0, 0.18, 1) forwards',
@@ -133,13 +154,27 @@ module.exports = {
         glitch: 'glitch 2s linear infinite',
         typing: 'expandWidth 3.5s steps(40, end), blinkCaret 0.75s step-end infinite',
         expandWidth: 'expandWidth 1.5s ease-out forwards',
-        glowPulse: 'glowPulse 6s ease-in-out infinite',
         fadeInUpGlow: 'fadeInUpGlow 0.8s ease-out forwards, glowStart 0.5s ease-out 2s forwards, glowPulse 6s ease-in-out 3s infinite',
+        glowPulse: 'glowPulse 6s ease-in-out infinite',
         glowStart: 'glowStart 0.5s ease-out forwards',
+        scanLine: 'scanLine 3s ease-in-out infinite',
+        dataFlow: 'dataFlow 2s ease-in-out infinite',
       }
     }
   },
   plugins: [
     daisyui,
+    function({ addBase }) {
+      addBase({
+        '::selection': {
+          backgroundColor: '#0015ca',
+          color: '#ffffff',
+        },
+        '::-moz-selection': {
+          backgroundColor: '#0015ca',
+          color: '#ffffff',
+        },
+      })
+    },
   ],
 }
