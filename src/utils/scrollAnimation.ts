@@ -208,20 +208,9 @@ const setupHeroImageAndText = (
   heroTexts: NodeListOf<Element>,
   observer: IntersectionObserver
 ): void => {
-  const heroImage: HTMLImageElement | null = document.getElementById('hero-image') as HTMLImageElement;
-  
-  // 画像のロードイベントを設定
-  if (heroImage) {
-    if (heroImage.complete) {
-      setupHeroTextAnimation(heroTextContainer, heroTexts, observer);
-    } else {
-      heroImage.addEventListener('load', () => {
-        setupHeroTextAnimation(heroTextContainer, heroTexts, observer);
-      });
-    }
-  } else {
+  document.addEventListener('splashScreenComplete', () => {
     setupHeroTextAnimation(heroTextContainer, heroTexts, observer);
-  }
+  });
 };
 
 /**

@@ -137,7 +137,8 @@ const MODE_TEXT = 'MODE: PROD';
   const initializeSplashScreen = (): void => {
     const splashScreen = document.getElementById('splash-screen') as HTMLElement | null;
     const exitCircle = document.getElementById('exit-circle') as HTMLElement | null;
-    
+    const splashCompleteEvent = new CustomEvent('splashScreenComplete');
+
     // システム起動効果
     if (!splashScreen || !exitCircle) return;
 
@@ -199,9 +200,8 @@ const MODE_TEXT = 'MODE: PROD';
       // 円拡大アニメーション完了を監視
       exitCircle.addEventListener('animationend', () => {
         splashScreen.classList.add('animate-fadeOut');
-      
-        // スプラッシュスクリーンを削除
-        setTimeout(() => splashScreen.remove(), 2000);
+        document.dispatchEvent(splashCompleteEvent);
+        setTimeout(() => splashScreen.remove(), 2000); // 削除
       }, { once: true });
     };
 
