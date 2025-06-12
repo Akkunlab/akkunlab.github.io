@@ -21,7 +21,6 @@ module.exports = {
   theme: {
     fontFamily: {
       'body': ['Noto Sans JP', 'sans-serif'],
-      'name': ['Zen Old Mincho', 'serif'],
     },
     extend: {
       colors: {
