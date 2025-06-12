@@ -18,12 +18,12 @@ export const HERO_TITLE_LINES: Array<string> = [
 export const NAV_ITEMS = [
   {
     label: '作品',
-    href: '/#works',
+    href: '/works',
     icon: 'work-outline',
     activeIcon: 'work'
   }, {
     label: '活動',
-    href: '/#activities',
+    href: '/activities',
     icon: 'event-available-outline-rounded',
     activeIcon: 'event-available-rounded'
   }, {

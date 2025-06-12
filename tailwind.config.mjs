@@ -26,6 +26,7 @@ module.exports = {
       colors: {
         'button-active': '#1f1f1f',
         'button-active-content': '#f2f2f2',
+        'button-border': 'rgba(255, 255, 255, 0.35)',
         'header-bg': 'rgba(0, 0, 0, 0.7)',
         'header-border': 'rgba(255, 255, 255, 0.1)',
         'header-hover': 'rgba(255, 255, 255, 0.1)',

@@ -1,0 +1,63 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '@/layouts/Layout.astro';
+import { fetchNotionPageList } from '@/utils/notion';
+import { TAGS } from '@/constants';
+import SectionHeading from '@/components/SectionHeading.astro';
+import AnimatedImage from '@/components/AnimatedImage.astro';
+
+import activityImage from '@/assets/images/activity-image.jpg';
+
+const pages = await fetchNotionPageList();
+---
+
+<Layout title="活動 | 岸本篤 / Atsushi Kishimoto Portfolio">
+  <section id="activities" class="pt-36 pb-40 px-4 md:px-16 relative">
+    
+    <!-- 背景画像 -->
+    <div class="absolute inset-0 h-[600px] z-0 parallax-bg overflow-hidden">
+      <Image 
+        src={activityImage} 
+        alt="活動背景画像" 
+        class="w-full h-full object-cover transform transition-transform ease-out duration-1000 will-change-transform" 
+      />
+      <div class="absolute inset-0 bg-gradient-to-b from-white/10 via-white/80 to-white"></div>
+    </div>
+    
+    <!-- ヘッダー -->
+    <SectionHeading title="活動" />
+    
+    <!-- タグ -->
+    <div class="my-8">
+      {TAGS.map((tag) => (
+        <button
+          class="btn filter-btn btn-outline rounded-full btn-md m-1.5 text-base hover:bg-button-active hover:text-button-active-content backdrop-blur-lg shadow-xl border border-button-border"
+          data-tag={tag.id}
+        >
+          {tag.name}
+        </button>
+      ))}
+    </div>
+
+    <!-- 活動コンテンツ -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20 mb-12">
+      {pages.map((page) => (
+        <article class="work-item">
+          <a href={page.link} class="card card-item">
+            <AnimatedImage src={activityImage} alt={page.title} />
+            <div class="card-body p-0 pt-2">
+              <h2 class="card-title fade-in-text opacity-0 translate-y-8">{page.title}</h2>
+              <p class="fade-in-text opacity-0 translate-y-8">{page.summary}</p>
+            </div>
+          </a>
+        </article>
+      ))}
+    </div>
+  </section>
+</Layout>
+
+<script>
+  import { filterTags } from '@/utils/filterTags';
+
+  window.addEventListener('load', filterTags);
+</script>
