@@ -1,11 +1,19 @@
 ---
 interface Props {
   text: string;
+  href?: string;
 }
 
-const { text } = Astro.props;
+const { text, href } = Astro.props;
+const buttonClasses = "btn btn-primary btn-wide h-14 rounded-full flex items-center justify-center text-base mx-auto relative overflow-hidden group transition-all duration-300 hover:-translate-y-0.5 hover:scale-105 before:absolute before:inset-0 before:w-full before:h-full before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:transition-transform before:duration-500 hover:before:translate-x-full";
 ---
 
-<button class="btn btn-primary btn-wide h-14 rounded-full block text-base mx-auto relative overflow-hidden group transition-all duration-300 hover:-translate-y-0.5 hover:scale-105 before:absolute before:inset-0 before:w-full before:h-full before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:transition-transform before:duration-500 hover:before:translate-x-full">
-  <span class="relative z-10">{text}</span>
-</button>
+{href ? (
+  <a href={href} class={buttonClasses}>
+    <span class="relative z-10">{text}</span>
+  </a>
+) : (
+  <button class={buttonClasses}>
+    <span class="relative z-10">{text}</span>
+  </button>
+)}
