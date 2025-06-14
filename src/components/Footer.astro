@@ -10,6 +10,8 @@ import {
 import CyberInfoPanel from './CyberInfoPanel.astro';
 
 const currentYear = new Date().getFullYear();
+const currentPath = Astro.url.pathname;
+const isHomePage = currentPath === '/' || currentPath === '';
 ---
 
 <footer class="bg-footer-bg text-dark-text pt-16 pb-24 md:pb-8">
@@ -48,7 +50,7 @@ const currentYear = new Date().getFullYear();
               <a
                 href={item.href}
                 class="btn btn-ghost hover:bg-header-hover transition-colors h-9 min-h-9 text-base"
-                data-scroll={item.href.startsWith('/#') ? 'true' : 'false'}
+                data-scroll={isHomePage && item.href.startsWith('/#') ? 'true' : 'false'}
               >
                 {item.label}
               </a>

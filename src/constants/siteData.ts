@@ -32,10 +32,10 @@ export const NAV_ITEMS = [
     icon: 'account-circle-outline',
     activeIcon: 'account-circle'
   }, {
-    label: 'リンク',
+    label: '連絡先',
     href: '/#links',
-    icon: 'link-rounded',
-    activeIcon: 'link-rounded'
+    icon: 'mail-outline-rounded',
+    activeIcon: 'mail-rounded'
   }
 ];
 
