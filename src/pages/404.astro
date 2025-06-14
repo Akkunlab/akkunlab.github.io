@@ -1,0 +1,33 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Button from '@/components/Button.astro';
+---
+
+<Layout title="404">
+  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 relative overflow-hidden">
+    <div class="text-center animate-fade-in">
+      
+      <!-- タイトル -->
+      <div class="mb-8 translate-y-8 transition-all duration-700">
+        <h1 class="text-5xl mb-8 font-bold text-dark-text fade-in-text">
+          404
+        </h1>
+        <div class="h-1 w-full mx-auto bg-gradient-to-r from-primary to-secondary rounded-full shadow-lg shadow-cyan-500/50"></div>
+      </div>
+
+      <!-- 説明文 -->
+      <div class="mb-16 translate-y-8 transition-all duration-700 delay-200">
+        <h2 class="text-xl md:text-3xl mb-8 font-bold text-dark-text fade-in-text">
+          リンクが家出しました
+        </h2>
+        <p class="text-base md:text-xl text-dark-text leading-relaxed fade-in-text">
+          置き手紙すら残さず旅に出たようです...<br>
+          行き先のヒントはホームに貼ってあります。
+        </p>
+      </div>
+
+    <div class="flex justify-center">
+      <Button text="ホームに戻る" href="/" type="arrow-back" />
+    </div>
+  </div>
+</Layout>
