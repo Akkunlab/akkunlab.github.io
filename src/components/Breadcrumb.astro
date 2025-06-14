@@ -27,7 +27,7 @@ const { items, class: className = '' } = Astro.props;
           {item.label}
         </a>
       ) : (
-        <span class="text-gray-700 uppercase">{item.label}</span>
+        <span class="text-light-text">{item.label}</span>
       )}
       {index < items.length - 1 && (
         <span class="text-gray-400">/</span>

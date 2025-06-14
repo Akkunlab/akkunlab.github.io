@@ -1,5 +1,6 @@
 import { remark } from 'remark';
 import remarkHtml from 'remark-html';
+import remarkBreaks from 'remark-breaks'
 
 /**
  * Markdown形式の文字列をHTMLに変換
@@ -8,9 +9,12 @@ import remarkHtml from 'remark-html';
  */
 export const markdownToHtml = async (markdownContent: string): Promise<string> => {
   try {
-    const result = await remark().use(remarkHtml).process(markdownContent);
+    const html = await remark()
+      .use(remarkBreaks)
+      .use(remarkHtml)
+      .process(markdownContent);
 
-    return result.toString();
+    return html.toString();
   } catch (error) {
     console.error('Error in markdownToHtml:', error);
 

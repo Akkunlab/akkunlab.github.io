@@ -47,7 +47,7 @@ const { title, systemMessage, statusItems } = Astro.props;
         {statusItems.map((item) => (
           <div class="group flex flex-wrap items-center gap-2 hover:bg-cyan-900/20 px-2 py-1 rounded cursor-pointer transition-all duration-300 hover:translate-x-1">
             <span class="text-cyan-500 group-hover:animate-pulse">[{item.id}]</span>
-            <span class="text-primary-content/80 group-hover:text-cyan-400 transition-colors">{item.name}</span>
+            <span class="text-dark-text group-hover:text-cyan-400 transition-colors">{item.name}</span>
             <span class={`ml-auto ${item.statusColor} group-hover:scale-105 transition-transform`}>{item.status}</span>
           </div>
         ))}

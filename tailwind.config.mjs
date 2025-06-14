@@ -23,6 +23,8 @@ module.exports = {
     },
     extend: {
       colors: {
+        'light-text': '#212121',
+        'dark-text': ' #dedede',
         'button-active': '#1f1f1f',
         'button-active-content': '#f2f2f2',
         'button-border': 'rgba(255, 255, 255, 0.35)',

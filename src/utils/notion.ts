@@ -1,7 +1,8 @@
 import type { NotionRecord, Tag } from '@/types';
 import { Client } from '@notionhq/client';
-import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+import type { BlockObjectResponse, PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 import { NotionToMarkdown } from 'notion-to-md';
+import type { ListBlockChildrenResponseResult } from 'notion-to-md/build/types';
 
 const notion = new Client({ auth: import.meta.env.NOTION_TOKEN });
 const databaseId = import.meta.env.DATABASE_ID;
@@ -23,6 +24,24 @@ const getImage = (property: any): string =>
   property?.type === 'files' && property.files.length > 0 && property.files[0].type === 'file'
     ? property.files[0].file.url
     : '/ogp.png';
+
+/**
+ * Notionの段落ブロックを判定するヘルパー関数
+ *  @param block Notionのブロックオブジェクト
+ *  @returns ブロックが段落ブロックである場合はtrue、それ以外はfalse
+ */
+const isParagraphBlock = (block : ListBlockChildrenResponseResult): block is BlockObjectResponse & {
+  type: 'paragraph';
+  paragraph: { rich_text: { plain_text: string }[] };
+} => (block as any).type === 'paragraph';
+
+/**
+ * Notionの段落ブロックをMarkdownに変換するカスタムトランスフォーマーを設定
+ * 段落ブロックが空の場合は改行文字を返す
+ */
+n2m.setCustomTransformer('paragraph', (block) =>
+  isParagraphBlock(block) && block.paragraph.rich_text.length === 0 ? '&nbsp;' : false
+);
 
 /**
  * ページをNotionRecordオブジェクトに変換

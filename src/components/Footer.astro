@@ -12,7 +12,7 @@ import CyberInfoPanel from './CyberInfoPanel.astro';
 const currentYear = new Date().getFullYear();
 ---
 
-<footer class="bg-footer-bg text-primary-content pt-16 pb-24 md:pb-8">
+<footer class="bg-footer-bg text-dark-text pt-16 pb-24 md:pb-8">
   <div class="container mx-auto px-4">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
@@ -27,7 +27,7 @@ const currentYear = new Date().getFullYear();
           {SNS_LINKS.map(item => (
             <a 
               href={item.url} 
-              class="btn btn-circle bg-transparent hover:bg-primary-content hover:text-base-300 border border-primary-content text-primary-content"
+              class="btn btn-circle bg-transparent hover:bg-primary-content hover:text-base-300 border border-primary-content"
               target="_blank" 
               rel="noopener noreferrer"
               aria-label={item.name}
@@ -47,7 +47,7 @@ const currentYear = new Date().getFullYear();
             <li class="mb-0">
               <a
                 href={item.href}
-                class="btn btn-ghost hover:bg-header-hover text-primary-content transition-colors h-9 min-h-9 text-base"
+                class="btn btn-ghost hover:bg-header-hover transition-colors h-9 min-h-9 text-base"
                 data-scroll={item.href.startsWith('/#') ? 'true' : 'false'}
               >
                 {item.label}
