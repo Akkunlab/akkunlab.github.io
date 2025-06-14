@@ -9,7 +9,7 @@ interface Props {
 }
 
 const { text, href, type = null } = Astro.props;
-const buttonClasses = "group relative inline-flex items-center px-16 py-4 text-base bg-gradient-to-r from-blue-600 to-purple-600 text-primary-content rounded-full overflow-hidden transition-all duration-300 hover:from-blue-500 hover:to-purple-500 shadow-lg before:absolute before:inset-0 before:w-full before:h-full before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:transition-transform before:duration-500 hover:before:translate-x-full";
+const buttonClasses = "group relative inline-flex items-center px-16 py-4 text-base bg-gradient-to-r from-primary to-secondary text-primary-content rounded-full overflow-hidden transition-all duration-300 hover:from-blue-500 hover:to-purple-500 shadow-lg before:absolute before:inset-0 before:w-full before:h-full before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:transition-transform before:duration-500 hover:before:translate-x-full";
 ---
 
 {href ? (

@@ -8,8 +8,9 @@ module.exports = {
     themes: [
       {
         theme: {
-          'primary': '#0015ca',
+          'primary': '#134af0',
           'primary-content': '#fff',
+          'secondary': '#a133ea',
           'neutral': '#000',
           'neutral-content': '#fff',
           'base-300': '#0a0a0a',
@@ -23,6 +24,7 @@ module.exports = {
     },
     extend: {
       colors: {
+        'primary-hover': '#0e285e',
         'light-text': '#212121',
         'dark-text': ' #dedede',
         'button-active': '#1f1f1f',
@@ -168,10 +170,7 @@ module.exports = {
         circleExpand: {
           '0%': {
             transform: 'scale(0)',
-            opacity: '0.8'
-          },
-          '50%': {
-            opacity: '0.9'
+            opacity: '1'
           },
           '100%': {
             transform: 'scale(150)',
@@ -209,11 +208,11 @@ module.exports = {
     function({ addBase }) {
       addBase({
         '::selection': {
-          backgroundColor: '#0015ca',
+          backgroundColor: '#134af0',
           color: '#ffffff',
         },
         '::-moz-selection': {
-          backgroundColor: '#0015ca',
+          backgroundColor: '#134af0',
           color: '#ffffff',
         },
       })

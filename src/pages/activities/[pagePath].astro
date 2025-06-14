@@ -40,27 +40,27 @@ const breadcrumbItems = [
 ---
 
 <Layout title={title}>
-  <div class="pt-36 pb-40 px-4 md:px-16 min-h-screen bg-content-bg">
+  <div class="pt-36 pb-40 px-0 md:px-16 min-h-screen bg-content-bg">
 
     <!-- ヘッダーセクション -->
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-4xl mx-auto px-4 md:px-0">
       
       <!-- パンくずリスト -->
       <Breadcrumb items={breadcrumbItems} />
 
       <!-- タイトル -->
       <div>
-        <h1 class="text-3xl sm:text-5xl mb-8 font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-emerald-600">
+        <h1 class="text-xl sm:text-3xl md:text-5xl mb-8 font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
           {title}
         </h1>
-        <div class="w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
+        <div class="w-full h-1 bg-gradient-to-r from-primary to-secondary"></div>
       </div>
     </div>
 
     <!-- コンテンツセクション -->
     <div class="max-w-4xl mx-auto my-16">
       {htmlContent && (
-        <div class="p-8 backdrop-blur-sm bg-white border border-button-border rounded-lg shadow-lg">
+        <div class="p-4 md:p-8 backdrop-blur-sm bg-white border border-button-border rounded-0 md:rounded-lg shadow-lg">
           <div class={`prose prose-slate max-w-none ${MARKDOWN_STYLES}`} set:html={htmlContent} />
         </div>
       )}

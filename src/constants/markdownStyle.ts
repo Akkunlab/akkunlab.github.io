@@ -14,20 +14,20 @@ export const MARKDOWN_STYLES = `
 
   /* Quotes */
   [&_blockquote]:border-l-4 [&_blockquote]:border-blue-500 [&_blockquote]:pl-4 [&_blockquote]:my-6
-  [&_blockquote]:text-blue-700 [&_blockquote]:bg-blue-50 [&_blockquote]:py-3 [&_blockquote]:rounded-r
+  [&_blockquote]:text-primary [&_blockquote]:bg-blue-50 [&_blockquote]:py-3 [&_blockquote]:rounded-r
   [&_blockquote_p]:mb-0
 
   /* Code blocks */
   [&_pre]:bg-gray-100 [&_pre]:border [&_pre]:border-gray-300 [&_pre]:rounded-lg [&_pre]:p-4
   [&_pre]:overflow-auto [&_pre]:my-6 [&_pre]:text-emerald-700 [&_pre]:font-mono
 
-  [&_code]:bg-gray-200 [&_code]:text-blue-700 [&_code]:px-1 [&_code]:py-0.5
+  [&_code]:bg-gray-200 [&_code]:text-primary [&_code]:px-1 [&_code]:py-0.5
   [&_code]:rounded [&_code]:text-sm [&_code]:font-mono
 
   [&_pre_code]:bg-transparent [&_pre_code]:text-emerald-700 [&_pre_code]:p-0
 
   /* Links and text emphasis */
-  [&_a]:text-blue-600 [&_a]:hover:text-blue-800 [&_a]:underline [&_a]:transition-colors
-  [&_strong]:text-blue-700 [&_strong]:font-bold
+  [&_a]:text-primary [&_a:hover]:text-primary-hover [&_a]:underline [&_a]:transition-colors
+  [&_strong]:text-primary [&_strong]:font-bold
   [&_em]:text-purple-600 [&_em]:italic
 `.trim();
