@@ -1,0 +1,37 @@
+---
+import { Icon } from 'astro-icon/components';
+import { getIconName } from '@/utils/icon';
+
+interface BreadcrumbItem {
+  label: string;
+  href?: string;
+  isHome?: boolean;
+}
+
+interface Props {
+  items: BreadcrumbItem[];
+  class?: string;
+}
+
+const { items, class: className = '' } = Astro.props;
+---
+
+<nav class={`flex items-center space-x-2 text-blue-600 mb-6 ${className}`}>
+  {items.map((item, index) => (
+    <>
+      {item.href ? (
+        <a href={item.href} class="hover:text-blue-800 transition-colors flex items-center">
+          {item.isHome && (
+            <Icon name={getIconName('material-symbols-light', 'home')} class="w-4 h-4 mr-1" />
+          )}
+          {item.label}
+        </a>
+      ) : (
+        <span class="text-gray-700 uppercase">{item.label}</span>
+      )}
+      {index < items.length - 1 && (
+        <span class="text-gray-400">/</span>
+      )}
+    </>
+  ))}
+</nav>

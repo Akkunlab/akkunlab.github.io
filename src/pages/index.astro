@@ -198,7 +198,7 @@ const media = [
 const sectionClass = 'py-40 px-4 md:px-16';
 ---
 
-<Layout title="岸本篤 / Atsushi Kishimoto Portfolio" showSplash={true}>
+<Layout showSplash={true}>
   
   <!-- ヒーローセクション -->
   <section class="relative h-screen">
@@ -230,7 +230,9 @@ const sectionClass = 'py-40 px-4 md:px-16';
         </article>
       ))}
     </div>
-    <Button text="もっと見てみる！" href="/works" />
+    <div class="flex justify-center">
+      <Button text="もっと見てみる！" href="/works" type="arrow-forward" />
+    </div>
   </section>
 
   <!-- 活動セクション -->
@@ -263,7 +265,9 @@ const sectionClass = 'py-40 px-4 md:px-16';
         </article>
       ))}
     </div>
-    <Button text="もっと見てみる！" href="/activities" />
+    <div class="flex justify-center">
+      <Button text="もっと見てみる！" href="/activities" type="arrow-forward" />
+    </div>
   </section>
 
   <!-- プロフィールセクション -->

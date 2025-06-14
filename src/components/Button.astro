@@ -1,16 +1,26 @@
 ---
+import { getIconName } from '@/utils/icon';
+import { Icon } from 'astro-icon/components';
+
 interface Props {
   text: string;
   href?: string;
+  type?: 'arrow-back' | 'arrow-forward';
 }
 
-const { text, href } = Astro.props;
-const buttonClasses = "btn btn-primary btn-wide h-14 rounded-full flex items-center justify-center text-base mx-auto relative overflow-hidden group transition-all duration-300 hover:-translate-y-0.5 hover:scale-105 before:absolute before:inset-0 before:w-full before:h-full before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:transition-transform before:duration-500 hover:before:translate-x-full";
+const { text, href, type = null } = Astro.props;
+const buttonClasses = "group relative inline-flex items-center px-16 py-4 text-base bg-gradient-to-r from-blue-600 to-purple-600 text-primary-content rounded-full overflow-hidden transition-all duration-300 hover:from-blue-500 hover:to-purple-500 shadow-lg before:absolute before:inset-0 before:w-full before:h-full before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:transition-transform before:duration-500 hover:before:translate-x-full";
 ---
 
 {href ? (
   <a href={href} class={buttonClasses}>
+    {type === 'arrow-back' && (
+      <Icon name={getIconName('material-symbols-light', 'arrow-back')} class="w-6 h-6 mt-0.5 mr-2 relative z-10" />
+    )}
     <span class="relative z-10">{text}</span>
+    {type === 'arrow-forward' && (
+      <Icon name={getIconName('material-symbols-light', 'arrow-forward')} class="w-6 h-6 mt-0.5 ml-2 relative z-10" />
+    )}
   </a>
 ) : (
   <button class={buttonClasses}>

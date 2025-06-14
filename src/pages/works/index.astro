@@ -11,7 +11,7 @@ import heroImage_1 from '@/assets/images/hero-image_1.jpg';
 const pages = await fetchNotionPageList();
 ---
 
-<Layout title="作品 | 岸本篤 / Atsushi Kishimoto Portfolio">
+<Layout title="作品">
   <section id="activities" class="pt-36 pb-40 px-4 md:px-16 relative">
     
     <!-- 背景画像 -->
@@ -43,7 +43,7 @@ const pages = await fetchNotionPageList();
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20 mb-12">
       {pages.map((page) => (
         <article class="work-item">
-          <a href={page.link} class="card card-item">
+          <a href={`/works/${page.slug}`} class="card card-item">
             <AnimatedImage src={heroImage_1} alt={page.title} />
             <div class="card-body p-0 pt-2">
               <h2 class="card-title fade-in-text opacity-0 translate-y-8">{page.title}</h2>

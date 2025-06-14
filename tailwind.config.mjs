@@ -12,7 +12,6 @@ module.exports = {
           'primary-content': '#fff',
           'neutral': '#000',
           'neutral-content': '#fff',
-          'base-200': '#e5e7eb',
           'base-300': '#0a0a0a',
         },
       },
@@ -31,6 +30,7 @@ module.exports = {
         'header-border': 'rgba(255, 255, 255, 0.1)',
         'header-hover': 'rgba(255, 255, 255, 0.1)',
         'footer-bg': '#080b14',
+        'content-bg': '#e5e7eb',
       },
       keyframes: {
         slideInRight: {

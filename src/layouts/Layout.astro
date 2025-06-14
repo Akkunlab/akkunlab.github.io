@@ -17,7 +17,7 @@ import Footer from '@/components/Footer.astro';
 import BottomNavigation from '@/components/BottomNavigation.astro';
 
 interface Props {
-  title: string;
+  title?: string;
   showSplash?: boolean;
 }
 
@@ -32,7 +32,7 @@ const { title, showSplash = false } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="max-image-preview:large">
 
-    <title>{title}</title>
+    <title>{title ? `${title} | ` : ''}{SITE_TITLE}</title>
 
     <meta name="description" content={SITE_DESCRIPTION}>
     <meta name="author" content={AUTHOR}>
