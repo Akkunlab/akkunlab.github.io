@@ -57,7 +57,7 @@ const { title, showSplash = false } = Astro.props;
     <link rel="icon" type="image/png" href="/android-touch-icon.png" sizes="192x192">
   </head>
   <body class="font-body">
-    <!-- {showSplash && <SplashScreen />} -->
+    {showSplash && <SplashScreen />}
     <Header />
     <main>
       <slot />
