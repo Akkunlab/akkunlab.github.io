@@ -12,7 +12,6 @@ const ASTRO_DIR = '/_astro';
 
 const notion = new Client({ auth: import.meta.env.NOTION_TOKEN });
 const renderer = new MDXRenderer();
-const n2m = new NotionConverter(notion).withRenderer(renderer);
 
 /* ヘルパー */
 const getProperty = <T>(property: any, type: string, fallback: T, extract: (prop: any) => T): T =>
@@ -115,6 +114,8 @@ export const fetchNotionPageList = async (types?: string): Promise<NotionRecord[
  */
 export const fetchNotionPage = async (pageId: string): Promise<string | null> => {
   try {
+    const n2m = new NotionConverter(notion).withRenderer(renderer);
+    
     if (import.meta.env.MODE === 'production') {
 
       // 本番環境では画像をダウンロード
