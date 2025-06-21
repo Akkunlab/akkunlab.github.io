@@ -8,6 +8,7 @@ import * as fs from 'fs/promises';
 
 const DATABASE_ID = import.meta.env.DATABASE_ID;
 const OUTPUT_DIR = './dist/_astro';
+const ASTRO_DIR = '/_astro';
 
 const notion = new Client({ auth: import.meta.env.NOTION_TOKEN });
 const renderer = new MDXRenderer();
@@ -69,20 +70,38 @@ const pageToNotionRecord = ({ id, properties }: PageObjectResponse): NotionRecor
 
 /**
  * NotionデータベースからPublishedがtrueのページのリストを取得
+ * @param types - フィルタリングするタイプ
  * @returns Notionページのリスト
  */
-export const fetchNotionPageList = async (): Promise<NotionRecord[]> => {
+export const fetchNotionPageList = async (types?: string): Promise<NotionRecord[]> => {
   if (!DATABASE_ID) {
     throw new Error('DATABASE_ID is not defined in the environment variables.');
+  }
+
+  // フィルタ条件を構築
+  const filters: any[] = [
+    {
+      property: 'published',
+      checkbox: {
+        equals: true,
+      },
+    },
+  ];
+
+  // typesが指定されている場合はフィルタに追加
+  if (types) {
+    filters.push({
+      property: 'types',
+      select: {
+        equals: types,
+      },
+    });
   }
 
   const response = await notion.databases.query({
     database_id: DATABASE_ID,
     filter: {
-      property: 'published',
-      checkbox: {
-        equals: true,
-      },
+      and: filters,
     },
   });
 
@@ -103,7 +122,10 @@ export const fetchNotionPage = async (pageId: string): Promise<string | null> =>
 
       n2m.downloadMediaTo({
         outputDir: OUTPUT_DIR,
-        transformPath: (local) => `../../_astro/${path.parse(local)}`,
+        transformPath: (local) => {
+          const filename = `${path.parse(local).name}.webp`;
+          return path.posix.join(ASTRO_DIR, filename);
+        },
         preserveExternalUrls: true,
       });
     } else {

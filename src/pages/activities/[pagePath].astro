@@ -17,7 +17,7 @@ type StaticPath = {
 };
 
 export const getStaticPaths = async (): Promise<StaticPath[]> => {
-  const pageList = await fetchNotionPageList();
+  const pageList = await fetchNotionPageList('活動');
 
   return pageList.map((page) => ({
     params: { pagePath: page.slug },
