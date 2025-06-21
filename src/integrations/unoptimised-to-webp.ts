@@ -5,6 +5,9 @@ import path from 'node:path';
 import sharp from 'sharp';
 import { fileURLToPath } from 'node:url';
 
+const MAX_WIDTH = 1920;
+const MAX_HEIGHT = 1080;
+
 export const unoptimisedToWebp = (
   {
     quality = 80,
@@ -44,7 +47,20 @@ export const unoptimisedToWebp = (
           const originalStats = await fs.stat(src);
           const originalSize = originalStats.size;
 
-          await sharp(src)[format]({ quality }).toFile(dest);
+          // リサイズ
+          const image = sharp(src);
+          const metadata = await image.metadata();
+          const { width = 0, height = 0 } = metadata;
+          let processedImage = image;
+
+          if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+            processedImage = image.resize(MAX_WIDTH, MAX_HEIGHT, {
+              fit: 'inside',
+              withoutEnlargement: true,
+            });
+          }
+
+          await processedImage[format]({ quality }).toFile(dest);
 
           const convertedStats = await fs.stat(dest);
           const convertedSize = convertedStats.size;
