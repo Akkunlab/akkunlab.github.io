@@ -1,12 +1,17 @@
 import type { NotionRecord, Tag } from '@/types';
 import { Client } from '@notionhq/client';
-import type { BlockObjectResponse, PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
-import { NotionToMarkdown } from 'notion-to-md';
-import type { ListBlockChildrenResponseResult } from 'notion-to-md/build/types';
+import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+import { NotionConverter } from 'notion-to-md';
+import { MDXRenderer } from 'notion-to-md/plugins/renderer';
+import * as path from 'path';
+import * as fs from 'fs/promises';
+
+const DATABASE_ID = import.meta.env.DATABASE_ID;
+const OUTPUT_DIR = './dist/_astro';
 
 const notion = new Client({ auth: import.meta.env.NOTION_TOKEN });
-const databaseId = import.meta.env.DATABASE_ID;
-const n2m = new NotionToMarkdown({ notionClient: notion });
+const renderer = new MDXRenderer();
+const n2m = new NotionConverter(notion).withRenderer(renderer);
 
 /* ヘルパー */
 const getProperty = <T>(property: any, type: string, fallback: T, extract: (prop: any) => T): T =>
@@ -26,22 +31,17 @@ const getImage = (property: any): string =>
     : '/ogp.png';
 
 /**
- * Notionの段落ブロックを判定するヘルパー関数
- *  @param block Notionのブロックオブジェクト
- *  @returns ブロックが段落ブロックである場合はtrue、それ以外はfalse
+ * 空段落なら &nbsp; を返す
  */
-const isParagraphBlock = (block : ListBlockChildrenResponseResult): block is BlockObjectResponse & {
-  type: 'paragraph';
-  paragraph: { rich_text: { plain_text: string }[] };
-} => (block as any).type === 'paragraph';
+renderer.createBlockTransformer('paragraph', {
+  transform: async ({ block, utils }) => {
+    if (block.paragraph.rich_text.length === 0) return '&nbsp;\n';
 
-/**
- * Notionの段落ブロックをMarkdownに変換するカスタムトランスフォーマーを設定
- * 段落ブロックが空の場合は改行文字を返す
- */
-n2m.setCustomTransformer('paragraph', (block) =>
-  isParagraphBlock(block) && block.paragraph.rich_text.length === 0 ? '&nbsp;' : false
-);
+    const text = await utils.transformRichText(block.paragraph.rich_text);
+
+    return `${text}\n\n`;
+  },
+});
 
 /**
  * ページをNotionRecordオブジェクトに変換
@@ -72,12 +72,12 @@ const pageToNotionRecord = ({ id, properties }: PageObjectResponse): NotionRecor
  * @returns Notionページのリスト
  */
 export const fetchNotionPageList = async (): Promise<NotionRecord[]> => {
-  if (!databaseId) {
+  if (!DATABASE_ID) {
     throw new Error('DATABASE_ID is not defined in the environment variables.');
   }
 
   const response = await notion.databases.query({
-    database_id: databaseId,
+    database_id: DATABASE_ID,
     filter: {
       property: 'published',
       checkbox: {
@@ -90,17 +90,31 @@ export const fetchNotionPageList = async (): Promise<NotionRecord[]> => {
 };
 
 /**
- * Notionのページを取得
- * @param pageId ページID
- * @returns ページのMarkdown文字列
+ * 指定ページをMarkdown文字列で取得（本番環境は画像をダウンロード）
+ * @param pageId - ページID
+ * @returns Markdown文字列
  */
-export const fetchNotionPage = async (pageId: string) => {
+export const fetchNotionPage = async (pageId: string): Promise<string | null> => {
   try {
-    const mdBlocks = await n2m.pageToMarkdown(pageId);
-    const mdString = n2m.toMarkdownString(mdBlocks);
-    const markdownContent = Object.values(mdString).join('\n');
+    if (import.meta.env.MODE === 'production') {
 
-    return markdownContent;
+      // 本番環境では画像をダウンロード
+      await fs.mkdir(OUTPUT_DIR, { recursive: true });
+
+      n2m.downloadMediaTo({
+        outputDir: OUTPUT_DIR,
+        transformPath: (local) => `../../_astro/${path.parse(local)}`,
+        preserveExternalUrls: true,
+      });
+    } else {
+
+      // 開発環境では画像をダウンロードしない
+      n2m.useDirectStrategy();
+    }
+
+    const { content } = await n2m.convert(pageId);
+
+    return content;
   } catch (error) {
     console.error('Error fetching page from Notion:', error);
 
