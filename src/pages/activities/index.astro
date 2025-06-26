@@ -44,7 +44,7 @@ const pages = await fetchNotionPageList('活動');
       {pages.map((page) => (
         <article class="work-item">
           <a href={`/activities/${page.slug}`} class="card card-item">
-            <AnimatedImage src={activityImage} alt={page.title} />
+            <AnimatedImage src={page.image} alt={page.title} class="aspect-video" />
             <div class="card-body p-0 pt-2">
               <h2 class="card-title fade-in-text opacity-0 translate-y-8">{page.title}</h2>
               <p class="fade-in-text opacity-0 translate-y-8">{page.summary}</p>

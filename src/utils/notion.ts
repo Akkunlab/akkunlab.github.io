@@ -1,10 +1,12 @@
-import type { NotionRecord, Tag } from '@/types';
 import { Client } from '@notionhq/client';
 import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 import { NotionConverter } from 'notion-to-md';
 import { MDXRenderer } from 'notion-to-md/plugins/renderer';
 import * as path from 'path';
 import * as fs from 'fs/promises';
+
+import { OGP_IMAGE } from '@/constants';
+import type { NotionRecord, Tag } from '@/types';
 
 const DATABASE_ID = import.meta.env.DATABASE_ID;
 const OUTPUT_DIR = './dist/_astro';
@@ -25,10 +27,37 @@ const getNumber = (p: any) => getProperty(p, 'number', '', prop => prop.number?.
 const getUrl = (p: any) => getProperty(p, 'url', '', prop => prop.url || '');
 const getDate = (p: any) => getProperty(p, 'date', '', prop => prop.date?.start || '');
 const getCheckbox = (p: any) => getProperty(p, 'checkbox', false, prop => prop.checkbox === true);
-const getImage = (property: any): string =>
-  property?.type === 'files' && property.files.length > 0 && property.files[0].type === 'file'
-    ? property.files[0].file.url
-    : '/ogp.png';
+
+/**
+ * 指定ページの最初の画像を取得
+ * @param pageId - ページID
+ * @returns 画像URL（本番環境は変換されたパス、開発環境では元のURL）
+ */
+const getImage = async (pageId: string): Promise<string> => {
+  try {
+    await notion.pages.retrieve({ page_id: pageId });
+
+    // 先頭50ブロック内で最初の画像を探す
+    const { results } = await notion.blocks.children.list({ block_id: pageId, page_size: 50 });
+    const url = (results.find((b: any) => b.type === 'image' && b.image?.type === 'file') as any)?.image?.file?.url;
+
+    // 画像が見つからない場合はOGP画像を返す
+    if (!url) return OGP_IMAGE;
+
+    // 本番環境では画像を変換して保存
+    if (import.meta.env.PROD) {
+      const filename = `${path.parse(new URL(url).pathname).name}.webp`;
+      return path.posix.join(ASTRO_DIR, filename);
+    }
+
+    // 開発環境では元のURLを返す
+    return url;
+  } catch (err) {
+    console.error('Notion image fetch error:', err);
+
+    return OGP_IMAGE;
+  }
+};
 
 /**
  * 空段落なら &nbsp; を返す
@@ -48,8 +77,8 @@ renderer.createBlockTransformer('paragraph', {
  * @param page Notionページ
  * @returns NotionRecordオブジェクト
  */
-const pageToNotionRecord = ({ id, properties }: PageObjectResponse): NotionRecord => {
-  const { slug, types, title, summary, tags, year, link, publication, image, category, published } = properties;
+const pageToNotionRecord = async ({ id, properties }: PageObjectResponse): Promise<NotionRecord> => {
+  const { slug, types, title, summary, tags, year, link, publication, category, published } = properties;
 
   return {
     id,
@@ -61,7 +90,7 @@ const pageToNotionRecord = ({ id, properties }: PageObjectResponse): NotionRecor
     year: getNumber(year),
     link: getUrl(link),
     publication: getDate(publication),
-    image: getImage(image),
+    image: await getImage(id),
     category: getSelect(category),
     published: getCheckbox(published),
   };
@@ -104,7 +133,7 @@ export const fetchNotionPageList = async (types?: string): Promise<NotionRecord[
     },
   });
 
-  return response.results.map(page => pageToNotionRecord(page as PageObjectResponse));
+  return Promise.all(response.results.map(page => pageToNotionRecord(page as PageObjectResponse)));
 };
 
 /**

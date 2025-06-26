@@ -8,7 +8,8 @@ import {
   SITE_URL,
   AUTHOR,
   X_ID,
-  COLOR
+  COLOR,
+  OGP_IMAGE
 } from '@/constants';
 
 import SplashScreen from '@/components/SplashScreen.astro';
@@ -44,10 +45,10 @@ const { title, showSplash = false } = Astro.props;
     <meta property="og:description" content={SITE_DESCRIPTION}>
     <meta property="og:site_name" content={SITE_TITLE}>
     <meta property="og:url" content={SITE_URL}>
-    <meta property="og:image" content="/ogp.png">
+    <meta property="og:image" content={OGP_IMAGE}>
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="/ogp.png">
+    <meta name="twitter:image" content={OGP_IMAGE}>
     <meta name="twitter:title" content={SITE_TITLE}>
     <meta name="twitter:site" content={X_ID}>
 
