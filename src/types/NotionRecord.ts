@@ -6,7 +6,7 @@ export interface NotionRecord {
   types: string;
   title: string;  
   summary: string;
-  category: Tag[];
+  category: string;
   tags: Tag[];
   year: string;
   link: string;

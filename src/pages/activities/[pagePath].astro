@@ -1,10 +1,13 @@
 ---
 import { fetchNotionPage, fetchNotionPageList } from '@/utils/notion';
 import { markdownToHtml } from '@/utils/markdown';
+import { formatDateShort } from '@/utils/dateFormat';
 import Layout from '@/layouts/Layout.astro';
 import Breadcrumb from '@/components/Breadcrumb.astro';
 import Button from '@/components/Button.astro';
 import { MARKDOWN_STYLES } from '@/constants';
+import { Icon } from 'astro-icon/components';
+import type { Tag } from '@/types/Tag';
 
 type StaticPath = {
   params: {
@@ -12,7 +15,10 @@ type StaticPath = {
   },
   props: {
     id: string,
-    title: string
+    title: string,
+    publication: string,
+    category: string,
+    tags: Tag[]
   }
 };
 
@@ -23,12 +29,15 @@ export const getStaticPaths = async (): Promise<StaticPath[]> => {
     params: { pagePath: page.slug },
     props: { 
       id: page.id,
-      title: page.title
+      title: page.title,
+      publication: page.publication,
+      category: page.category,
+      tags: page.tags
     }
   }));
 };
 
-const { id: pageId, title } = Astro.props;
+const { id: pageId, title, publication, category, tags } = Astro.props;
 const markdownContent = pageId ? await fetchNotionPage(pageId) : null;
 const htmlContent = markdownContent ? await markdownToHtml(markdownContent) : null;
 
@@ -50,9 +59,33 @@ const breadcrumbItems = [
 
       <!-- タイトル -->
       <div>
-        <h1 class="text-xl sm:text-3xl md:text-5xl mb-8 font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+        <h1 class="text-xl sm:text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
           {title}
         </h1>
+
+        <div class="my-6 flex flex-wrap items-center gap-4">
+
+          <!-- 日付 -->
+          <time class="text-light-text inline-flex items-center gap-1">
+            <Icon name="material-symbols-light:calendar-month" class="w-6 h-6" />
+            {formatDateShort(publication)}
+          </time>
+
+          <!-- カテゴリ・タグ -->
+          {(category || (tags && tags.length > 0)) && (
+            <div class="flex flex-wrap gap-2">
+              {[category, ...(tags ?? []).map(tag => tag.name)]
+                .filter(Boolean)
+                .map((name) => (
+                  <span class="text-primary bg-primary/10 px-3 py-1 border border-button-border rounded-full">
+                    #{name}
+                  </span>
+                ))}
+            </div>
+          )}
+        </div>
+
+        <!-- Divider -->
         <div class="w-full h-1 bg-gradient-to-r from-primary to-secondary"></div>
       </div>
     </div>
@@ -60,7 +93,7 @@ const breadcrumbItems = [
     <!-- コンテンツセクション -->
     <div class="max-w-4xl mx-auto my-16">
       {htmlContent && (
-        <div class="p-4 md:p-8 backdrop-blur-sm bg-white border border-button-border rounded-0 md:rounded-lg shadow-lg">
+        <div class="p-4 md:p-8 bg-primary-content border border-button-border rounded-0 md:rounded-lg shadow-lg">
           <div class={`prose prose-slate max-w-none ${MARKDOWN_STYLES}`} set:html={htmlContent} />
         </div>
       )}
