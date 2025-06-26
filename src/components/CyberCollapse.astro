@@ -37,7 +37,7 @@ const { title, items, class: className } = Astro.props;
         
         <!-- アイコンとテキスト -->
         <div class="relative z-10 flex items-center justify-between">
-          <span class="text-slate-200 group-hover:text-white font-medium transition-colors duration-300">
+          <span class="text-primary-content font-medium transition-colors duration-300">
             {title}
           </span>
           
@@ -51,7 +51,7 @@ const { title, items, class: className } = Astro.props;
     
     <!-- コンテンツ部分 -->
     <div class="collapse-content px-0 pb-4">
-      <div class="cyber-collapse-content mt-2 p-4 bg-white rounded-lg relative overflow-hidden">
+      <div class="cyber-collapse-content mt-2 py-4 pl-4 bg-white rounded-lg relative overflow-hidden">
         
         <!-- リスト -->
         <ul class="space-y-3">
@@ -105,7 +105,7 @@ const { title, items, class: className } = Astro.props;
                   <div class="relative z-10 p-4 flex items-center justify-between">
                     
                     {/* テキスト */}
-                    <span class="text-dark-text font-medium group-hover/item:text-primary-content group-hover/item:text-shadow-[0_0_8px_rgba(255,255,255,0.5)] transition-all duration-300">
+                    <span class="text-primary-content font-medium group-hover/item:text-shadow-[0_0_8px_rgba(255,255,255,0.5)] transition-all duration-300">
                       {item.date} {item.name}
                     </span>
                     
