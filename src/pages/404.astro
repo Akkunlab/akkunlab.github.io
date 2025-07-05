@@ -1,6 +1,8 @@
 ---
+import { Image } from 'astro:assets';
 import Layout from '@/layouts/Layout.astro';
 import Button from '@/components/Button.astro';
+import notFoundImage from '@/assets/images/404.png';
 ---
 
 <Layout title="404">
@@ -8,22 +10,35 @@ import Button from '@/components/Button.astro';
     <div class="text-center animate-fade-in">
       
       <!-- タイトル -->
-      <div class="mb-8 translate-y-8 transition-all duration-700">
+      <div class="mb-8 translate-y-8 transition-all">
         <h1 class="text-5xl mb-8 font-bold text-dark-text fade-in-text">
           404
         </h1>
         <div class="h-1 w-full mx-auto bg-gradient-to-r from-primary to-secondary rounded-full shadow-lg shadow-cyan-500/50"></div>
       </div>
 
-      <!-- 説明文 -->
-      <div class="mb-16 translate-y-8 transition-all duration-700 delay-200">
-        <h2 class="text-xl md:text-3xl mb-8 font-bold text-dark-text fade-in-text">
-          リンクが家出しました
-        </h2>
-        <p class="text-base md:text-xl text-dark-text leading-relaxed fade-in-text">
-          置き手紙すら残さず旅に出たようです...<br>
-          行き先のヒントはホームに貼ってあります。
-        </p>
+      <!-- メインコンテンツ -->
+      <div class="mb-16 flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
+
+        <!-- 説明文 -->
+        <div class="translate-y-8 text-center md:text-left">
+          <h2 class="text-xl md:text-3xl mb-6 font-bold text-dark-text fade-in-text">
+            リンクが家出しました
+          </h2>
+          <p class="text-base md:text-xl text-dark-text leading-relaxed fade-in-text">
+            置き手紙すら残さず旅に出たようです...<br>
+            行き先のヒントはホームに貼ってあります。
+          </p>
+        </div>
+
+        <!-- 画像 -->
+        <div class="translate-y-8 flex-shrink-0">
+          <Image 
+            src={notFoundImage} 
+            alt="家出したキャラクター" 
+            class="w-48 h-48 md:w-64 md:h-64 object-contain fade-in-text"
+          />
+        </div>
       </div>
 
     <div class="flex justify-center">
