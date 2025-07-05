@@ -29,37 +29,6 @@ const getDate = (p: any) => getProperty(p, 'date', '', prop => prop.date?.start 
 const getCheckbox = (p: any) => getProperty(p, 'checkbox', false, prop => prop.checkbox === true);
 
 /**
- * 指定ページの最初の画像を取得
- * @param pageId - ページID
- * @returns 画像URL（本番環境は変換されたパス、開発環境では元のURL）
- */
-const getImage = async (pageId: string): Promise<string> => {
-  try {
-    await notion.pages.retrieve({ page_id: pageId });
-
-    // 先頭50ブロック内で最初の画像を探す
-    const { results } = await notion.blocks.children.list({ block_id: pageId, page_size: 50 });
-    const url = (results.find((b: any) => b.type === 'image' && b.image?.type === 'file') as any)?.image?.file?.url;
-
-    // 画像が見つからない場合はOGP画像を返す
-    if (!url) return OGP_IMAGE;
-
-    // 本番環境では画像を変換して保存
-    if (import.meta.env.PROD) {
-      const filename = `${path.parse(new URL(url).pathname).name}.webp`;
-      return path.posix.join(ASTRO_DIR, filename);
-    }
-
-    // 開発環境では元のURLを返す
-    return url;
-  } catch (err) {
-    console.error('Notion image fetch error:', err);
-
-    return OGP_IMAGE;
-  }
-};
-
-/**
  * 空段落なら &nbsp; を返す
  */
 renderer.createBlockTransformer('paragraph', {
@@ -90,7 +59,7 @@ const pageToNotionRecord = async ({ id, properties }: PageObjectResponse): Promi
     year: getNumber(year),
     link: getUrl(link),
     publication: getDate(publication),
-    image: await getImage(id),
+    image: (await fetchNotionPage(id))?.ogImage ?? OGP_IMAGE,
     category: getSelect(category),
     published: getCheckbox(published),
   };
@@ -139,37 +108,42 @@ export const fetchNotionPageList = async (types?: string): Promise<NotionRecord[
 /**
  * 指定ページをMarkdown文字列で取得（本番環境は画像をダウンロード）
  * @param pageId - ページID
- * @returns Markdown文字列
+ * @returns ページのコンテンツとOGP画像URL
  */
-export const fetchNotionPage = async (pageId: string): Promise<string | null> => {
+export const fetchNotionPage = async (pageId: string): Promise<{ content: string; ogImage: string } | null> => {
   try {
     const n2m = new NotionConverter(notion).withRenderer(renderer);
-    
-    if (import.meta.env.MODE === 'production') {
+    const isProduction = import.meta.env.MODE === 'production';
+    let ogImage = OGP_IMAGE;
 
-      // 本番環境では画像をダウンロード
+    if (isProduction) {
+
+      // 本番環境：画像をダウンロード
       await fs.mkdir(OUTPUT_DIR, { recursive: true });
 
       n2m.downloadMediaTo({
         outputDir: OUTPUT_DIR,
         transformPath: (local) => {
           const filename = `${path.parse(local).name}.webp`;
-          return path.posix.join(ASTRO_DIR, filename);
+          ogImage = path.posix.join(ASTRO_DIR, filename);
+          return ogImage;
         },
         preserveExternalUrls: true,
       });
     } else {
 
-      // 開発環境では画像をダウンロードしない
+      // 開発環境：画像をダウンロードしない
       n2m.useDirectStrategy();
     }
 
     const { content } = await n2m.convert(pageId);
 
-    return content;
+    // 開発環境の場合、コンテンツから最初の画像を取得
+    if (!isProduction) ogImage = content.match(/!\[[^\]]*]\(([^)]+)\)/)?.[1] ?? OGP_IMAGE;
+
+    return { content, ogImage };
   } catch (error) {
     console.error('Error fetching page from Notion:', error);
-
     return null;
   }
 };

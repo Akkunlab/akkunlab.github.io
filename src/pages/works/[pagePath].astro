@@ -38,8 +38,9 @@ export const getStaticPaths = async (): Promise<StaticPath[]> => {
 };
 
 const { id: pageId, title, publication, category, tags } = Astro.props;
-const markdownContent = pageId ? await fetchNotionPage(pageId) : null;
-const htmlContent = markdownContent ? await markdownToHtml(markdownContent) : null;
+const pageData = pageId ? await fetchNotionPage(pageId) : null;
+const content = pageData ? pageData.content : null;
+const htmlContent = content ? await markdownToHtml(content) : null;
 
 const breadcrumbItems = [
   { label: 'ホーム', href: '/', isHome: true },
