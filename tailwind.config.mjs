@@ -205,7 +205,7 @@ module.exports = {
   },
   plugins: [
     daisyui,
-    function({ addBase }) {
+    function({ addBase, addUtilities }) {
       addBase({
         '::selection': {
           backgroundColor: '#134af0',
@@ -215,7 +215,29 @@ module.exports = {
           backgroundColor: '#134af0',
           color: '#ffffff',
         },
-      })
+      });
+      
+      // カスタムbox-shadowユーティリティ
+      addUtilities({
+        '.shadow-skill-card': {
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1)',
+        },
+        '.shadow-skill-card-hover': {
+          boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.15), 0 0 20px rgba(59, 130, 246, 0.3)',
+        },
+        '.shadow-skill-card-glow': {
+          boxShadow: '0 0 8px rgba(59, 130, 246, 0.4), 0 0 16px rgba(59, 130, 246, 0.3), 0 0 24px rgba(59, 130, 246, 0.2)',
+        },
+        '.shadow-skill-card-hover-glow': {
+          boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.15), 0 0 20px rgba(59, 130, 246, 0.3), 0 0 40px rgba(59, 130, 246, 0.2)',
+        },
+        '.shadow-skill-category': {
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3), 0 0 30px rgba(59, 130, 246, 0.2)',
+        },
+        '.shadow-skill-category-hover': {
+          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35), 0 0 40px rgba(59, 130, 246, 0.3), 0 0 60px rgba(59, 130, 246, 0.2)',
+        },
+      });
     },
   ],
 }

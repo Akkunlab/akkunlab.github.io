@@ -1,7 +1,7 @@
 ---
 export interface Props {
   text: string;
-  color: 'blue' | 'green' | 'red';
+  color: 'blue' | 'green' | 'red' | 'purple';
   class?: string;
 }
 
@@ -28,6 +28,13 @@ const colorConfig = {
     border: 'border-pink-500',
     borderHover: 'hover:border-orange-500',
     gradientOverlay: 'from-pink-900/80 via-red-900/80 to-orange-900/80'
+  },
+  purple: {
+    background: 'from-purple-900 via-violet-900 to-indigo-900',
+    backgroundHover: 'hover:from-indigo-900 hover:via-violet-900 hover:to-purple-900',
+    border: 'border-purple-500',
+    borderHover: 'hover:border-indigo-500',
+    gradientOverlay: 'from-purple-900/80 via-violet-900/80 to-indigo-900/80'
   }
 };
 
