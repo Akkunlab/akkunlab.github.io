@@ -8,7 +8,8 @@ import AnimatedImage from '@/components/AnimatedImage.astro';
 
 import activityImage from '@/assets/images/activity-image.jpg';
 
-const pages = await fetchNotionPageList('活動');
+const PORTFOLIO_DATABASE_ID = import.meta.env.PORTFOLIO_DATABASE_ID;
+const pages = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, '活動');
 ---
 
 <Layout title="活動">

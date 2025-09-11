@@ -8,7 +8,6 @@ import * as fs from 'fs/promises';
 import { OGP_IMAGE } from '@/constants';
 import type { NotionRecord, Tag } from '@/types';
 
-const DATABASE_ID = import.meta.env.DATABASE_ID;
 const OUTPUT_DIR = './dist/_astro';
 const ASTRO_DIR = '/_astro';
 
@@ -67,12 +66,14 @@ const pageToNotionRecord = async ({ id, properties }: PageObjectResponse): Promi
 
 /**
  * NotionデータベースからPublishedがtrueのページのリストを取得
+ * @param databaseId - 対象のNotionデータベースID
  * @param types - フィルタリングするタイプ
  * @returns Notionページのリスト
  */
-export const fetchNotionPageList = async (types?: string): Promise<NotionRecord[]> => {
-  if (!DATABASE_ID) {
-    throw new Error('DATABASE_ID is not defined in the environment variables.');
+export const fetchNotionPageList = async (databaseId: string, types?: string): Promise<NotionRecord[]> => {
+
+  if (!databaseId) {
+    throw new Error('databaseId is not defined in the environment variables.');
   }
 
   // フィルタ条件を構築
@@ -96,7 +97,7 @@ export const fetchNotionPageList = async (types?: string): Promise<NotionRecord[
   }
 
   const response = await notion.databases.query({
-    database_id: DATABASE_ID,
+    database_id: databaseId,
     filter: {
       and: filters,
     },

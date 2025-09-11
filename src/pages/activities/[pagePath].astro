@@ -23,9 +23,10 @@ type StaticPath = {
 };
 
 export const getStaticPaths = async (): Promise<StaticPath[]> => {
-  const pageList = await fetchNotionPageList('活動');
+  const PORTFOLIO_DATABASE_ID = import.meta.env.PORTFOLIO_DATABASE_ID;
+  const pages = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, '活動');
 
-  return pageList.map((page) => ({
+  return pages.map((page) => ({
     params: { pagePath: page.slug },
     props: { 
       id: page.id,
