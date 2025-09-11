@@ -26,16 +26,18 @@ export const getStaticPaths = async (): Promise<StaticPath[]> => {
   const PORTFOLIO_DATABASE_ID = import.meta.env.PORTFOLIO_DATABASE_ID;
   const pages = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, '作品');
 
-  return pages.map((page) => ({
-    params: { pagePath: page.slug },
-    props: { 
-      id: page.id,
-      title: page.title,
-      publication: page.publication,
-      category: page.category,
-      tags: page.tags
-    }
-  }));
+  return pages
+    .filter(page => page.slug && page.id && page.title && page.publication && page.category && page.tags)
+    .map((page) => ({
+      params: { pagePath: page.slug as string },
+      props: { 
+        id: page.id as string,
+        title: page.title as string,
+        publication: page.publication as string,
+        category: page.category as string,
+        tags: page.tags as Tag[]
+      }
+    }));
 };
 
 const { id: pageId, title, publication, category, tags } = Astro.props;

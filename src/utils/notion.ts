@@ -45,29 +45,61 @@ renderer.createBlockTransformer('paragraph', {
  * @param page Notionページ
  * @returns NotionRecordオブジェクト
  */
-const pageToNotionRecord = async ({ id, properties }: PageObjectResponse): Promise<NotionRecord> => {
-  const { slug, types, title, summary, tags, year, link, publication, category, published } = properties;
-
-  return {
+const pageToNotionRecord = async (
+  { id, properties }: PageObjectResponse
+): Promise<NotionRecord> => {
+  const record: Partial<NotionRecord> = {
     id,
-    slug: getRichText(slug),
-    types: getSelect(types),
-    title: getTitle(title),
-    summary: getRichText(summary),
-    tags: getMultiSelect(tags),
-    year: getNumber(year),
-    link: getUrl(link),
-    publication: getDate(publication),
+    slug: getRichText(properties.slug),
+    types: getSelect(properties.types),
+    title: getTitle(properties.title),
+    summary: getRichText(properties.summary),
+    tags: getMultiSelect(properties.tags),
+    year: getNumber(properties.year),
+    link: getUrl(properties.link),
+    publication: getDate(properties.publication),
     image: (await fetchNotionPage(id))?.ogImage ?? OGP_IMAGE,
-    category: getSelect(category),
-    published: getCheckbox(published),
+    category: getSelect(properties.category),
+    published: getCheckbox(properties.published),
+
+    // MediaCoverage
+    source: getRichText(properties.source),
+    date: getDate(properties.date),
+
+    // Skills / SocialLinks
+    name: getTitle(properties.name),
+    icon: getRichText(properties.icon),
+    subcategory: getSelect(properties.subcategory),
+    color: getRichText(properties.color),
+    description: getRichText(properties.description),
+
+    // EducationCareer
+    org: getRichText(properties.org),
+    dept_prog: getRichText(properties.dept_prog),
+    start: getDate(properties.start),
+    end: getDate(properties.end),
+
+    // Certifications
+    mark: getCheckbox(properties.mark),
   };
+
+  const cleanedRecord = Object.fromEntries(
+    Object.entries(record).filter(([key, v]) => {
+      if (v === undefined) return false;                    // undefined
+      if (v === "") return false;                           // 空文字
+      if (Array.isArray(v) && v.length === 0) return false; // 空配列
+      if (key === "published" && v === true) return false;  // published=true は削除
+      return true;
+    })
+  ) as Partial<NotionRecord>;
+
+  return cleanedRecord as NotionRecord;
 };
 
 /**
- * NotionデータベースからPublishedがtrueのページのリストを取得
+ * Notionデータベースからページのリストを取得（publishedプロパティがある場合はtrueのみ取得）
  * @param databaseId - 対象のNotionデータベースID
- * @param types - フィルタリングするタイプ
+ * @param types - フィルタリングするタイプ（typesプロパティが存在する場合のみ適用）
  * @returns Notionページのリスト
  */
 export const fetchNotionPageList = async (databaseId: string, types?: string): Promise<NotionRecord[]> => {
@@ -76,32 +108,44 @@ export const fetchNotionPageList = async (databaseId: string, types?: string): P
     throw new Error('databaseId is not defined in the environment variables.');
   }
 
-  // フィルタ条件を構築
-  const filters: any[] = [
-    {
-      property: 'published',
-      checkbox: {
-        equals: true,
-      },
-    },
-  ];
+  // フィルタ条件
+  const filters: any[] = [];
 
-  // typesが指定されている場合はフィルタに追加
-  if (types) {
-    filters.push({
-      property: 'types',
-      select: {
-        equals: types,
-      },
-    });
+  try {
+    const dbInfo = await notion.databases.retrieve({ database_id: databaseId });
+    const properties = dbInfo.properties;
+
+    // publishedプロパティが存在する場合のみフィルタに追加
+    if (properties.published && properties.published.type === 'checkbox') {
+      filters.push({
+        property: 'published',
+        checkbox: {
+          equals: true,
+        },
+      });
+    }
+
+    // typesプロパティが存在し、かつtypesが指定されている場合のみフィルタに追加
+    if (types && properties.types && properties.types.type === 'select') {
+      filters.push({
+        property: 'types',
+        select: {
+          equals: types,
+        },
+      });
+    }
+  } catch (error) {
+    console.warn('Database structure check failed, proceeding without filters:', error);
   }
 
-  const response = await notion.databases.query({
-    database_id: databaseId,
-    filter: {
-      and: filters,
-    },
-  });
+  const queryOptions: any = { database_id: databaseId };
+  
+  // フィルタが存在する場合のみfilterを追加
+  if (filters.length > 0) {
+    queryOptions.filter = filters.length === 1 ? filters[0] : { and: filters };
+  }
+
+  const response = await notion.databases.query(queryOptions);
 
   return Promise.all(response.results.map(page => pageToNotionRecord(page as PageObjectResponse)));
 };

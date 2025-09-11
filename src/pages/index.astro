@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import { Icon } from 'astro-icon/components';
 import { getIconName } from '@/utils/icon'
+import { fetchNotionPageList } from '@/utils/notion';
 import type { SkillCategory } from '@/types';
 
 import Layout from '@/layouts/Layout.astro';
@@ -25,9 +26,10 @@ import {
   AUTHOR,
   AUTHOR_ENGLISH,
   AUTHOR_SUMMARY,
-  HERO_TITLE_LINES,
-  SNS_LINKS
+  HERO_TITLE_LINES
 } from '@/constants';
+
+const SOCIAL_LINKS_DATABASE_ID = import.meta.env.SOCIAL_LINKS_DATABASE_ID;
 
 const works = [
   {
@@ -267,6 +269,8 @@ const media = [
   },
 ];
 
+const socialLinks = await fetchNotionPageList(SOCIAL_LINKS_DATABASE_ID);
+
 const sectionClass = 'py-40 px-4 md:px-16';
 ---
 
@@ -404,11 +408,11 @@ const sectionClass = 'py-40 px-4 md:px-16';
 
     <!-- 連絡先コンテンツ -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 my-20">
-      {SNS_LINKS.map((item) => (
+      {socialLinks.map((item) => (
         <article class="fade-in-text opacity-0 translate-y-8">
-          <a href={item.url} class="group" target={item.name !== 'Email' ? "_blank" : undefined} rel={item.name !== 'Email' ? "noopener noreferrer" : undefined}>
+          <a href={item.link} class="group" target={item.name !== 'Email' ? "_blank" : undefined} rel={item.name !== 'Email' ? "noopener noreferrer" : undefined}>
             <div class={'text-primary-content py-4 aspect-video relative overflow-hidden rounded-xl transition-transform duration-500 transform group-hover:scale-105 group-hover:rotate-3 group-hover:shadow-2xl flex flex-col items-center justify-center'} style={`background-color: ${item.color}`}>
-              <Icon name={getIconName('prime', item.icon)} size={128} style={{ transform: item.icon === 'twitter' ? 'scale(0.625)' : 'scale(1)' }} />
+              <Icon name={getIconName('prime', item.icon ?? '')} size={128} style={{ transform: item.icon === 'twitter' ? 'scale(0.625)' : 'scale(1)' }} />
               <p class="text-2xl xl:text-3xl font-bold">{item.name}</p>
               <div class="absolute inset-0 bg-gradient-to-t from-black opacity-0 group-hover:opacity-30 transition-opacity duration-500"></div>
             </div>
