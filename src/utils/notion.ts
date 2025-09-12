@@ -74,7 +74,6 @@ const pageToNotionRecord = async (
     description: getRichText(properties.description),
 
     // EducationCareer
-    org: getRichText(properties.org),
     dept_prog: getRichText(properties.dept_prog),
     start: getDate(properties.start),
     end: getDate(properties.end),

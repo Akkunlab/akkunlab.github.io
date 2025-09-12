@@ -32,6 +32,7 @@ import {
 const SOCIAL_LINKS_DATABASE_ID = import.meta.env.SOCIAL_LINKS_DATABASE_ID;
 const CERTIFICATIONS_DATABASE_ID = import.meta.env.CERTIFICATIONS_DATABASE_ID;
 const MEDIA_COVERAGE_DATABASE_ID = import.meta.env.MEDIA_COVERAGE_DATABASE_ID;
+const EDUCATION_CAREER_DATABASE_ID = import.meta.env.EDUCATION_CAREER_DATABASE_ID;
 
 const works = [
   {
@@ -121,21 +122,6 @@ const activities = [
     link: "#",
   }
 ];
-const timeline = [
-  {
-    date: '2025/04 -',
-    title: '筑波大学大学院',
-    description: '人間総合科学学術院/研究群 情報学学位プログラム',
-  },{
-    date: '2023/04 - 2025/03',
-    title: '茨城大学',
-    description: '工学部 電気電子システム工学科',
-  }, {
-    date: '2018/04 - 2023/03',
-    title: '福島工業高等専門学校',
-    description: '電気電子システム工学科',
-  },
-];
 const skillCategories: SkillCategory[] = [
   {
     category: 'プログラミング言語',
@@ -209,6 +195,10 @@ const skillCategories: SkillCategory[] = [
 
 const mediaCoverage = await fetchNotionPageList(MEDIA_COVERAGE_DATABASE_ID, {
   sorts: [{ property: 'date', direction: 'descending' }]
+});
+const educationCareer = await fetchNotionPageList(EDUCATION_CAREER_DATABASE_ID, {
+  types: 'education',
+  sorts: [{ property: 'start', direction: 'descending' }]
 });
 const socialLinks = await fetchNotionPageList(SOCIAL_LINKS_DATABASE_ID);
 const certifications = await fetchNotionPageList(CERTIFICATIONS_DATABASE_ID, {
@@ -316,7 +306,7 @@ const sectionClass = 'py-40 px-4 md:px-16';
         
         <!-- 経歴 -->
         <CyberHeading text="経歴" color="blue" />
-        <CyberTimeline items={timeline} />
+        <CyberTimeline items={educationCareer} />
         
         <!-- 資格 -->
         <CyberHeading text="資格" color="green" />

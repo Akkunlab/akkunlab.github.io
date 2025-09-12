@@ -28,7 +28,6 @@ export interface NotionRecord {
   description?: string;
 
   // EducationCareer
-  org?: string;
   dept_prog?: string;
   start?: string;
   end?: string;
