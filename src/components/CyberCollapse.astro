@@ -1,13 +1,11 @@
 ---
 import { Icon } from 'astro-icon/components';
 import { getIconName } from '@/utils/icon'
+import type { NotionRecord } from '@/types/NotionRecord';
 
 interface Props {
   title: string;
-  items: Array<{
-    name: string;
-    date: string;
-  }>;
+  items: NotionRecord[];
   class?: string;
 }
 
@@ -106,7 +104,7 @@ const { title, items, class: className } = Astro.props;
                     
                     {/* テキスト */}
                     <span class="text-primary-content font-medium group-hover/item:text-shadow-[0_0_8px_rgba(255,255,255,0.5)] transition-all duration-300">
-                      {item.date} {item.name}
+                      {item.date ? item.date.split('-')[0] + '年' : ''} {item.name || ''}
                     </span>
                     
                     {/* ステータスインジケーター */}

@@ -30,6 +30,7 @@ import {
 } from '@/constants';
 
 const SOCIAL_LINKS_DATABASE_ID = import.meta.env.SOCIAL_LINKS_DATABASE_ID;
+const CERTIFICATIONS_DATABASE_ID = import.meta.env.CERTIFICATIONS_DATABASE_ID;
 
 const works = [
   {
@@ -132,37 +133,6 @@ const timeline = [
     date: '2018/04 - 2023/03',
     title: '福島工業高等専門学校',
     description: '電気電子システム工学科',
-  },
-];
-const qualifications = [
-  {
-    name: '応用情報技術者試験',
-    date: '2022年',
-    mark: true,
-  }, {
-    name: 'ディジタル技術検定 1級情報',
-    date: '2022年',
-    mark: true,
-  }, {
-    name: '基本情報技術者試験',
-    date: '2021年',
-    mark: true,
-  }, {
-    name: 'ディジタル技術検定 2級情報',
-    date: '2020年',
-    mark: false,
-  }, {
-    name: 'ディジタル技術検定 3級',
-    date: '2020年',
-    mark: false,
-  }, {
-    name: '第二種電気工事士',
-    date: '2020年',
-    mark: true,
-  }, {
-    name: 'IT パスポート試験',
-    date: '2019年',
-    mark: false,
   },
 ];
 const skillCategories: SkillCategory[] = [
@@ -270,6 +240,9 @@ const media = [
 ];
 
 const socialLinks = await fetchNotionPageList(SOCIAL_LINKS_DATABASE_ID);
+const certifications = await fetchNotionPageList(CERTIFICATIONS_DATABASE_ID, {
+  sorts: [{ property: 'date', direction: 'descending' }]
+});
 
 const sectionClass = 'py-40 px-4 md:px-16';
 ---
@@ -376,8 +349,8 @@ const sectionClass = 'py-40 px-4 md:px-16';
         
         <!-- 資格 -->
         <CyberHeading text="資格" color="green" />
-        <CyberList items={qualifications.filter(item => item.mark).map(item => item.name)} />
-        <CyberCollapse title="全て見てみる！" items={qualifications} />
+        <CyberList items={certifications.filter(item => item.mark && item.name).map(item => item.name!)} />
+        <CyberCollapse title="全て見てみる！" items={certifications} />
 
         <!-- メディア -->
         <CyberHeading text="メディア" color="red" />

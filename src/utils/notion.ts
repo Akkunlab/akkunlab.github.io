@@ -99,16 +99,27 @@ const pageToNotionRecord = async (
 /**
  * Notionデータベースからページのリストを取得（publishedプロパティがある場合はtrueのみ取得）
  * @param databaseId - 対象のNotionデータベースID
- * @param types - フィルタリングするタイプ（typesプロパティが存在する場合のみ適用）
+ * @param options - オプション設定
+ * @param options.types - フィルタリングするタイプ（typesプロパティが存在する場合のみ適用）
+ * @param options.sorts - ソート設定の配列
  * @returns Notionページのリスト
  */
-export const fetchNotionPageList = async (databaseId: string, types?: string): Promise<NotionRecord[]> => {
+export const fetchNotionPageList = async (
+  databaseId: string, 
+  options?: {
+    types?: string;
+    sorts?: Array<{
+      property: string;
+      direction: 'ascending' | 'descending';
+    }>;
+  }
+): Promise<NotionRecord[]> => {
 
   if (!databaseId) {
     throw new Error('databaseId is not defined in the environment variables.');
   }
 
-  // フィルタ条件
+  const { types, sorts } = options || {};
   const filters: any[] = [];
 
   try {
@@ -143,6 +154,11 @@ export const fetchNotionPageList = async (databaseId: string, types?: string): P
   // フィルタが存在する場合のみfilterを追加
   if (filters.length > 0) {
     queryOptions.filter = filters.length === 1 ? filters[0] : { and: filters };
+  }
+
+  // ソートが指定されている場合のみsortsを追加
+  if (sorts && sorts.length > 0) {
+    queryOptions.sorts = sorts;
   }
 
   const response = await notion.databases.query(queryOptions);
