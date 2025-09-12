@@ -17,7 +17,6 @@ import CyberMediaList from '@/components/CyberMediaList.astro';
 import CyberCollapse from '@/components/CyberCollapse.astro';
 import CyberSkills from '@/components/CyberSkills.astro';
 
-import heroImage_1 from '@/assets/images/hero-image_1.jpg';
 import activityImage from '@/assets/images/activity-image.jpg';
 import linkImage from '@/assets/images/link-image.jpg';
 import profile from '@/assets/images/profile.jpg';
@@ -29,99 +28,12 @@ import {
   HERO_TITLE_LINES
 } from '@/constants';
 
-const SOCIAL_LINKS_DATABASE_ID = import.meta.env.SOCIAL_LINKS_DATABASE_ID;
-const CERTIFICATIONS_DATABASE_ID = import.meta.env.CERTIFICATIONS_DATABASE_ID;
+const PORTFOLIO_DATABASE_ID = import.meta.env.PORTFOLIO_DATABASE_ID;
 const MEDIA_COVERAGE_DATABASE_ID = import.meta.env.MEDIA_COVERAGE_DATABASE_ID;
+const CERTIFICATIONS_DATABASE_ID = import.meta.env.CERTIFICATIONS_DATABASE_ID;
 const EDUCATION_CAREER_DATABASE_ID = import.meta.env.EDUCATION_CAREER_DATABASE_ID;
+const SOCIAL_LINKS_DATABASE_ID = import.meta.env.SOCIAL_LINKS_DATABASE_ID;
 
-const works = [
-  {
-    id: 1,
-    title: "Awesome Project",
-    summary: "テクノロジーとアートの融合を実現したプロジェクト",
-    image: "/assets/works/work1.jpg",
-    link: "#",
-  },
-  {
-    id: 2,
-    title: "Creative Design",
-    summary: "独創的なUI/UXを追求したデザインプロジェクト",
-    image: "/assets/works/work2.jpg",
-    link: "#",
-  },
-  {
-    id: 3,
-    title: "Innovative App",
-    summary: "新しい技術を活用したモバイルアプリケーション",
-    image: "/assets/works/work3.jpg",
-    link: "#",
-  },
-  {
-    id: 4,
-    title: "Web Development",
-    summary: "最新のWeb技術を駆使した開発プロジェクト",
-    image: "/assets/works/work4.jpg",
-    link: "#",
-  },
-  {
-    id: 5,
-    title: "Digital Marketing",
-    summary: "デジタルマーケティングを活用したプロモーション",
-    image: "/assets/works/work5.jpg",
-    link: "#",
-  },
-  {
-    id: 6,
-    title: "Social Media",
-    summary: "SNSを活用したコミュニケーションプロジェクト",
-    image: "/assets/works/work6.jpg",
-    link: "#",
-  }
-];
-const activities = [
-  {
-    id: 1,
-    title: "ドローンプログラミング教室",
-    summary: "小中学生向けのプログラミング教室を企画・運営",
-    image: "/assets/works/work1.jpg",
-    link: "#",
-  },
-  {
-    id: 2,
-    title: "常陸frogs",
-    summary: "社会課題を解決するリーダーシッププログラムに参加",
-    image: "/assets/works/work2.jpg",
-    link: "#",
-  },
-  {
-    id: 3,
-    title: "光の祭",
-    summary: "プロジェクションマッピングイベントの企画運営",
-    image: "/assets/works/work3.jpg",
-    link: "#",
-  },
-  {
-    id: 4,
-    title: "AWSロボットデリバリーチャレンジ",
-    summary: "自律走行ロボットの開発と競技会での優勝",
-    image: "/assets/works/work4.jpg",
-    link: "#",
-  },
-  {
-    id: 5,
-    title: "研究活動",
-    summary: "エレクトロニクスと情報技術を融合した研究を推進",
-    image: "/assets/works/work5.jpg",
-    link: "#",
-  },
-  {
-    id: 6,
-    title: "ボランティア活動",
-    summary: "地域コミュニティへの技術支援と教育活動",
-    image: "/assets/works/work6.jpg",
-    link: "#",
-  }
-];
 const skillCategories: SkillCategory[] = [
   {
     category: 'プログラミング言語',
@@ -193,7 +105,18 @@ const skillCategories: SkillCategory[] = [
   },
 ];
 
+const works = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, { 
+  types: '作品',
+  sorts: [{ property: 'publication', direction: 'descending' }]
+});
+const activities = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, { 
+  types: '活動',
+  sorts: [{ property: 'publication', direction: 'descending' }]
+});
 const mediaCoverage = await fetchNotionPageList(MEDIA_COVERAGE_DATABASE_ID, {
+  sorts: [{ property: 'date', direction: 'descending' }]
+});
+const certifications = await fetchNotionPageList(CERTIFICATIONS_DATABASE_ID, {
   sorts: [{ property: 'date', direction: 'descending' }]
 });
 const educationCareer = await fetchNotionPageList(EDUCATION_CAREER_DATABASE_ID, {
@@ -201,9 +124,6 @@ const educationCareer = await fetchNotionPageList(EDUCATION_CAREER_DATABASE_ID, 
   sorts: [{ property: 'start', direction: 'descending' }]
 });
 const socialLinks = await fetchNotionPageList(SOCIAL_LINKS_DATABASE_ID);
-const certifications = await fetchNotionPageList(CERTIFICATIONS_DATABASE_ID, {
-  sorts: [{ property: 'date', direction: 'descending' }]
-});
 
 const sectionClass = 'py-40 px-4 md:px-16';
 ---
@@ -231,7 +151,7 @@ const sectionClass = 'py-40 px-4 md:px-16';
       {works.map((work) => (
         <article class="work-item">
           <a href={work.link} class="card card-item">
-            <AnimatedImage src={heroImage_1} alt={work.title} />
+            <AnimatedImage src={work.image ?? ''} alt={work.title ?? ''} class="aspect-video" />
             <div class="card-body p-0 pt-2">
               <h2 class="card-title fade-in-text opacity-0 translate-y-8">{work.title}</h2>
               <p class="fade-in-text opacity-0 translate-y-8">{work.summary}</p>
@@ -266,7 +186,7 @@ const sectionClass = 'py-40 px-4 md:px-16';
       {activities.map((activity) => (
         <article class="work-item">
           <a href={activity.link} class="card card-item">
-            <AnimatedImage src={heroImage_1} alt={activity.title} />
+            <AnimatedImage src={activity.image ?? ''} alt={activity.title ?? ''} class="aspect-video" />
             <div class="card-body p-0 pt-2">
               <h2 class="card-title fade-in-text opacity-0 translate-y-8">{activity.title}</h2>
               <p class="fade-in-text opacity-0 translate-y-8">{activity.summary}</p>
