@@ -31,6 +31,7 @@ import {
 
 const SOCIAL_LINKS_DATABASE_ID = import.meta.env.SOCIAL_LINKS_DATABASE_ID;
 const CERTIFICATIONS_DATABASE_ID = import.meta.env.CERTIFICATIONS_DATABASE_ID;
+const MEDIA_COVERAGE_DATABASE_ID = import.meta.env.MEDIA_COVERAGE_DATABASE_ID;
 
 const works = [
   {
@@ -205,40 +206,10 @@ const skillCategories: SkillCategory[] = [
     ]
   },
 ];
-const media = [
-  {
-    title: '常陸frogs5期生決定！中学生から大学生までの次世代リーダー8名が挑む「社会課題を解決し、未来を創造する」ための半年間',
-    source: '常陸frogs',
-    date: '2023.7.5',
-    url: 'https://www.hitachifrogs.com/post/selection2023',
-  }, {
-    title: 'ディジタル技術検定試験で優秀賞及び団体優秀賞を受賞しました',
-    source: '福島高専',
-    date: '2023.2.10',
-    url: 'https://www.fukushima-nct.ac.jp/fk_news/post_632.html',
-  }, {
-    title: '「光の祭」を開催しました',
-    source: '福島高専',
-    date: '2023.2.3',
-    url: 'https://www.fukushima-nct.ac.jp/fk_news/post_625.html',
-  }, {
-    title: '【高専祭】福島高専の磐陽祭が楽しすぎた件。',
-    source: 'みんなの高専チャンネル',
-    date: '2023.1.28',
-    url: 'https://youtu.be/a5CpZ8VdtK0',
-  }, {
-    title: '【福島県磐梯町で開催】親子で学べる ドローンプログラミング教室',
-    source: 'PR TIMES',
-    date: '2022.8.25',
-    url: 'https://prtimes.jp/main/html/rd/p/000000001.000106546.html',
-  }, {
-    title: '自律走行ロボットで競う学生対抗「AWSロボットデリバリーチャレンジ」予選トップ通過チームにインタビュー　速く走るポイントは',
-    source: 'ロボスタ',
-    date: '2021.4.26',
-    url: 'https://robotstart.info/2021/04/26/aws-rdc-int.html',
-  },
-];
 
+const mediaCoverage = await fetchNotionPageList(MEDIA_COVERAGE_DATABASE_ID, {
+  sorts: [{ property: 'date', direction: 'descending' }]
+});
 const socialLinks = await fetchNotionPageList(SOCIAL_LINKS_DATABASE_ID);
 const certifications = await fetchNotionPageList(CERTIFICATIONS_DATABASE_ID, {
   sorts: [{ property: 'date', direction: 'descending' }]
@@ -354,7 +325,7 @@ const sectionClass = 'py-40 px-4 md:px-16';
 
         <!-- メディア -->
         <CyberHeading text="メディア" color="red" />
-        <CyberMediaList items={media} />
+        <CyberMediaList items={mediaCoverage} />
 
         <!-- スキル -->
         <CyberHeading text="スキル" color="purple" />
