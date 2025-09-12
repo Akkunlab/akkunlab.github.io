@@ -11,7 +11,7 @@ import heroImage_1 from '@/assets/images/hero-image_1.jpg';
 const PORTFOLIO_DATABASE_ID = import.meta.env.PORTFOLIO_DATABASE_ID;
 const pages = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, { 
   types: '作品',
-  sorts: [{ property: 'publication', direction: 'descending' }]
+  sorts: [{ property: 'event', direction: 'descending' }]
 });
 ---
 

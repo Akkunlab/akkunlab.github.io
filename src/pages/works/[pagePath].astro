@@ -16,7 +16,9 @@ type StaticPath = {
   props: {
     id: string,
     title: string,
-    publication: string,
+    event: string,
+    publish: string,
+    updated: string,
     category: string,
     tags: Tag[]
   }
@@ -26,24 +28,24 @@ export const getStaticPaths = async (): Promise<StaticPath[]> => {
   const PORTFOLIO_DATABASE_ID = import.meta.env.PORTFOLIO_DATABASE_ID;
   const pages = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, { 
     types: '作品',
-    sorts: [{ property: 'publication', direction: 'descending' }]
+    sorts: [{ property: 'event', direction: 'descending' }]
   });
 
-  return pages
-    .filter(page => page.slug && page.id && page.title && page.publication && page.category && page.tags)
-    .map((page) => ({
-      params: { pagePath: page.slug as string },
-      props: { 
-        id: page.id as string,
-        title: page.title as string,
-        publication: page.publication as string,
-        category: page.category as string,
-        tags: page.tags as Tag[]
-      }
-    }));
+  return pages.map((page) => ({
+    params: { pagePath: page.slug as string },
+    props: { 
+      id: page.id as string,
+      title: page.title as string,
+      event: page.event as string,
+      publish: page.publish as string,
+      updated: page.updated as string,
+      category: page.category as string,
+      tags: page.tags as Tag[]
+    }
+  }));
 };
 
-const { id: pageId, title, publication, category, tags } = Astro.props;
+const { id: pageId, title, event, publish, updated, category, tags } = Astro.props;
 const pageData = pageId ? await fetchNotionPage(pageId) : null;
 const content = pageData ? pageData.content : null;
 const htmlContent = content ? await markdownToHtml(content) : null;
@@ -53,6 +55,10 @@ const breadcrumbItems = [
   { label: '作品', href: '/works' },
   { label: title }
 ];
+
+const shouldShowUpdatedDate = updated && publish && 
+  new Date(updated).toDateString() !== new Date(publish).toDateString() && 
+  new Date(updated) > new Date(publish);
 ---
 
 <Layout title={title}>
@@ -70,13 +76,25 @@ const breadcrumbItems = [
           {title}
         </h1>
 
-        <div class="my-6 flex flex-wrap items-center gap-4">
+        <div class="my-6">
 
           <!-- 日付 -->
-          <time class="text-light-text inline-flex items-center gap-1">
-            <Icon name="material-symbols-light:calendar-month" class="w-6 h-6" />
-            {formatDateShort(publication)}
-          </time>
+          <div class="text-light-text inline-flex items-center gap-2 flex-wrap mb-4">
+            <time class="inline-flex items-center gap-1" datetime={event}>
+              <Icon name="material-symbols-light:calendar-month" class="w-5 h-5" />
+              制作日: {formatDateShort(event)}
+            </time>
+            <time class="inline-flex items-center gap-1" datetime={publish}>
+              <Icon name="material-symbols-light:public" class="w-5 h-5" />
+              公開日: {formatDateShort(publish)}
+            </time>
+            {shouldShowUpdatedDate && (
+              <time class="inline-flex items-center gap-1" datetime={updated}>
+                <Icon name="material-symbols-light:update" class="w-5 h-5" />
+                更新日: {formatDateShort(updated)}
+              </time>
+            )}
+          </div>
 
           <!-- カテゴリ・タグ -->
           {(category || (tags && tags.length > 0)) && (

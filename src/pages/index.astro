@@ -107,11 +107,11 @@ const skillCategories: SkillCategory[] = [
 
 const works = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, { 
   types: '作品',
-  sorts: [{ property: 'publication', direction: 'descending' }]
+  sorts: [{ property: 'event', direction: 'descending' }]
 });
 const activities = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, { 
   types: '活動',
-  sorts: [{ property: 'publication', direction: 'descending' }]
+  sorts: [{ property: 'event', direction: 'descending' }]
 });
 const mediaCoverage = await fetchNotionPageList(MEDIA_COVERAGE_DATABASE_ID, {
   sorts: [{ property: 'date', direction: 'descending' }]

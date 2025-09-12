@@ -8,30 +8,32 @@ export interface NotionRecord {
   types?: string;
   title?: string;
   summary?: string;
-  tags?: Tag[];
-  year?: string;
-  link?: string;
-  publication?: string;
-  image?: string;
   category?: string;
+  tags?: Tag[];
+  link?: string;
+  year?: string;
+  event?: string;
+  publish?: string;
+  updated?: string;
   published?: boolean;
+  image?: string;
 
   // MediaCoverage
   source?: string;
   date?: string;
 
   // Skills / SocialLinks
+  subcategory?: string;
   name?: string;
   icon?: string;
-  subcategory?: string;
   color?: string;
+  
+  // certifications
   description?: string;
+  mark?: boolean;
 
   // EducationCareer
   dept_prog?: string;
   start?: string;
   end?: string;
-
-  // Certifications
-  mark?: boolean;
 }

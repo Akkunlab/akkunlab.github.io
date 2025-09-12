@@ -26,6 +26,7 @@ const getNumber = (p: any) => getProperty(p, 'number', '', prop => prop.number?.
 const getUrl = (p: any) => getProperty(p, 'url', '', prop => prop.url || '');
 const getDate = (p: any) => getProperty(p, 'date', '', prop => prop.date?.start || '');
 const getCheckbox = (p: any) => getProperty(p, 'checkbox', false, prop => prop.checkbox === true);
+const getLastEdited = (p: any) => getProperty(p, 'last_edited_time', '', prop => prop.last_edited_time);
 
 /**
  * 空段落なら &nbsp; を返す
@@ -54,32 +55,34 @@ const pageToNotionRecord = async (
     types: getSelect(properties.types),
     title: getTitle(properties.title),
     summary: getRichText(properties.summary),
-    tags: getMultiSelect(properties.tags),
-    year: getNumber(properties.year),
-    link: getUrl(properties.link),
-    publication: getDate(properties.publication),
-    image: (await fetchNotionPage(id))?.ogImage ?? OGP_IMAGE,
     category: getSelect(properties.category),
+    tags: getMultiSelect(properties.tags),
+    link: getUrl(properties.link),
+    year: getNumber(properties.year),
+    event: getDate(properties.event),
+    publish: getDate(properties.publish),
+    updated: getLastEdited(properties.updated),
     published: getCheckbox(properties.published),
+    image: (await fetchNotionPage(id))?.ogImage ?? OGP_IMAGE,
 
     // MediaCoverage
     source: getRichText(properties.source),
     date: getDate(properties.date),
 
     // Skills / SocialLinks
+    subcategory: getSelect(properties.subcategory),
     name: getTitle(properties.name),
     icon: getRichText(properties.icon),
-    subcategory: getSelect(properties.subcategory),
     color: getRichText(properties.color),
+
+    // Certifications
     description: getRichText(properties.description),
+    mark: getCheckbox(properties.mark),
 
     // EducationCareer
     dept_prog: getRichText(properties.dept_prog),
     start: getDate(properties.start),
     end: getDate(properties.end),
-
-    // Certifications
-    mark: getCheckbox(properties.mark),
   };
 
   const cleanedRecord = Object.fromEntries(
