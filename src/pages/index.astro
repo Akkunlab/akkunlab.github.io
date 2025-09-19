@@ -10,6 +10,7 @@ import HeroCarousel from '@/components/HeroCarousel.astro';
 import SectionHeading from '@/components/SectionHeading.astro';
 import Button from '@/components/Button.astro';
 import AnimatedImage from '@/components/AnimatedImage.astro';
+import CyberInfoGraphics from '@/components/CyberInfoGraphics.astro';
 import CyberHeading from '@/components/CyberHeading.astro';
 import CyberTimeline from '@/components/CyberTimeline.astro';
 import CyberList from '@/components/CyberList.astro';
@@ -17,6 +18,7 @@ import CyberMediaList from '@/components/CyberMediaList.astro';
 import CyberCollapse from '@/components/CyberCollapse.astro';
 import CyberSkills from '@/components/CyberSkills.astro';
 
+import heroImage_1 from '@/assets/images/hero-image_1.jpg';
 import activityImage from '@/assets/images/activity-image.jpg';
 import linkImage from '@/assets/images/link-image.jpg';
 import profile from '@/assets/images/profile.jpg';
@@ -144,9 +146,32 @@ const sectionClass = 'py-40 px-4 md:px-16';
     </div>
   </section>
 
+  <!-- インフォグラフィックスセクション -->
+  <section id="infographics" class={sectionClass.replace('md:px-16', 'max-w-[1300px] mx-auto')}>
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-12">
+      <CyberInfoGraphics title="制作した作品数" icon="work" count={works.length} color="cyan" />
+      <CyberInfoGraphics title="参加したイベント数" icon="event-available-rounded" count={activities.length} color="purple" />
+      <CyberInfoGraphics title="習得したスキル数" icon="workspace-premium" count={30} color="orange" />
+    </div>
+  </section>
+
   <!-- 作品セクション -->
-  <section id="works" class={sectionClass}>
+  <section id="works" class=`${sectionClass} relative`>
+
+    <!-- 背景画像 -->
+    <div class="absolute inset-0 h-[600px] z-0 parallax-bg overflow-hidden">
+      <Image 
+        src={heroImage_1} 
+        alt="作品背景画像" 
+        class="w-full h-full object-cover transform transition-transform ease-out duration-1000 will-change-transform" 
+      />
+      <div class="absolute inset-0 bg-gradient-to-b from-white/10 via-white/80 to-white"></div>
+    </div>
+  
+    <!-- ヘッダー -->
     <SectionHeading title="作品" />
+
+    <!-- 作品コンテンツ -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20 mb-12">
       {works.map((work) => (
         <article class="work-item">
@@ -201,7 +226,7 @@ const sectionClass = 'py-40 px-4 md:px-16';
   </section>
 
   <!-- プロフィールセクション -->
-  <section id="profile" class={sectionClass.replace('md:px-16', 'lg:px-[15%]')}>
+  <section id="profile" class={sectionClass.replace('md:px-16', 'max-w-[1300px] mx-auto')}>
     <SectionHeading title="プロフィール" />
     <div class="flex flex-col lg:flex-row my-20">
       
