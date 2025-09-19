@@ -36,10 +36,10 @@ const { skillCategories } = Astro.props;
       <div class={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${category.color} opacity-60 animate-pulse`}></div>
       
       {/* スキルグリッド */}
-      <div class="relative z-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+      <div class="relative z-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8 gap-3 sm:gap-4">
         {category.skills.map((skill, index) => (
           <div 
-            class="skill-item opacity-0 translate-y-8 scale-75 group relative bg-gradient-to-br from-slate-800/80 to-slate-700/80 backdrop-blur-sm border border-slate-600/50 rounded-lg p-3 sm:p-4 transition-all duration-500 hover:scale-105 hover:shadow-cyan-500/30 hover:border-cyan-400/80 cursor-pointer overflow-hidden hover:shadow-[0_0_20px_rgba(6,182,212,0.8),0_0_30px_rgba(6,182,212,0.6),0_0_40px_rgba(147,51,234,0.4),inset_0_0_20px_rgba(6,182,212,0.2)]"
+            class="skill-item opacity-0 translate-y-8 scale-75 group relative bg-gradient-to-br from-slate-800/80 to-slate-700/80 backdrop-blur-sm border border-slate-600/50 rounded-lg px-2 py-4 transition-all duration-500 hover:scale-105 hover:shadow-cyan-500/30 hover:border-cyan-400/80 cursor-pointer overflow-hidden hover:shadow-[0_0_20px_rgba(6,182,212,0.8),0_0_30px_rgba(6,182,212,0.6),0_0_40px_rgba(147,51,234,0.4),inset_0_0_20px_rgba(6,182,212,0.2)]"
             style={`animation: fadeIn 0.8s ease-out forwards ${categoryIndex * 0.2 + index * 0.05}s;`}
           >
             {/* マトリックス風デジタル雨エフェクト */}
@@ -57,14 +57,18 @@ const { skillCategories } = Astro.props;
             {/* アイコン */}
             <div class="flex justify-center mb-2 sm:mb-3 relative z-20">
               <Icon 
-                name={getIconName('devicon', skill.icon)} 
+                name={
+                  skill.icon.startsWith('custom:')
+                    ? skill.icon.replace('custom:', '')
+                    : getIconName('devicon', skill.icon)
+                }
                 size={32}
                 class="sm:w-9 sm:h-9 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 filter group-hover:drop-shadow-lg group-hover:drop-shadow-cyan-400/50"
               />
             </div>
             
             {/* スキル名 */}
-            <p class="text-sm sm:text-base text-center text-slate-300 group-hover:text-white font-medium transition-all duration-300 relative z-20 group-hover:tracking-wide leading-tight min-h-[2.5rem] sm:min-h-[3rem] flex items-center justify-center">{skill.name}</p>
+            <p class="sm:text-base text-center text-slate-300 group-hover:text-white transition-all duration-300 relative z-20 group-hover:tracking-wide leading-relaxed break-all whitespace-normal">{skill.name}</p>
             
             {/* プログレスバー風エフェクト */}
             <div class={`absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r ${category.color} group-hover:w-full transition-all duration-700 ease-out`}></div>
