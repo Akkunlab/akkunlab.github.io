@@ -121,6 +121,41 @@ export const fetchNotionPageList = async (
     throw new Error('databaseId is not defined in the environment variables.');
   }
 
+  // 開発環境の場合はモックデータを返す
+  if (import.meta.env.MODE !== 'production') {
+    const mockData: NotionRecord[] = [
+      {
+        id: 'mock-1',
+        slug: 'sample-project',
+        types: 'Portfolio',
+        title: 'Sample Project',
+        summary: 'This is a sample project for development.',
+        category: 'Web Development',
+        tags: [{ id: 'tag-1', name: 'JavaScript' }, { id: 'tag-2', name: 'React' }],
+        link: 'https://example.com',
+        year: '2023',
+        event: '2023-01-01',
+        publish: '2023-01-01',
+        updated: '2023-01-01T00:00:00.000Z',
+        published: true,
+        image: 'https://placehold.jp/1280x720.png',
+        source: 'Tech News',
+        date: '2023-06-15',
+        subcategory: 'Programming Languages',
+        name: 'JavaScript',
+        icon: 'code',
+        color: '#f7df1e',
+        description: 'JavaScript programming language',
+        mark: true,
+        dept_prog: 'Computer Science',
+        start: '2019-09-01',
+        end: '2023-06-30',
+      },
+    ];
+
+    return mockData;
+  }
+
   const { types, sorts } = options || {};
   const filters: any[] = [];
 
