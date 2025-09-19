@@ -7,9 +7,10 @@ export interface Props {
   icon: string;
   count: number;
   color: 'cyan' | 'purple' | 'orange' | 'green';
+  href?: string;
 }
 
-const { title, icon, count, color } = Astro.props;
+const { title, icon, count, color, href } = Astro.props;
 
 const colorConfig = {
   cyan: {
@@ -62,10 +63,13 @@ const colorConfig = {
   }
 };
 
+const Component = href ? 'a' : 'div';
+const linkProps = href ? { href, 'data-scroll': 'true' } : {};
+
 const colors = colorConfig[color];
 ---
 
-<div class="group relative transform hover:scale-110 transition-all duration-700 infographic-card" data-count={count}>
+<Component class={`group relative transform hover:scale-110 transition-all duration-700 infographic-card block no-underline ${href ? 'cursor-pointer' : ''}`} data-count={count} {...linkProps}>
   <div class={`bg-gradient-to-br from-slate-900 via-${colors.via} to-slate-900 p-12 rounded-2xl border-2 border-${colors.border} hover:border-${colors.hoverBorder} transition-all duration-500 hover:shadow-2xl hover:shadow-${colors.hoverShadow} overflow-hidden relative`}>
 
     <!-- サイバーフレーム -->
@@ -103,7 +107,7 @@ const colors = colorConfig[color];
       </div>
     </div>
   </div>
-</div>
+</Component>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
