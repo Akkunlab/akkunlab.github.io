@@ -5,10 +5,9 @@ import type { Skill } from '@/types';
 
 interface Props {
   skill: Skill;
-  color: string;
 }
 
-const { skill, color } = Astro.props;
+const { skill } = Astro.props;
 ---
 
 <div 
@@ -32,10 +31,10 @@ const { skill, color } = Astro.props;
     />
   </div>
   <p class="sm:text-base text-center text-slate-300 group-hover:text-white transition-all duration-300 relative z-20 group-hover:tracking-wide leading-relaxed break-all whitespace-normal">{skill.name}</p>
-  <div class={`absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r ${color} group-hover:w-full transition-all duration-700 ease-out`}></div>
+  <div class={`absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r ${skill.color} group-hover:w-full transition-all duration-700 ease-out`}></div>
   <div class="absolute top-1 left-1 w-2 h-2 sm:w-3 sm:h-3 border-t-2 border-l-2 border-cyan-400/60 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100"></div>
   <div class="absolute top-1 right-1 w-2 h-2 sm:w-3 sm:h-3 border-t-2 border-r-2 border-cyan-400/60 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100"></div>
   <div class="absolute bottom-1 left-1 w-2 h-2 sm:w-3 sm:h-3 border-b-2 border-l-2 border-purple-400/60 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100"></div>
   <div class="absolute bottom-1 right-1 w-2 h-2 sm:w-3 sm:h-3 border-b-2 border-r-2 border-purple-400/60 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100"></div>
-  <div class={`absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm bg-gradient-to-br ${color.replace('from-', 'from-').replace('to-', 'to-')}/20`}></div>
+  <div class={`absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm bg-gradient-to-br ${skill.color.replace('from-', 'from-').replace('to-', 'to-')}/20`}></div>
 </div>

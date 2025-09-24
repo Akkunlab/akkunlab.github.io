@@ -1,42 +1,79 @@
 ---
-import type { SkillCategory } from '@/types';
+import type { NotionRecord, Skill, CategoryGroup } from '@/types';
+import { getInterestColor } from '@/constants';
 import SkillCard from './SkillCard.astro';
 
 interface Props {
-  skillCategories: SkillCategory[];
+  items: NotionRecord[];
 }
 
-const { skillCategories } = Astro.props;
+const { items } = Astro.props as Props;
+
+// NotionRecord の配列を カテゴリ → サブカテゴリ へ集約
+const categories: CategoryGroup[] = Array.from(
+  (items ?? []).reduce((map, r) => {
+
+    // 必須情報がないスキルはスキップ
+    if (!r?.name || !r?.icon) return map;
+
+    const cat = r.category?.trim() || '';
+    const color = getInterestColor(cat) || '';
+
+    // カテゴリ取得
+    let group = map.get(cat);
+    if (!group) {
+      group = { name: cat, color, subgroups: [], skills: [] };
+      map.set(cat, group);
+    }
+
+    const skill: Skill = { name: r.name, icon: r.icon, color };
+    const sub = r.subcategory?.trim();
+
+    // サブカテゴリに振り分け
+    if (sub) {
+      let sg = group.subgroups.find(s => s.name === sub);
+      if (!sg) {
+        sg = { name: sub, skills: [] };
+        group.subgroups.push(sg);
+      }
+      sg.skills.push(skill);
+    } else {
+      group.skills.push(skill);
+    }
+
+    return map;
+  }, new Map<string, CategoryGroup>()).values()
+);
 ---
 
 <div class="relative mt-6 space-y-8">
-  {skillCategories.map((category) => (
-    <div 
+  {categories.map((category) => (
+    <div
       class="fade-in-text opacity-0 translate-y-8 bg-gradient-to-br from-slate-950 to-slate-900 rounded-xl border border-slate-700 overflow-hidden p-4 sm:p-6 relative transition-all duration-800 ease-out"
     >
       {/* カテゴリヘッダー */}
       <div class="flex items-center mb-6">
         <div class={`w-1 h-8 bg-gradient-to-b ${category.color} mr-4 rounded-full`}></div>
-        <h4 class="text-lg sm:text-xl font-bold text-white tracking-wide bg-gradient-to-r from-white via-cyan-400 to-white bg-[length:200%_100%] bg-clip-text text-transparent">{category.category}</h4>
+        <h4 class="text-lg sm:text-xl font-bold text-white tracking-wide bg-gradient-to-r from-white via-cyan-400 to-white bg-[length:200%_100%] bg-clip-text text-transparent">{category.name}</h4>
         <div class="flex-1 ml-4 h-px bg-gradient-to-r from-slate-600 to-transparent"></div>
       </div>
-      
+
       {/* 背景グリッド */}
       <div class="absolute inset-0 opacity-10">
         <div class="grid grid-cols-6 sm:grid-cols-8 h-full">
-          {Array.from({length: 8}).map((_) => (
+          {Array.from({ length: 8 }).map(() => (
             <div class="border-r border-cyan-500/20"></div>
           ))}
         </div>
       </div>
-      
+
       {/* 動的スキャンライン */}
       <div class={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${category.color} opacity-60 animate-pulse`}></div>
-      
-      {/* サブカテゴリーがある場合は見出し付きで表示、なければグリッド */}
-      {category.subcategories && category.subcategories.length > 0 ? (
+
+      {/* サブカテゴリー */}
+      {category.subgroups.length > 0 && (
         <div class="relative z-10 space-y-5">
-          {category.subcategories.map((sub) => (
+          {category.subgroups.map((sub) => (
             <div>
               <div class="flex items-center mb-3">
                 <div class={`w-1 h-5 bg-gradient-to-b ${category.color} mr-3 rounded-full`}></div>
@@ -45,17 +82,20 @@ const { skillCategories } = Astro.props;
               </div>
               <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8 gap-3 sm:gap-4">
                 {sub.skills.map((skill) => (
-                  <SkillCard skill={skill} color={category.color} />
+                  <SkillCard skill={skill} />
                 ))}
               </div>
             </div>
           ))}
         </div>
-      ) : (
-        <div class="relative z-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8 gap-3 sm:gap-4">
-        {category.skills && category.skills.map((skill) => (
-          <SkillCard skill={skill} color={category.color} />
-        ))}
+      )}
+
+      {/* サブカテゴリーなしのスキル */}
+      {category.skills.length > 0 && (
+        <div class="relative z-10 mt-5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8 gap-3 sm:gap-4">
+          {category.skills.map((skill) => (
+            <SkillCard skill={skill} />
+          ))}
         </div>
       )}
 

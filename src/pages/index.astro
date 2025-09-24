@@ -3,7 +3,6 @@ import { Image } from 'astro:assets';
 import { Icon } from 'astro-icon/components';
 import { getIconName } from '@/utils/icon'
 import { fetchNotionPageList } from '@/utils/notion';
-import type { SkillCategory } from '@/types';
 
 import Layout from '@/layouts/Layout.astro';
 import HeroCarousel from '@/components/HeroCarousel.astro';
@@ -31,161 +30,11 @@ import {
 } from '@/constants';
 
 const PORTFOLIO_DATABASE_ID = import.meta.env.PORTFOLIO_DATABASE_ID;
-const MEDIA_COVERAGE_DATABASE_ID = import.meta.env.MEDIA_COVERAGE_DATABASE_ID;
-const CERTIFICATIONS_DATABASE_ID = import.meta.env.CERTIFICATIONS_DATABASE_ID;
 const EDUCATION_CAREER_DATABASE_ID = import.meta.env.EDUCATION_CAREER_DATABASE_ID;
+const CERTIFICATIONS_DATABASE_ID = import.meta.env.CERTIFICATIONS_DATABASE_ID;
+const MEDIA_COVERAGE_DATABASE_ID = import.meta.env.MEDIA_COVERAGE_DATABASE_ID;
+const SKILLS_INTERESTS_DATABASE_ID = import.meta.env.SKILLS_INTERESTS_DATABASE_ID;
 const SOCIAL_LINKS_DATABASE_ID = import.meta.env.SOCIAL_LINKS_DATABASE_ID;
-
-const skillCategories: SkillCategory[] = [
-  {
-    category: 'プログラミング言語',
-    color: 'from-blue-500 to-cyan-500',
-    subcategories: [
-      {
-        name: '汎用',
-        skills: [
-          { name: 'Python', icon: 'python' },
-          { name: 'TypeScript', icon: 'typescript' },
-        ],
-      },
-      {
-        name: 'システム・低レイヤ',
-        skills: [
-          { name: 'C++', icon: 'cplusplus' },
-          { name: 'C#', icon: 'csharp' },
-          { name: 'C', icon: 'c' },
-        ],
-      },
-      {
-        name: 'モバイル',
-        skills: [
-          { name: 'Kotlin', icon: 'kotlin' },
-        ],
-      },
-    ],
-  },
-  {
-    category: 'フロントエンド',
-    color: 'from-green-500 to-emerald-500',
-    subcategories: [
-      {
-        name: 'フレームワーク',
-        skills: [
-          { name: 'React', icon: 'react' },
-          { name: 'Vue.js', icon: 'vuejs' },
-          { name: 'Next.js', icon: 'nextjs' },
-          { name: 'Nuxt.js', icon: 'nuxtjs' },
-          { name: 'Astro', icon: 'astro' },
-        ],
-      },
-      {
-        name: 'ベーシック',
-        skills: [
-          { name: 'HTML', icon: 'html5' },
-          { name: 'CSS', icon: 'css3' },
-        ],
-      },
-      {
-        name: 'スタイリング',
-        skills: [
-          { name: 'Tailwind CSS', icon: 'tailwindcss' },
-          { name: 'Sass', icon: 'sass' },
-          { name: 'Bootstrap', icon: 'bootstrap' },
-          { name: 'Chakra UI', icon: 'chakraui' },
-          { name: 'Vuetify', icon: 'vuetify' },
-        ],
-      },
-    ],
-  },
-  {
-    category: 'バックエンド・インフラ',
-    color: 'from-purple-500 to-violet-500',
-    subcategories: [
-      {
-        name: 'サーバー',
-        skills: [
-          { name: 'Node.js', icon: 'nodejs' },
-          { name: 'Express', icon: 'express' },
-        ],
-      },
-      {
-        name: 'データベース',
-        skills: [
-          { name: 'MySQL', icon: 'mysql' },
-        ],
-      },
-      {
-        name: 'クラウド・ホスティング',
-        skills: [
-          { name: 'Firebase', icon: 'firebase' },
-          { name: 'Heroku', icon: 'heroku' },
-          { name: 'Vercel', icon: 'vercel' },
-        ],
-      },
-      {
-        name: 'コンテナ',
-        skills: [
-          { name: 'Docker', icon: 'docker' },
-        ],
-      },
-    ],
-  },
-  {
-    category: 'モバイル・ゲーム開発',
-    color: 'from-orange-500 to-red-500',
-    subcategories: [
-      {
-        name: 'モバイル',
-        skills: [
-          { name: 'Android', icon: 'android' },
-          { name: 'Flutter', icon: 'flutter' },
-          { name: 'Android Studio', icon: 'androidstudio' },
-        ],
-      },
-      {
-        name: 'ゲーム',
-        skills: [
-          { name: 'Unity', icon: 'unity' },
-        ],
-      },
-    ],
-  },
-  {
-    category: 'ツール・その他',
-    color: 'from-pink-500 to-rose-500',
-    subcategories: [
-      {
-        name: 'コラボレーション',
-        skills: [
-          { name: 'Git', icon: 'git' },
-          { name: 'GitHub', icon: 'github' },
-        ],
-      },
-      {
-        name: 'デザイン・3D',
-        skills: [
-          { name: 'Figma', icon: 'figma' },
-          { name: 'Blender', icon: 'blender' },
-        ],
-      },
-      {
-        name: 'エディタ',
-        skills: [
-          { name: 'Visual Studio Code', icon: 'vscode' },
-        ],
-      },
-      {
-        name: 'IoT・ロボティクス',
-        skills: [
-          { name: 'Arduino', icon: 'arduino' },
-          { name: 'Raspberry Pi', icon: 'raspberrypi' },
-          { name: 'ROS', icon: 'ros' },
-          { name: 'OpenCV', icon: 'opencv' },
-        ],
-      },
-    ],
-  },
-];
 
 const works = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, { 
   types: '作品',
@@ -209,6 +58,7 @@ const certifications = await fetchNotionPageList(CERTIFICATIONS_DATABASE_ID, {
 const mediaCoverage = await fetchNotionPageList(MEDIA_COVERAGE_DATABASE_ID, {
   sorts: [{ property: 'date', direction: 'descending' }]
 });
+const skillInterests = await fetchNotionPageList(SKILLS_INTERESTS_DATABASE_ID);
 const socialLinks = await fetchNotionPageList(SOCIAL_LINKS_DATABASE_ID);
 
 const sectionClass = 'py-40 px-4 md:px-16';
@@ -361,7 +211,7 @@ const sectionClass = 'py-40 px-4 md:px-16';
       <!-- スキル -->
       <div id="skills">
         <CyberHeading text="スキル" color="purple"/>
-        <CyberSkills skillCategories={skillCategories} />
+        <CyberSkills items={skillInterests} />
       </div>
     </div>
   </section>

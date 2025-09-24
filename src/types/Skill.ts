@@ -1,16 +1,12 @@
 export interface Skill {
   name: string;
   icon: string;
-}
-
-export interface SkillSubcategory {
-  name: string;
-  skills: Skill[];
-}
-
-export interface SkillCategory {
-  category: string;
   color: string;
-  skills?: Skill[];
-  subcategories?: SkillSubcategory[];
+}
+
+export interface CategoryGroup {
+  name: string;
+  color: string;
+  subgroups: Array<{ name: string; skills: Skill[] }>;
+  skills: Skill[];
 }
