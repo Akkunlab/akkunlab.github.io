@@ -40,70 +40,150 @@ const skillCategories: SkillCategory[] = [
   {
     category: 'プログラミング言語',
     color: 'from-blue-500 to-cyan-500',
-    skills: [
-      { name: 'Python', icon: 'python' },
-      { name: 'TypeScript', icon: 'typescript' },
-      { name: 'C++', icon: 'cplusplus' },
-      { name: 'C#', icon: 'csharp' },
-      { name: 'C', icon: 'c' },
-      { name: 'Kotlin', icon: 'kotlin' },
-    ]
+    subcategories: [
+      {
+        name: '汎用',
+        skills: [
+          { name: 'Python', icon: 'python' },
+          { name: 'TypeScript', icon: 'typescript' },
+        ],
+      },
+      {
+        name: 'システム・低レイヤ',
+        skills: [
+          { name: 'C++', icon: 'cplusplus' },
+          { name: 'C#', icon: 'csharp' },
+          { name: 'C', icon: 'c' },
+        ],
+      },
+      {
+        name: 'モバイル',
+        skills: [
+          { name: 'Kotlin', icon: 'kotlin' },
+        ],
+      },
+    ],
   },
   {
     category: 'フロントエンド',
     color: 'from-green-500 to-emerald-500',
-    skills: [
-      { name: 'React', icon: 'react' },
-      { name: 'Vue.js', icon: 'vuejs' },
-      { name: 'Next.js', icon: 'nextjs' },
-      { name: 'Nuxt.js', icon: 'nuxtjs' },
-      { name: 'Astro', icon: 'astro' },
-      { name: 'HTML', icon: 'html5' },
-      { name: 'CSS', icon: 'css3' },
-      { name: 'Tailwind CSS', icon: 'tailwindcss' },
-      { name: 'Sass', icon: 'sass' },
-      { name: 'Bootstrap', icon: 'bootstrap' },
-      { name: 'Chakra UI', icon: 'chakraui' },
-      { name: 'Vuetify', icon: 'vuetify' },
-    ]
+    subcategories: [
+      {
+        name: 'フレームワーク',
+        skills: [
+          { name: 'React', icon: 'react' },
+          { name: 'Vue.js', icon: 'vuejs' },
+          { name: 'Next.js', icon: 'nextjs' },
+          { name: 'Nuxt.js', icon: 'nuxtjs' },
+          { name: 'Astro', icon: 'astro' },
+        ],
+      },
+      {
+        name: 'ベーシック',
+        skills: [
+          { name: 'HTML', icon: 'html5' },
+          { name: 'CSS', icon: 'css3' },
+        ],
+      },
+      {
+        name: 'スタイリング',
+        skills: [
+          { name: 'Tailwind CSS', icon: 'tailwindcss' },
+          { name: 'Sass', icon: 'sass' },
+          { name: 'Bootstrap', icon: 'bootstrap' },
+          { name: 'Chakra UI', icon: 'chakraui' },
+          { name: 'Vuetify', icon: 'vuetify' },
+        ],
+      },
+    ],
   },
   {
     category: 'バックエンド・インフラ',
     color: 'from-purple-500 to-violet-500',
-    skills: [
-      { name: 'Node.js', icon: 'nodejs' },
-      { name: 'Express', icon: 'express' },
-      { name: 'MySQL', icon: 'mysql' },
-      { name: 'Firebase', icon: 'firebase' },
-      { name: 'Docker', icon: 'docker' },
-      { name: 'Heroku', icon: 'heroku' },
-      { name: 'Vercel', icon: 'vercel' },
-    ]
+    subcategories: [
+      {
+        name: 'サーバー',
+        skills: [
+          { name: 'Node.js', icon: 'nodejs' },
+          { name: 'Express', icon: 'express' },
+        ],
+      },
+      {
+        name: 'データベース',
+        skills: [
+          { name: 'MySQL', icon: 'mysql' },
+        ],
+      },
+      {
+        name: 'クラウド・ホスティング',
+        skills: [
+          { name: 'Firebase', icon: 'firebase' },
+          { name: 'Heroku', icon: 'heroku' },
+          { name: 'Vercel', icon: 'vercel' },
+        ],
+      },
+      {
+        name: 'コンテナ',
+        skills: [
+          { name: 'Docker', icon: 'docker' },
+        ],
+      },
+    ],
   },
   {
     category: 'モバイル・ゲーム開発',
     color: 'from-orange-500 to-red-500',
-    skills: [
-      { name: 'Android', icon: 'android' },
-      { name: 'Flutter', icon: 'flutter' },
-      { name: 'Unity', icon: 'unity' },
-      { name: 'Android Studio', icon: 'androidstudio' },
-    ]
+    subcategories: [
+      {
+        name: 'モバイル',
+        skills: [
+          { name: 'Android', icon: 'android' },
+          { name: 'Flutter', icon: 'flutter' },
+          { name: 'Android Studio', icon: 'androidstudio' },
+        ],
+      },
+      {
+        name: 'ゲーム',
+        skills: [
+          { name: 'Unity', icon: 'unity' },
+        ],
+      },
+    ],
   },
   {
     category: 'ツール・その他',
     color: 'from-pink-500 to-rose-500',
-    skills: [
-      { name: 'Git', icon: 'git' },
-      { name: 'GitHub', icon: 'github' },
-      { name: 'Visual Studio Code', icon: 'vscode' },
-      { name: 'Figma', icon: 'figma' },
-      { name: 'Blender', icon: 'blender' },
-      { name: 'Arduino', icon: 'arduino' },
-      { name: 'Raspberry Pi', icon: 'raspberrypi' },
-      { name: 'ROS', icon: 'ros' },
-      { name: 'OpenCV', icon: 'opencv' },
-    ]
+    subcategories: [
+      {
+        name: 'コラボレーション',
+        skills: [
+          { name: 'Git', icon: 'git' },
+          { name: 'GitHub', icon: 'github' },
+        ],
+      },
+      {
+        name: 'デザイン・3D',
+        skills: [
+          { name: 'Figma', icon: 'figma' },
+          { name: 'Blender', icon: 'blender' },
+        ],
+      },
+      {
+        name: 'エディタ',
+        skills: [
+          { name: 'Visual Studio Code', icon: 'vscode' },
+        ],
+      },
+      {
+        name: 'IoT・ロボティクス',
+        skills: [
+          { name: 'Arduino', icon: 'arduino' },
+          { name: 'Raspberry Pi', icon: 'raspberrypi' },
+          { name: 'ROS', icon: 'ros' },
+          { name: 'OpenCV', icon: 'opencv' },
+        ],
+      },
+    ],
   },
 ];
 
