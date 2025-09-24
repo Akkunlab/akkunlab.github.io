@@ -39,7 +39,10 @@ const isHomePage = currentPath === '/' || currentPath === '';
               aria-label={item.name}
               title={item.name}
             >
-              <Icon name={getIconName('prime', item.icon ?? '')} size={24} style={{ transform: item.icon === 'twitter' ? 'scale(0.625)' : 'scale(1)' }} />
+              <Icon 
+                name={getIconName('prime', item.icon ?? '')}
+                size={24}
+                style={{ transform: item.icon === 'twitter' ? 'scale(0.625)' : 'scale(1)' }} />
             </a>
           ))}
         </div>

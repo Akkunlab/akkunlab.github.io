@@ -143,7 +143,7 @@ export const fetchNotionPageList = async (
         date: '2023-06-15',
         subcategory: 'Programming Languages',
         name: 'VScode',
-        icon: 'vscode',
+        icon: 'local:home',
         color: '#f7df1e',
         description: 'VScode programming language',
         mark: true,

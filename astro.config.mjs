@@ -13,7 +13,9 @@ export default defineConfig({
   site: SITE_URL,
   integrations: [
     tailwind(),
-    icon(),
+    icon({
+      iconDir: 'src/assets/icons',
+    }),
     sitemap(),
     robotsTxt({
       policy: [{
