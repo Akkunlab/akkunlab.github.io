@@ -115,15 +115,19 @@ const activities = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, {
   types: '活動',
   sorts: [{ property: 'event', direction: 'descending' }]
 });
-const mediaCoverage = await fetchNotionPageList(MEDIA_COVERAGE_DATABASE_ID, {
-  sorts: [{ property: 'date', direction: 'descending' }]
+const careers = await fetchNotionPageList(EDUCATION_CAREER_DATABASE_ID, {
+  types: 'career',
+  sorts: [{ property: 'start', direction: 'descending' }]
+});
+const educations = await fetchNotionPageList(EDUCATION_CAREER_DATABASE_ID, {
+  types: 'education',
+  sorts: [{ property: 'start', direction: 'descending' }]
 });
 const certifications = await fetchNotionPageList(CERTIFICATIONS_DATABASE_ID, {
   sorts: [{ property: 'date', direction: 'descending' }]
 });
-const educationCareer = await fetchNotionPageList(EDUCATION_CAREER_DATABASE_ID, {
-  types: 'education',
-  sorts: [{ property: 'start', direction: 'descending' }]
+const mediaCoverage = await fetchNotionPageList(MEDIA_COVERAGE_DATABASE_ID, {
+  sorts: [{ property: 'date', direction: 'descending' }]
 });
 const socialLinks = await fetchNotionPageList(SOCIAL_LINKS_DATABASE_ID);
 
@@ -253,10 +257,18 @@ const sectionClass = 'py-40 px-4 md:px-16';
 
     <div class="flex flex-col">
 
-      <!-- 経歴 -->
-      <CyberHeading text="経歴" color="blue" />
-      <CyberTimeline items={educationCareer} />
-      
+      <!-- 学歴・職歴 -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div>
+          <CyberHeading text="職歴" color="blue" />
+          <CyberTimeline items={careers} />
+        </div>
+        <div>
+          <CyberHeading text="学歴" color="blue" />
+          <CyberTimeline items={educations} />
+        </div>
+      </div>
+
       <!-- 資格 -->
       <CyberHeading text="資格" color="green" />
       <CyberList items={certifications.filter(item => item.mark && item.name).map(item => item.name!)} />
