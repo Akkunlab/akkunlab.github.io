@@ -184,11 +184,11 @@ const isHomePage = currentPath === '/' || currentPath === '';
       }, 200 + Math.random() * 800);
     }
     
-    copyrightEl.addEventListener('click', (e: MouseEvent): void => {
+    copyrightEl.addEventListener('click', (): void => {
       isEasterEggActive = true;
       easterEggContainer.classList.remove('hidden');
       
-      // レインボー背景を適用（TailwindCSSクラスを使用）
+      // レインボー背景を適用
       easterEggContainer.className = 'fixed inset-0 pointer-events-none z-50 bg-gradient-to-br from-pink-500 via-purple-500 to-cyan-500 opacity-80 animate-pulse';
       
       // テキストアニメーション
