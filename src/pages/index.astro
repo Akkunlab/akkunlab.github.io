@@ -58,7 +58,13 @@ const certifications = await fetchNotionPageList(CERTIFICATIONS_DATABASE_ID, {
 const mediaCoverage = await fetchNotionPageList(MEDIA_COVERAGE_DATABASE_ID, {
   sorts: [{ property: 'date', direction: 'descending' }]
 });
-const skillInterests = await fetchNotionPageList(SKILLS_INTERESTS_DATABASE_ID);
+const skillInterests = await fetchNotionPageList(SKILLS_INTERESTS_DATABASE_ID, {
+  sorts: [
+    { property: 'category', direction: 'ascending' },
+    { property: 'subcategory', direction: 'ascending' },
+    { property: 'name', direction: 'ascending' },
+  ],
+});
 const socialLinks = await fetchNotionPageList(SOCIAL_LINKS_DATABASE_ID);
 
 const sectionClass = 'py-40 px-4 md:px-16';
