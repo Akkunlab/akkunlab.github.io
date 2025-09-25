@@ -29,3 +29,6 @@ pnpm-debug.log*
 
 # test folder
 test/
+
+# local cache
+.cache/
