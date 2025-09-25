@@ -25,6 +25,11 @@ const carouselDuration = 14; // seconds
       class="absolute animate-carousel h-screen w-full object-cover opacity-0"
       style={{ animationDelay: `${carouselDuration * (0.9 - 0.45 * sequenceIndex)}s` }}
       loading={sequenceIndex === 1 ? "eager" : "lazy"}
+      widths={[640, 960, 1280, 1536, 1920]}
+      sizes="100vw"
+      format="avif"
+      quality={72}
+      fetchpriority={sequenceIndex === 1 ? 'high' : 'auto'}
     />
   ))}
 </div>

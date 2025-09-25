@@ -7,9 +7,25 @@ interface Props {
   class?: string;
   loading?: 'eager' | 'lazy';
   noScale?: boolean;
+  widths?: number[];
+  sizes?: string;
+  format?: 'avif' | 'webp' | 'png' | 'jpg';
+  quality?: number;
+  fetchpriority?: 'high' | 'low' | 'auto';
 }
 
-const { src, alt, class: className, loading = 'lazy', noScale = false } = Astro.props;
+const {
+  src,
+  alt,
+  class: className,
+  loading = 'lazy',
+  noScale = false,
+  widths,
+  sizes,
+  format = 'avif',
+  quality = 78,
+  fetchpriority,
+} = Astro.props;
 const imageClass = `transition-transform duration-500 ${noScale ? '' : 'hover:scale-110'} image-animation opacity-0 w-full h-full object-cover ${className || ''}`;
 ---
 
@@ -18,7 +34,17 @@ const imageClass = `transition-transform duration-500 ${noScale ? '' : 'hover:sc
     {typeof src === 'string' ? (
       <img src={src} alt={alt} class={imageClass} loading={loading} />
     ) : (
-      <Image src={src} alt={alt} class={imageClass} loading={loading} />
+      <Image
+        src={src}
+        alt={alt}
+        class={imageClass}
+        loading={loading}
+        widths={widths}
+        sizes={sizes}
+        format={format}
+        quality={quality}
+        fetchpriority={fetchpriority}
+      />
     )}
   </figure>
   <div class="absolute inset-0 bg-base-300 curtain-animation opacity-0"></div>

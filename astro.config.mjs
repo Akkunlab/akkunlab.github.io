@@ -7,6 +7,7 @@ import sitemap from "@astrojs/sitemap";
 import robotsTxt from "astro-robots-txt";
 import playformCompress from "@playform/compress";
 import { unoptimisedToWebp } from './src/integrations/unoptimised-to-webp';
+import critters from '@otterlord/astro-critters';
 
 // https://astro.build/config
 export default defineConfig({
@@ -24,6 +25,7 @@ export default defineConfig({
       }]
     }),
     unoptimisedToWebp(),
+    critters(),
     playformCompress(),
   ]
 });

@@ -104,6 +104,11 @@ const sectionClass = 'py-40 px-4 md:px-16';
         src={heroImage_1} 
         alt="作品背景画像" 
         class="w-full h-full object-cover transform transition-transform ease-out duration-1000 will-change-transform" 
+        widths={[640, 960, 1280, 1536, 1920]}
+        sizes="100vw"
+        format="avif"
+        quality={72}
+        loading="lazy"
       />
       <div class="absolute inset-0 bg-gradient-to-b from-white/10 via-white/80 to-white"></div>
     </div>
@@ -139,6 +144,11 @@ const sectionClass = 'py-40 px-4 md:px-16';
         src={activityImage} 
         alt="活動背景画像" 
         class="w-full h-full object-cover transform transition-transform ease-out duration-1000 will-change-transform" 
+        widths={[640, 960, 1280, 1536, 1920]}
+        sizes="100vw"
+        format="avif"
+        quality={72}
+        loading="lazy"
       />
       <div class="absolute inset-0 bg-gradient-to-b from-white/10 via-white/80 to-white"></div>
     </div>
@@ -172,7 +182,17 @@ const sectionClass = 'py-40 px-4 md:px-16';
       
       <!-- プロフィール写真 -->
       <div class="avatar flex justify-center lg:w-1/3 work-item">
-        <AnimatedImage src={profile} alt="プロフィール写真" loading="eager" noScale={true} />
+        <AnimatedImage 
+          src={profile} 
+          alt="プロフィール写真" 
+          loading="eager" 
+          noScale={true} 
+          widths={[256, 384, 512]} 
+          sizes="(max-width: 1024px) 40vw, 423px" 
+          format="avif" 
+          quality={80}
+          fetchpriority="high"
+        />
       </div>
 
       <!-- プロフィール情報 -->
@@ -231,6 +251,11 @@ const sectionClass = 'py-40 px-4 md:px-16';
         src={linkImage} 
         alt="連絡先背景画像" 
         class="w-full h-full object-cover transform transition-transform ease-out duration-1000 will-change-transform" 
+        widths={[640, 960, 1280, 1536, 1920]}
+        sizes="100vw"
+        format="avif"
+        quality={72}
+        loading="lazy"
       />
       <div class="absolute inset-0 bg-gradient-to-b from-white/10 via-white/80 to-white"></div>
     </div>
