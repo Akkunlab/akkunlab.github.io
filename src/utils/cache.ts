@@ -35,11 +35,9 @@ const ensureCacheLoaded = async () => {
 /** キャッシュ内容をディスクへ保存 */
 const persistCache = async () => {
   try {
-    if (!fssync.existsSync(CACHE_DIR)) {
-      await fs.mkdir(CACHE_DIR, { recursive: true });
-    }
+    await fs.mkdir(CACHE_DIR, { recursive: true });
     await fs.writeFile(CACHE_FILE, JSON.stringify(cacheStore ?? {}, null, 2), 'utf-8');
-  } catch {
+  } catch (error) {
     // 書き込み失敗は無視（機能影響を避けるため）
   }
 };
