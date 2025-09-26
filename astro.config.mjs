@@ -6,7 +6,7 @@ import icon from "astro-icon";
 import sitemap from "@astrojs/sitemap";
 import robotsTxt from "astro-robots-txt";
 import playformCompress from "@playform/compress";
-import { unoptimisedToWebp } from './src/integrations/unoptimised-to-webp';
+import { optimizeImages } from './src/integrations/imageOptimize';
 
 // https://astro.build/config
 export default defineConfig({
@@ -23,7 +23,7 @@ export default defineConfig({
         allow: '/'
       }]
     }),
-    unoptimisedToWebp(),
+    optimizeImages(),
     playformCompress(),
   ]
 });

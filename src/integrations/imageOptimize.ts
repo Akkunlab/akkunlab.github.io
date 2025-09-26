@@ -8,10 +8,10 @@ import { fileURLToPath } from 'node:url';
 const MAX_WIDTH = 1920;
 const MAX_HEIGHT = 1080;
 
-export const unoptimisedToWebp = (
+export const optimizeImages = (
   {
-    quality = 80,
-    format  = 'webp',
+    quality = 45,
+    format  = 'avif',
     exts    = ['png', 'jpg', 'jpeg', 'gif'],
     keepOriginal = false,
   }: {
@@ -21,7 +21,7 @@ export const unoptimisedToWebp = (
     keepOriginal?: boolean;
   } = {},
 ): AstroIntegration => ({
-  name: 'unoptimised-to-webp',
+  name: 'image-optimize',
   hooks: {
     async 'astro:build:done'({ dir, logger }) {
       const distDir = path.join(fileURLToPath(dir), '_astro');
