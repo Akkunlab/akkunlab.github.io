@@ -7,7 +7,7 @@ import * as fs from 'fs/promises';
 import * as fssync from 'fs';
 import { getCache, setCache, isTTLValid } from './cache';
 
-import { OGP_IMAGE } from '@/constants';
+import { IMAGE_FORMAT, OGP_IMAGE } from '@/constants';
 import type { NotionRecord, Tag } from '@/types';
 
 const OUTPUT_DIR = './dist/_astro';
@@ -279,7 +279,7 @@ export const fetchNotionPage = async (pageId: string): Promise<{ content: string
       n2m.downloadMediaTo({
         outputDir: OUTPUT_DIR,
         transformPath: (local) => {
-          const filename = `${path.parse(local).name}.webp`;
+          const filename = `${path.parse(local).name}.${IMAGE_FORMAT}`;
           ogImage = path.posix.join(ASTRO_DIR, filename);
           return ogImage;
         },
