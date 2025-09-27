@@ -1,5 +1,5 @@
 import { defineConfig } from 'astro/config';
-import { SITE_URL } from './src/constants';
+import { SITE_URL } from './src/constants/siteData';
 
 import tailwind from "@astrojs/tailwind";
 import icon from "astro-icon";

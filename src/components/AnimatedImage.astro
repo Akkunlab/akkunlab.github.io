@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import { IMAGE_FORMAT, IMAGE_QUALITY } from '@/constants';
 
 interface Props {
   src: ImageMetadata | string;
@@ -9,7 +10,7 @@ interface Props {
   noScale?: boolean;
   widths?: number[];
   sizes?: string;
-  format?: 'avif' | 'webp' | 'png' | 'jpg';
+  format?: 'avif' | 'webp';
   quality?: number;
   fetchpriority?: 'high' | 'low' | 'auto';
 }
@@ -22,10 +23,11 @@ const {
   noScale = false,
   widths,
   sizes,
-  format = 'avif',
-  quality = 78,
-  fetchpriority,
+  format = IMAGE_FORMAT,
+  quality = IMAGE_QUALITY,
+  fetchpriority = 'auto',
 } = Astro.props;
+
 const imageClass = `transition-transform duration-500 ${noScale ? '' : 'hover:scale-110'} image-animation opacity-0 w-full h-full object-cover ${className || ''}`;
 ---
 

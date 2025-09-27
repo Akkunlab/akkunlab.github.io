@@ -4,14 +4,15 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
 import { fileURLToPath } from 'node:url';
+import { IMAGE_FORMAT, IMAGE_QUALITY } from '../constants/siteData';
 
 const MAX_WIDTH = 1920;
 const MAX_HEIGHT = 1080;
 
 export const optimizeImages = (
   {
-    quality = 45,
-    format  = 'avif',
+    quality = IMAGE_QUALITY,
+    format  = IMAGE_FORMAT,
     exts    = ['png', 'jpg', 'jpeg', 'gif'],
     keepOriginal = false,
   }: {

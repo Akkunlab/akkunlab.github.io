@@ -26,7 +26,9 @@ import {
   AUTHOR,
   AUTHOR_ENGLISH,
   AUTHOR_SUMMARY,
-  HERO_TITLE_LINES
+  HERO_TITLE_LINES,
+  IMAGE_FORMAT,
+  IMAGE_QUALITY
 } from '@/constants';
 
 const PORTFOLIO_DATABASE_ID = import.meta.env.PORTFOLIO_DATABASE_ID;
@@ -106,8 +108,8 @@ const sectionClass = 'py-40 px-4 md:px-16';
         class="w-full h-full object-cover transform transition-transform ease-out duration-1000 will-change-transform" 
         widths={[640, 960, 1280, 1536, 1920]}
         sizes="100vw"
-        format="avif"
-        quality={72}
+        format={IMAGE_FORMAT}
+        quality={IMAGE_QUALITY}
         loading="lazy"
       />
       <div class="absolute inset-0 bg-gradient-to-b from-white/10 via-white/80 to-white"></div>
@@ -146,8 +148,8 @@ const sectionClass = 'py-40 px-4 md:px-16';
         class="w-full h-full object-cover transform transition-transform ease-out duration-1000 will-change-transform" 
         widths={[640, 960, 1280, 1536, 1920]}
         sizes="100vw"
-        format="avif"
-        quality={72}
+        format={IMAGE_FORMAT}
+        quality={IMAGE_QUALITY}
         loading="lazy"
       />
       <div class="absolute inset-0 bg-gradient-to-b from-white/10 via-white/80 to-white"></div>
@@ -185,13 +187,9 @@ const sectionClass = 'py-40 px-4 md:px-16';
         <AnimatedImage 
           src={profile} 
           alt="プロフィール写真" 
-          loading="eager" 
           noScale={true} 
           widths={[256, 384, 512]} 
           sizes="(max-width: 1024px) 40vw, 423px" 
-          format="avif" 
-          quality={80}
-          fetchpriority="high"
         />
       </div>
 
@@ -253,8 +251,8 @@ const sectionClass = 'py-40 px-4 md:px-16';
         class="w-full h-full object-cover transform transition-transform ease-out duration-1000 will-change-transform" 
         widths={[640, 960, 1280, 1536, 1920]}
         sizes="100vw"
-        format="avif"
-        quality={72}
+        format={IMAGE_FORMAT}
+        quality={IMAGE_QUALITY}
         loading="lazy"
       />
       <div class="absolute inset-0 bg-gradient-to-b from-white/10 via-white/80 to-white"></div>

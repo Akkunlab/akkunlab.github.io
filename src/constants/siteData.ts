@@ -11,6 +11,9 @@ export const OGP_IMAGE: string = '/ogp.png';
 export const X_ID: string = '@akkun_lab';
 export const COLOR: string = '#000';
 
+export const IMAGE_QUALITY: number = 45;
+export const IMAGE_FORMAT: "webp" | "avif" = 'avif';
+
 export const HERO_TITLE_LINES: Array<string> = [
   'テクノロジーと',
   'デザインの融合で',
