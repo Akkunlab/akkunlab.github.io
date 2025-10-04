@@ -23,7 +23,7 @@ export default defineConfig({
         allow: '/'
       }]
     }),
-    optimizeImages(),
+    // optimizeImages(),
     // playformCompress(),
   ]
 });
