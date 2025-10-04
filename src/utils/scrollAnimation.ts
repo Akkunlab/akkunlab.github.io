@@ -2,6 +2,9 @@ const STAGGER_DELAY: number = 150;    // 要素間の遅延（ミリ秒）
 const BREAKPOINT_MD: number = 768;    // MD以下のブレークポイント
 const PARALLAX_SPEED: number = 0.05;  // パララックス効果の速度
 
+// 重複初期化防止用のフラグ
+const SCROLL_ANIM_INIT_FLAG = '__akkunlabScrollAnimationsInitialized__';
+
 /**
  * ヘッダーのスクロール制御
  * MD以下のサイズでスクロールに応じてヘッダーを表示/非表示
@@ -28,7 +31,8 @@ const setupHeaderScrollControl = (): void => {
     if (!isMobile()) header.style.transform = 'translateY(0)';
   };
 
-  window.addEventListener('scroll', handleScroll);
+  // 重複でイベントが追加されないように一度だけ追加
+  window.addEventListener('scroll', handleScroll, { passive: true });
   window.addEventListener('resize', handleResize);
 };
 
@@ -76,6 +80,10 @@ const setupSmoothScroll = (): void => {
  * @param element - アニメーションを適用する要素
  */
 const animateTextFadeIn = (element: Element): void => {
+  // 2回目以降の実行を防止
+  if ((element as HTMLElement).dataset.animated === 'true') return;
+  (element as HTMLElement).dataset.animated = 'true';
+
   element.classList.add('animate-fadeInUp');
   element.classList.remove('opacity-0', 'translate-y-8');
 };
@@ -85,6 +93,10 @@ const animateTextFadeIn = (element: Element): void => {
  * @param element - アニメーションを適用する要素
  */
 const animateWorkItem = (element: Element): void => {
+  // 2回目以降の実行を防止
+  if ((element as HTMLElement).dataset.animated === 'true') return;
+  (element as HTMLElement).dataset.animated = 'true';
+
   const curtain: HTMLElement | null = element.querySelector('.curtain-animation');
   const image: HTMLElement | null = element.querySelector('.image-animation');
   const imageWrapper: HTMLElement | null = element.querySelector('.image-wrapper');
@@ -115,6 +127,8 @@ const animateWorkItem = (element: Element): void => {
  */
 const animateHeroText = (heroTexts: NodeListOf<Element>): void => {
   heroTexts.forEach((item: Element) => {
+    if ((item as HTMLElement).dataset.animated === 'true') return;
+    (item as HTMLElement).dataset.animated = 'true';
     const index: string | null = item.getAttribute('data-index');
     const delay: number = index ? parseFloat(index) * 0.7 + 0.5 : 0.5;
     
@@ -180,6 +194,9 @@ const setupWorkItemsAnimation = (
   let delay: number = 0;
 
   workItems.forEach((item: Element) => {
+
+    // 既にアニメーション済みならスキップ
+    if ((item as HTMLElement).dataset.animated === 'true') return;
 
     // 要素が画面内にあるかをチェック
     const rect: DOMRect = item.getBoundingClientRect();
@@ -270,6 +287,9 @@ const setupTextAnimation = (
 ): void => {
   textElements.forEach((element: Element) => {
 
+    // 既にアニメーション済みならスキップ
+    if ((element as HTMLElement).dataset.animated === 'true') return;
+
     // 要素が画面内にあるかをチェック
     const rect: DOMRect = element.getBoundingClientRect();
     const isVisible: boolean = 
@@ -289,6 +309,9 @@ const setupTextAnimation = (
  * スクロールに関する全アニメーションの設定を行う
  */
 export const setupScrollAnimations = (): void => {
+  // 多重初期化の防止
+  if ((window as any)[SCROLL_ANIM_INIT_FLAG]) return;
+  (window as any)[SCROLL_ANIM_INIT_FLAG] = true;
 
   // 監視する対象の要素を取得
   const workItems: NodeListOf<Element> = document.querySelectorAll('.work-item');

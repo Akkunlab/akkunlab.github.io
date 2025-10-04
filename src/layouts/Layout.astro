@@ -68,8 +68,11 @@ const { title, showSplash = false } = Astro.props;
     
     <script>
       import { setupScrollAnimations } from '../utils/scrollAnimation';
-      
-      window.addEventListener('load', setupScrollAnimations);
+      // iOS Safari の back/forward cache 復元時や二重呼び出しを防止
+      window.addEventListener('load', () => setTimeout(setupScrollAnimations, 0), { once: true });
+      window.addEventListener('pageshow', (e) => {
+        if (e.persisted) setTimeout(setupScrollAnimations, 0);
+      }, { once: true });
     </script>
   </body>
 
