@@ -5,12 +5,18 @@ import { NAV_ITEMS } from '@/constants/siteData'
 
 const currentPath = Astro.url.pathname;
 const isHomePage = currentPath === '/' || currentPath === '';
+
+const isRouteActive = (href: string) => {
+  if (href.includes('#')) return false;
+  if (href === '/') return isHomePage;
+  return currentPath === href || currentPath.startsWith(href);
+};
 ---
 
 <div class="md:hidden btm-nav rounded-t-xl backdrop-blur-lg shadow-xl bg-header-bg border-t border-header-border z-50">
   {NAV_ITEMS.map((item) => (
     <a 
-      class="group text-primary-content"
+      class={`group text-primary-content ${isRouteActive(item.href) ? 'is-active' : ''}`}
       href={item.href}
       data-scroll={isHomePage && item.href.startsWith('/#') ? 'true' : 'false'}
     >
@@ -29,13 +35,48 @@ const isHomePage = currentPath === '/' || currentPath === '';
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const links = document.querySelectorAll('.btm-nav a');
+    const nav = document.querySelector('.btm-nav');
 
-    links.forEach(link => {
-      link.addEventListener('click', () => {
-        links.forEach(item => item.classList.remove('is-active', 'bg-transparent', 'border-transparent'));
-        link.classList.add('is-active', 'bg-transparent', 'border-transparent');
+    if (!nav) return;
+
+    const allLinks = Array.from(nav.querySelectorAll('a'));
+    const hashLinks = allLinks.filter(a => (a.getAttribute('href') || '').includes('#'));
+    const isHome = location.pathname === '/' || location.pathname === '';
+
+    const updateActiveForHash = () => {
+      if (!isHome) return;
+
+      const current = location.hash.replace('#', '');
+
+      if (!current) {
+        hashLinks.forEach(a => a.classList.remove('is-active'));
+        return;
+      }
+
+      hashLinks.forEach(a => {
+        const href = a.getAttribute('href') || '';
+        const anchor = href.split('#')[1];
+        a.classList.toggle('is-active', anchor === current);
       });
-    });
+    };
+
+    updateActiveForHash();
+
+    if (isHome) {
+      hashLinks.forEach(a => {
+        a.addEventListener('click', () => {
+          const href = a.getAttribute('href') || '';
+          const anchor = href.split('#')[1];
+
+          if (!anchor) return;
+
+          hashLinks.forEach(l => l.classList.remove('is-active'));
+          a.classList.add('is-active');
+          history.replaceState(null, '', `#${anchor}`);
+        });
+      });
+
+      window.addEventListener('hashchange', updateActiveForHash);
+    }
   });
 </script>
