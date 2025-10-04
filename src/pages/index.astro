@@ -189,8 +189,9 @@ const skillsCount = (skillInterests ?? []).filter(r => (r.name?.trim())).length;
           src={profile} 
           alt="プロフィール写真" 
           noScale={true} 
-          widths={[256, 384, 512]} 
-          sizes="(max-width: 1024px) 40vw, 423px" 
+          widths={[256, 384, 512]}
+          loading="eager"
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 60vw, 423px" 
         />
       </div>
 
