@@ -13,7 +13,7 @@ const isRouteActive = (href: string) => {
 };
 ---
 
-<div class="md:hidden btm-nav rounded-t-xl backdrop-blur-lg shadow-xl bg-header-bg border-t border-header-border z-[60] fixed left-0 right-0" style="bottom: max(env(safe-area-inset-bottom), 0px); padding-bottom: max(env(safe-area-inset-bottom), 0px);">
+<div class="md:hidden btm-nav rounded-t-xl backdrop-blur-lg shadow-xl bg-header-bg border-t border-header-border z-50">
   {NAV_ITEMS.map((item) => (
     <a 
       class={`group text-primary-content ${isRouteActive(item.href) ? 'is-active' : ''}`}
@@ -33,12 +33,9 @@ const isRouteActive = (href: string) => {
   ))}
 </div>
 
-<!-- Spacer to ensure content above isn't hidden behind fixed bottom nav on mobile -->
-<div id="btm-nav-spacer" class="md:hidden" aria-hidden="true" style="height: calc(64px + max(env(safe-area-inset-bottom), 0px));"></div>
-
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const nav = document.querySelector('.btm-nav') as HTMLElement | null;
+    const nav = document.querySelector('.btm-nav');
 
     if (!nav) return;
 
@@ -80,32 +77,6 @@ const isRouteActive = (href: string) => {
       });
 
       window.addEventListener('hashchange', updateActiveForHash);
-    }
-
-    // iOS/Android dynamic toolbar and home indicator handling
-    // Use visualViewport to adjust bottom position so buttons stay tappable when toolbars collapse/expand.
-  const spacer = document.getElementById('btm-nav-spacer') as HTMLElement | null;
-
-    const applyViewportOffset = () => {
-      const vv = window.visualViewport;
-      if (!vv) return;
-      // Calculate the difference between layout viewport height and visual viewport height
-      const toolbarOffset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-      // Apply as an extra bottom offset in addition to safe-area inset
-  nav.style.bottom = `max(env(safe-area-inset-bottom), 0px)`;
-  nav.style.transform = `translateY(${-toolbarOffset}px)`; // move up when toolbars overlap
-      if (spacer) {
-        spacer.style.height = `calc(64px + ${toolbarOffset}px + max(env(safe-area-inset-bottom), 0px))`;
-      }
-    };
-
-    if ('visualViewport' in window) {
-      applyViewportOffset();
-      const vvListeners = window.visualViewport;
-      if (vvListeners) {
-        vvListeners.addEventListener('resize', applyViewportOffset);
-        vvListeners.addEventListener('scroll', applyViewportOffset);
-      }
     }
   });
 </script>
