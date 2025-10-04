@@ -70,6 +70,7 @@ const skillInterests = await fetchNotionPageList(SKILLS_INTERESTS_DATABASE_ID, {
 const socialLinks = await fetchNotionPageList(SOCIAL_LINKS_DATABASE_ID);
 
 const sectionClass = 'py-40 px-4 md:px-16';
+const skillsCount = (skillInterests ?? []).filter(r => (r.name?.trim())).length;
 ---
 
 <Layout showSplash={true}>
@@ -93,7 +94,7 @@ const sectionClass = 'py-40 px-4 md:px-16';
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-12">
       <CyberInfoGraphics title="制作した作品数" icon="work" count={works.length} color="cyan" href="#works" />
       <CyberInfoGraphics title="参加したイベント数" icon="event-available-rounded" count={activities.length} color="purple" href="#activities" />
-      <CyberInfoGraphics title="習得したスキル数" icon="workspace-premium" count={30} color="orange" href="#skills" />
+      <CyberInfoGraphics title="習得したスキル数" icon="workspace-premium" count={skillsCount} color="orange" href="#skills" />
     </div>
   </section>
 
