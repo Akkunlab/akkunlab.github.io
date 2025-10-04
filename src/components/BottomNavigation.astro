@@ -14,7 +14,7 @@ const isRouteActive = (href: string) => {
 ---
 
 <div class="md:hidden btm-nav rounded-t-xl backdrop-blur-lg shadow-xl bg-header-bg border-t border-header-border z-50"
-  style="padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--bottom-extra, 0px));">
+  style="height: calc(var(--nav-base, 80px) + var(--bottom-extra, 0px)); padding-bottom: env(safe-area-inset-bottom, 0px);">
   {NAV_ITEMS.map((item) => (
     <a 
       class={`group text-primary-content ${isRouteActive(item.href) ? 'is-active' : ''}`}
@@ -53,7 +53,7 @@ const isRouteActive = (href: string) => {
           : 0;
         if (nav instanceof HTMLElement) {
           // When bottomInset is ~0, the browser UI is hidden. Add some extra space.
-          const extra = bottomInset <= 1 ? 16 : 0; // px
+          const extra = bottomInset <= 1 ? 24 : 0; // px (add more space when bottom bar is hidden)
           nav.style.setProperty('--bottom-extra', `${extra}px`);
         }
       } catch (_) {
