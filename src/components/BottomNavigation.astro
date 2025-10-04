@@ -15,7 +15,7 @@ const isRouteActive = (href: string) => {
 
 <div
   class="md:hidden btm-nav rounded-t-xl backdrop-blur-lg shadow-xl bg-header-bg border-t border-header-border z-50"
-  style="height: calc(var(--nav-base, 80px) + var(--bottom-extra, 0px)); padding-bottom: env(safe-area-inset-bottom, 0px);"
+  style="padding-bottom: env(safe-area-inset-bottom, 0px);"
 >
   {NAV_ITEMS.map((item) => (
     <a 
@@ -50,6 +50,7 @@ const isRouteActive = (href: string) => {
       try {
         const vv = window.visualViewport;
         const bottomInset = vv ? Math.max(0, window.innerHeight - (vv.height + vv.offsetTop)) : 0;
+
         if (nav instanceof HTMLElement) {
           const extra = bottomInset <= 1 ? 24 : 0; // px
           nav.style.setProperty('--bottom-extra', `${extra}px`);
