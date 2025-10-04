@@ -14,7 +14,7 @@ const isRouteActive = (href: string) => {
 ---
 
 <div class="md:hidden btm-nav rounded-t-xl backdrop-blur-lg shadow-xl bg-header-bg border-t border-header-border z-50"
-  style="height: calc(var(--nav-base, 80px) + var(--bottom-extra, 0px)); padding-bottom: env(safe-area-inset-bottom, 0px);">
+  style="bottom: env(safe-area-inset-bottom, 0px); padding-bottom: var(--bottom-extra, 0px);">
   {NAV_ITEMS.map((item) => (
     <a 
       class={`group text-primary-content ${isRouteActive(item.href) ? 'is-active' : ''}`}
