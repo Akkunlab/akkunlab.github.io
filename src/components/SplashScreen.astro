@@ -18,7 +18,7 @@ const MODE_TEXT = 'MODE: PROD';
 
 <div id="splash-screen" class="fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-primary z-[9999] overflow-hidden">
   
-  <!-- 背景マトリックス効果 -->
+  <!-- グリッドアニメーション -->
   <div class="absolute inset-0 opacity-20">
     <div class="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent animate-scanLine"></div>
     <div class="absolute top-0 left-0 w-full h-full">
@@ -31,21 +31,11 @@ const MODE_TEXT = 'MODE: PROD';
     </div>
   </div>
 
-  <!-- サイバーグリッド -->
-  <div class="absolute inset-0 opacity-30">
-    <div class="w-full h-full" style="background-image: linear-gradient(rgba(34, 211, 238, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(34, 211, 238, 0.1) 1px, transparent 1px); background-size: 50px 50px; animation: pulse 2s ease-in-out infinite;"></div>
-  </div>
-
   <!-- 中央コンテンツコンテナ -->
   <div class="relative flex flex-col items-center justify-center h-full px-8">
     
-    <!-- グリッチボーダーフレーム -->
-    <div class="absolute inset-8 border-2 border-cyan-400/50 animate-pulse">
-      <div class="absolute -top-px -left-px w-8 h-8 border-t-2 border-l-2 border-cyan-400 animate-glow"></div>
-      <div class="absolute -top-px -right-px w-8 h-8 border-t-2 border-r-2 border-cyan-400 animate-glow"></div>
-      <div class="absolute -bottom-px -left-px w-8 h-8 border-b-2 border-l-2 border-cyan-400 animate-glow"></div>
-      <div class="absolute -bottom-px -right-px w-8 h-8 border-b-2 border-r-2 border-cyan-400 animate-glow"></div>
-    </div>
+    <!-- フレーム -->
+    <div class="absolute inset-8 border-2 border-cyan-400/50 animate-pulse"></div>
     
     <!-- システムステータス -->
     <div class="mb-6 text-center">
@@ -60,9 +50,6 @@ const MODE_TEXT = 'MODE: PROD';
     <!-- サイバー効果付きメインテキスト -->
     <div class="relative mb-6">
       
-      <!-- グロー効果背景 -->
-      <div class="absolute -inset-4 bg-cyan-400/20 blur-xl rounded-lg animate-glowPulse"></div>
-      
       <!-- メインテキスト -->
       <h1 class="relative text-4xl sm:text-6xl md:text-8xl lg:text-[120px] font-bold text-primary-content">
         {AUTHOR_ENGLISH.toUpperCase().split(' ').map((part, partIndex) => (
@@ -72,14 +59,7 @@ const MODE_TEXT = 'MODE: PROD';
                 class="inline-block overflow-hidden"
                 style={`animation-delay: ${(partIndex * part.length + letterIndex) * 0.03}s;`}
               >
-                <span class="inline-block animate-slideInOut relative">
-                  {letter}
-
-                  {/* 文字グリッチ効果 */}
-                  <span class="absolute inset-0 text-cyan-400 opacity-0 animate-glitch" style={`animation-delay: ${Math.random() * 1.5}s;`}>
-                    {letter}
-                  </span>
-                </span>
+                <span class="inline-block animate-slideInOut relative">{letter}</span>
               </span>
             ))}
           </div>
@@ -90,16 +70,6 @@ const MODE_TEXT = 'MODE: PROD';
     <!-- プログレスバー -->
     <div class="w-64 md:w-96 bg-gray-800 h-1 rounded-full overflow-hidden mb-4">
       <div class="h-full bg-gradient-to-r from-cyan-400 to-blue-500 animate-expandWidth"></div>
-    </div>
-
-    <!-- ローディングインジケーター -->
-    <div class="flex space-x-2 mb-6">
-      {Array.from({ length: 3 }).map((_, i) => (
-        <div 
-          class="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"
-          style={`animation-delay: ${i * 0.15}s;`}
-        ></div>
-      ))}
     </div>
     
     <!-- システム情報 -->
@@ -123,9 +93,6 @@ const MODE_TEXT = 'MODE: PROD';
     <div class="animate-fadeInUp">{ID_TEXT}</div>
     <div class="animate-fadeInUp" style="animation-delay: 0.3s;">{MODE_TEXT}</div>
   </div>
-
-  <!-- 下部テックライン -->
-  <div class="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-glowPulse"></div>
   
   <!-- 終了アニメーション円 -->
   <div id="exit-circle" class="absolute top-1/2 left-1/2 w-4 h-4 -translate-x-1/2 -translate-y-1/2 bg-primary rounded-full opacity-0 pointer-events-none"></div>
@@ -155,23 +122,6 @@ const MODE_TEXT = 'MODE: PROD';
         setTimeout(() => {
           htmlElement.style.animation = 'expandWidth 1.5s steps(40, end), blinkCaret 0.75s step-end infinite';
         }, 300 + index * 100);
-      });
-    };
-
-    // グリッチ効果の追加
-    const addGlitchEffects = (): void => {
-      const letters = splashScreen.querySelectorAll('h1 span span');
-      letters.forEach((letter: Element) => {
-        const htmlLetter = letter as HTMLElement;
-        
-        // ランダムなグリッチタイミング
-        const glitchDelay = Math.random() * 2000 + 500;
-        setTimeout(() => {
-          htmlLetter.style.filter = 'hue-rotate(180deg)';
-          setTimeout(() => {
-            htmlLetter.style.filter = 'none';
-          }, 50);
-        }, glitchDelay);
       });
     };
 
@@ -207,7 +157,6 @@ const MODE_TEXT = 'MODE: PROD';
 
     // 初期化実行
     createSystemBoot();
-    addGlitchEffects();
     enhanceDataFlow();
 
     // 2秒後に終了アニメーション開始
