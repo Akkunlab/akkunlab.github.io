@@ -15,7 +15,7 @@ const isRouteActive = (href: string) => {
 
 <div
   class="md:hidden btm-nav rounded-t-xl backdrop-blur-lg shadow-xl bg-header-bg border-t border-header-border z-50"
-  style="padding-bottom: env(safe-area-inset-bottom, 0px);"
+  style="height: calc(64px + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom);"
 >
   {NAV_ITEMS.map((item) => (
     <a 
@@ -45,25 +45,6 @@ const isRouteActive = (href: string) => {
     const allLinks = Array.from(nav.querySelectorAll('a'));
     const hashLinks = allLinks.filter(a => (a.getAttribute('href') || '').includes('#'));
     const isHome = location.pathname === '/' || location.pathname === '';
-
-    const applyViewportInset = () => {
-      try {
-        const vv = window.visualViewport;
-        const bottomInset = vv ? Math.max(0, window.innerHeight - (vv.height + vv.offsetTop)) : 0;
-
-        if (nav instanceof HTMLElement) {
-          const extra = bottomInset <= 1 ? 24 : 0; // px
-          nav.style.setProperty('--bottom-extra', `${extra}px`);
-        }
-      } catch (_) {
-        // Do nothing
-      }
-    };
-
-    applyViewportInset();
-    window.visualViewport?.addEventListener('resize', applyViewportInset);
-    window.visualViewport?.addEventListener('scroll', applyViewportInset);
-    window.addEventListener('orientationchange', applyViewportInset);
 
     const updateActiveForHash = () => {
       if (!isHome) return;
