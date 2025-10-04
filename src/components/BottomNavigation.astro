@@ -13,7 +13,8 @@ const isRouteActive = (href: string) => {
 };
 ---
 
-<div class="md:hidden btm-nav rounded-t-xl backdrop-blur-lg shadow-xl bg-header-bg border-t border-header-border z-50">
+<div class="md:hidden btm-nav rounded-t-xl backdrop-blur-lg shadow-xl bg-header-bg border-t border-header-border z-50"
+  style="padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--bottom-extra, 0px));">
   {NAV_ITEMS.map((item) => (
     <a 
       class={`group text-primary-content ${isRouteActive(item.href) ? 'is-active' : ''}`}
@@ -35,13 +36,34 @@ const isRouteActive = (href: string) => {
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const nav = document.querySelector('.btm-nav');
+  const nav = document.querySelector('.btm-nav');
 
     if (!nav) return;
 
     const allLinks = Array.from(nav.querySelectorAll('a'));
     const hashLinks = allLinks.filter(a => (a.getAttribute('href') || '').includes('#'));
     const isHome = location.pathname === '/' || location.pathname === '';
+
+    // Add bottom whitespace when the mobile browser bottom bar disappears (Chrome, etc.).
+    const applyViewportInset = () => {
+      try {
+        const vv = window.visualViewport;
+        const bottomInset = vv
+          ? Math.max(0, window.innerHeight - (vv.height + vv.offsetTop))
+          : 0;
+        if (nav instanceof HTMLElement) {
+          // When bottomInset is ~0, the browser UI is hidden. Add some extra space.
+          const extra = bottomInset <= 1 ? 16 : 0; // px
+          nav.style.setProperty('--bottom-extra', `${extra}px`);
+        }
+      } catch (_) {
+        // noop
+      }
+    };
+    applyViewportInset();
+    window.visualViewport?.addEventListener('resize', applyViewportInset);
+    window.visualViewport?.addEventListener('scroll', applyViewportInset);
+    window.addEventListener('orientationchange', applyViewportInset);
 
     const updateActiveForHash = () => {
       if (!isHome) return;
