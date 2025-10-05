@@ -85,8 +85,8 @@ const linkProps = href ? { href, 'data-scroll': 'true' } : {};
 const colors = themes[color];
 ---
 
-<Component class={`group relative transform hover:scale-110 transition-all duration-700 infographic-card block no-underline ${href ? 'cursor-pointer' : ''}`} data-count={count} {...linkProps}>
-  <div class={`bg-gradient-to-br from-slate-900 ${colors.via} to-slate-900 p-12 rounded-2xl border-2 ${colors.border} ${colors.hoverBorder} transition-all duration-500 hover:shadow-2xl ${colors.hoverShadow} overflow-hidden relative`}>
+<Component class={`group relative transform hover:scale-105 md:hover:scale-110 transition-all duration-700 infographic-card block no-underline ${href ? 'cursor-pointer' : ''}`} data-count={count} {...linkProps}>
+  <div class={`bg-gradient-to-br from-slate-900 ${colors.via} to-slate-900 p-6 xl:p-12 rounded-2xl border-2 ${colors.border} ${colors.hoverBorder} transition-all duration-500 hover:shadow-2xl ${colors.hoverShadow} overflow-hidden relative`}>
 
     <!-- サイバーフレーム -->
     <div class={`absolute inset-0 ${colors.gradBg} rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500`}></div>
@@ -101,19 +101,19 @@ const colors = themes[color];
     <div class={`absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 ${colors.borderAccent} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
     
     <!-- アイコン -->
-    <div class="relative text-center mb-8">
-      <div class={`inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-r ${colors.gradIcon} mb-6 group-hover:animate-glow group-hover:scale-110 transition-transform duration-500 shadow-2xl ${colors.shadowIcon}`}>
-        <Icon name={getIconName('material-symbols-light', icon)} class="h-12 w-12 text-white" />
+    <div class="relative text-center mb-6 md:mb-8">
+      <div class={`inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full bg-gradient-to-r ${colors.gradIcon} mb-4 md:mb-6 group-hover:animate-glow group-hover:scale-110 transition-transform duration-500 shadow-2xl ${colors.shadowIcon}`}>
+        <Icon name={getIconName('material-symbols-light', icon)} class="h-8 w-8 md:h-10 md:w-10 lg:h-12 lg:w-12 text-white" />
       </div>
     </div>
     
     <!-- 数値 -->
     <div class="text-center relative z-10">
-      <div class={`text-7xl font-bold ${colors.text} mb-4 relative counter-number`}>
+      <div class={`text-5xl md:text-6xl lg:text-7xl font-bold ${colors.text} mb-2 md:mb-4 relative counter-number`}>
         0
         <div class={`absolute inset-0 ${colors.textGlow} opacity-20 blur-sm counter-glow`}>0</div>
       </div>
-      <div class="text-2xl font-semibold text-dark-text mb-3 tracking-wider">{title}</div>
+      <div class="text-lg lg:text-2xl font-semibold text-dark-text mb-2 md:mb-3 tracking-wider">{title}</div>
     </div>
     
     <!-- 進行バー -->
