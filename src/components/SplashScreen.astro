@@ -55,11 +55,13 @@ const MODE_TEXT = 'MODE: PROD';
         {AUTHOR_ENGLISH.toUpperCase().split(' ').map((part, partIndex) => (
           <div class="block mb-2">
             {part.split('').map((letter, letterIndex) => (
-              <span 
-                class="inline-block overflow-hidden"
-                style={`animation-delay: ${(partIndex * part.length + letterIndex) * 0.03}s;`}
-              >
-                <span class="inline-block animate-slideInOut relative">{letter}</span>
+              <span class="inline-block overflow-hidden">
+                <span
+                  class="inline-block animate-slideInOut relative opacity-0"
+                  style={`animation-delay: ${0.5 + (partIndex * part.length + letterIndex) * 0.03}s;`}
+                >
+                  {letter}
+                </span>
               </span>
             ))}
           </div>
@@ -99,6 +101,7 @@ const MODE_TEXT = 'MODE: PROD';
 </div>
 
 <script>
+  const animationDuration = 2800; // アニメーションの総時間（ms）
 
   /** スプラッシュスクリーンのサイバー効果と制御 */
   const initializeSplashScreen = (): void => {
@@ -113,7 +116,8 @@ const MODE_TEXT = 'MODE: PROD';
 
       // プログレスバーの速度調整
       const progressBar = splashScreen.querySelector('.animate-expandWidth') as HTMLElement;
-      if (progressBar) progressBar.style.animationDuration = '2s';
+
+      if (progressBar) progressBar.style.animationDuration = `${animationDuration}ms`;
 
       // HUD要素のタイピング効果
       const typingElements = splashScreen.querySelectorAll('.animate-typing');
@@ -151,7 +155,7 @@ const MODE_TEXT = 'MODE: PROD';
       exitCircle.addEventListener('animationend', () => {
         splashScreen.classList.add('animate-fadeOut');
         document.dispatchEvent(splashCompleteEvent);
-        setTimeout(() => splashScreen.remove(), 2000); // 削除
+        setTimeout(() => splashScreen.remove(), animationDuration); // 削除
       }, { once: true });
     };
 
@@ -160,7 +164,7 @@ const MODE_TEXT = 'MODE: PROD';
     enhanceDataFlow();
 
     // 2秒後に終了アニメーション開始
-    setTimeout(startExitAnimation, 2000);
+    setTimeout(startExitAnimation, animationDuration);
   };
 
   // DOM読み込み完了後に実行

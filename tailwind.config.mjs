@@ -37,13 +37,10 @@ module.exports = {
         'content-bg': '#e5e7eb',
       },
       keyframes: {
-        slideInRight: {
-          '0%': { transform: 'translateX(120%)' },
-          '100%': { transform: 'translateX(0%)' }
-        },
-        slideOutLeft: {
-          '0%': { transform: 'translateX(0%)' },
-          '100%': { transform: 'translateX(-120%)' }
+        slideInOut: {
+          '0%':   { transform: 'translateX(120%)', opacity: 0 },
+          '40%, 60%':  { transform: 'translateX(0%)', opacity: 1 },
+          '100%': { transform: 'translateX(-120%)', opacity: 0 },
         },
         fadeIn: {
           from: { opacity: 0 },
@@ -179,8 +176,7 @@ module.exports = {
         },
       },
       animation: {
-        slideInOut: 'slideInRight 1.8s cubic-bezier(0.18, 0.9, 0.18, 0.9) forwards,' +
-                    'slideOutLeft 1.8s cubic-bezier(0.18, 0.9, 0.18, 0.9) 1.8s forwards',
+        slideInOut: 'slideInOut 3s cubic-bezier(0.18, 0.9, 0.18, 0.9) both',
         fadeIn: 'fadeIn 0.5s ease-out forwards',
         fadeInUp: 'fadeInUp 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards',
         fadeOut: 'fadeOut 1.5s ease-out forwards',
