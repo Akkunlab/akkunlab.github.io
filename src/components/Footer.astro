@@ -18,7 +18,7 @@ const currentPath = Astro.url.pathname;
 const isHomePage = currentPath === '/' || currentPath === '';
 ---
 
-<footer class="bg-footer-bg text-dark-text pt-16 pb-24 md:pb-8">
+<footer class="bg-footer-bg text-dark-text pt-16 pb-8 md:pb-8">
   <div class="container mx-auto px-4">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
@@ -104,6 +104,18 @@ const isHomePage = currentPath === '/' || currentPath === '';
         <div id="fireworks-container" class="absolute inset-0"></div>
       </div>
     </div>
+  </div>
+
+  <!-- モバイル用セーフエリアスペース -->
+  <div
+    class="md:hidden"
+    style="
+      height: 64px;
+      height: calc(64px + constant(safe-area-inset-bottom));
+      height: calc(64px + env(safe-area-inset-bottom));
+    "
+    aria-hidden="true"
+  >
   </div>
 </footer>
 
