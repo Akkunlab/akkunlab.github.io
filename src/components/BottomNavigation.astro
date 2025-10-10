@@ -15,7 +15,19 @@ const isRouteActive = (href: string) => {
 
 <div
   class="md:hidden btm-nav rounded-t-xl backdrop-blur-lg shadow-xl bg-header-bg border-t border-header-border z-50"
-  style="height: calc(64px + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom);"
+  style="
+    /* Base fallback when env() is not supported */
+    height: 64px;
+    padding-bottom: 0;
+
+    /* iOS 11-12 legacy syntax */
+    height: calc(64px + constant(safe-area-inset-bottom));
+    padding-bottom: constant(safe-area-inset-bottom);
+
+    /* Modern browsers (iOS 11.2+, Safari, Chrome on iOS with viewport-fit=cover) */
+    height: calc(64px + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+  "
 >
   {NAV_ITEMS.map((item) => (
     <a 
