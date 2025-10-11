@@ -125,26 +125,83 @@ const buildListFilters = async (
   return filters;
 };
 
-// last_edited_time を用いた軽量なデータベース変更検知
+// last_edited_time を用いたデータベース変更検知
 const hasDatabaseChangedSince = async (
   databaseId: string,
-  sinceISO: string,
-  baseFilters: any[]
+  sinceISO: string
 ): Promise<boolean> => {
-
-  // タイムスタンプがなければ初回取得として変更あり扱い
   if (!sinceISO) return true;
 
-  const changeFilter = { timestamp: 'last_edited_time', last_edited_time: { after: sinceISO } } as const;
-  const filter = baseFilters.length > 0 ? { and: [...baseFilters, changeFilter] } : changeFilter;
-
   try {
-    const resp = await notion.databases.query({ database_id: databaseId, page_size: 1, filter: filter as any });
+    const resp = await notion.databases.query({
+      database_id: databaseId,
+      page_size: 1,
+      filter: { timestamp: 'last_edited_time', last_edited_time: { after: sinceISO } } as any,
+    });
     return resp.results.length > 0;
   } catch (error) {
     console.warn('Change detection failed for database:', error);
     throw error;
   }
+};
+
+/**
+ * 変更のあったページIDを取得
+ * @param databaseId 
+ * @param sinceISO 
+ * @returns 変更のあったページIDのリスト
+ */
+const listChangedPageIdsSince = async (
+  databaseId: string,
+  sinceISO: string
+): Promise<string[]> => {
+  if (!sinceISO) return [];
+
+  const changedIds: string[] = [];
+  let cursor: string | undefined = undefined;
+
+  while (true) {
+    const resp = await notion.databases.query({
+      database_id: databaseId,
+      page_size: 100,
+      start_cursor: cursor,
+      filter: { timestamp: 'last_edited_time', last_edited_time: { after: sinceISO } } as any,
+    });
+
+    for (const r of resp.results as any[]) {
+      if (r?.id) changedIds.push(r.id);
+    }
+
+    if (!resp.has_more || !resp.next_cursor) break;
+  
+    cursor = resp.next_cursor as string;
+  }
+
+  return Array.from(new Set(changedIds));
+};
+
+/**
+ * ページが現在のフィルタにマッチするかを評価
+ * @param page 
+ * @param options 
+ * @param dbProps 
+ * @returns true: マッチ, false: マッチしない
+ */
+const doesPageMatchFilters = (page: any, options?: { types?: string }, dbProps?: any): boolean => {
+  const properties = page?.properties || {};
+
+  if (dbProps?.published?.type === 'checkbox') {
+    const published = getCheckbox(properties.published);
+    if (!published) return false;
+  }
+
+  // types チェック
+  if (options?.types && dbProps?.types?.type === 'select') {
+    const typeVal = getSelect(properties.types);
+    if (typeVal !== options.types) return false;
+  }
+
+  return true;
 };
 
 /**
@@ -179,42 +236,112 @@ export const fetchNotionPageList = async (
   // TTL内のキャッシュがあればAPIを叩かず即返却
   if (cached && isTTLValid(cached.cachedAt)) return cached.value;
 
-  // 検証や再取得が必要になった時のみフィルタを組み立て
-  const filters = await buildListFilters(databaseId, options);
+  // データベースのプロパティ情報を先に取得
+  let dbProps: any = null;
+  try {
+    const dbInfo = await notion.databases.retrieve({ database_id: databaseId });
+    dbProps = (dbInfo as any).properties || {};
+  } catch (error) {
+    console.warn('Failed to get database properties:', error);
+  }
 
   // TTL切れ後に変更検知、未変更なら cachedAt を更新して返却
   if (cached) {
     try {
-      const changed = await hasDatabaseChangedSince(databaseId, cached.lastChange ?? '', filters);
+      const changed = await hasDatabaseChangedSince(databaseId, cached.lastChange ?? '');
+
       if (!changed) {
         await setCache(cacheKey, { ...cached, cachedAt: Date.now() });
         return cached.value;
       }
+
+      // 変更のあったページID一覧
+      const changedIds = await listChangedPageIdsSince(databaseId, cached.lastChange ?? '');
+
+      if (changedIds.length === 0) {
+        await setCache(cacheKey, { ...cached, cachedAt: Date.now() });
+        return cached.value;
+      }
+
+      // タイムスタンプソートが要求される場合はフル再取得
+      const requiresFullSort = (sorts || []).some((s) => 'timestamp' in s);
+
+      // 変更件数が大きすぎる場合はフル再取得に切り替え
+      const CHANGED_THRESHOLD = 100;
+
+      if (changedIds.length > CHANGED_THRESHOLD || requiresFullSort) {
+        // フル再取得
+        const filters = await buildListFilters(databaseId, options);
+        const queryOptions: any = { database_id: databaseId };
+
+        if (filters.length > 0) queryOptions.filter = filters.length === 1 ? filters[0] : { and: filters };
+        if (sorts && sorts.length > 0) queryOptions.sorts = sorts;
+
+        const response = await notion.databases.query(queryOptions);
+        const maxEdited = response.results.map((r: any) => r.last_edited_time as string | undefined).filter(Boolean).sort().pop() ?? '';
+        const records = await Promise.all(response.results.map(page => pageToNotionRecord(page as PageObjectResponse)));
+       
+        await setCache(cacheKey, { value: records, lastChange: maxEdited, cachedAt: Date.now() });
+
+        return records;
+      }
+
+      // 部分更新
+      const byId = new Map<string, NotionRecord>();
+
+      for (const r of cached.value) byId.set(r.id, r);
+
+      let maxEdited = cached.lastChange ?? '';
+
+      for (const id of changedIds) {
+        try {
+          const p = (await notion.pages.retrieve({ page_id: id })) as any;
+          const lastEdited = p.last_edited_time as string | undefined;
+          if (lastEdited && lastEdited > maxEdited) maxEdited = lastEdited;
+
+          if (doesPageMatchFilters(p, options, dbProps)) {
+            const rec = await pageToNotionRecord(p as PageObjectResponse);
+            byId.set(rec.id, rec);
+          } else {
+            byId.delete(id);
+          }
+        } catch (e) {
+          // 取得失敗時はスキップ
+        }
+      }
+
+      // ソート適用
+      let merged = Array.from(byId.values());
+
+      if (sorts && sorts.length > 0) {
+        for (const s of sorts.slice().reverse()) {
+          const dir = s.direction === 'ascending' ? 1 : -1;
+          if ('property' in s) {
+            const prop = s.property;
+            merged = merged.sort((a: any, b: any) => ((a as any)[prop] ?? '') > ((b as any)[prop] ?? '') ? dir : -dir);
+          }
+        }
+      }
+
+      await setCache(cacheKey, { value: merged, lastChange: maxEdited, cachedAt: Date.now() });
+
+      return merged;
     } catch (e) {
       await setCache(cacheKey, { ...cached, cachedAt: Date.now() });
+
       return cached.value;
     }
   }
 
-  // 変更がある場合、またはキャッシュが無い場合のみ最新データを取得
+  // キャッシュが無い場合はフル取得
+  const filters = await buildListFilters(databaseId, options);
   const queryOptions: any = { database_id: databaseId };
 
-  if (filters.length > 0) {
-    queryOptions.filter = filters.length === 1 ? filters[0] : { and: filters };
-  }
-  if (sorts && sorts.length > 0) {
-    queryOptions.sorts = sorts;
-  }
+  if (filters.length > 0) queryOptions.filter = filters.length === 1 ? filters[0] : { and: filters };
+  if (sorts && sorts.length > 0) queryOptions.sorts = sorts;
 
   const response = await notion.databases.query(queryOptions);
-
-  // 取得結果の last_edited_time の最大を追跡用に保存
-  const maxEdited = response.results
-    .map((r: any) => r.last_edited_time as string | undefined)
-    .filter(Boolean)
-    .sort()
-    .pop() ?? '';
-
+  const maxEdited = response.results.map((r: any) => r.last_edited_time as string | undefined).filter(Boolean).sort().pop() ?? '';
   const records = await Promise.all(response.results.map(page => pageToNotionRecord(page as PageObjectResponse)));
 
   await setCache(cacheKey, { value: records, lastChange: maxEdited, cachedAt: Date.now() });
