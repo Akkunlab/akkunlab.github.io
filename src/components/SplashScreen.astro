@@ -97,7 +97,7 @@ const MODE_TEXT = 'MODE: PROD';
   </div>
   
   <!-- 終了アニメーション円 -->
-  <div id="exit-circle" class="absolute top-1/2 left-1/2 w-4 h-4 -translate-x-1/2 -translate-y-1/2 bg-primary rounded-full opacity-0 pointer-events-none"></div>
+  <div id="exit-circle" class="absolute top-1/2 left-1/2 w-0 h-0 bg-primary rounded-full opacity-0 pointer-events-none" style="will-change: transform, opacity; transform-origin: center center;"></div>
 </div>
 
 <script>
@@ -147,6 +147,11 @@ const MODE_TEXT = 'MODE: PROD';
     
     // 中央から広がる終了エフェクト
     const startExitAnimation = (): void => {
+      
+      // 円の中央配置を確実にする
+      exitCircle.style.left = '50%';
+      exitCircle.style.top = '50%';
+      exitCircle.style.transform = 'translate(-50%, -50%)';
       
       // 円の拡大アニメーション開始
       exitCircle.classList.add('animate-circleExpand');

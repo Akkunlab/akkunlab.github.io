@@ -166,11 +166,13 @@ module.exports = {
         },
         circleExpand: {
           '0%': {
-            transform: 'scale(0)',
+            width: '0',
+            height: '0',
             opacity: '1'
           },
           '100%': {
-            transform: 'scale(150)',
+            width: '300vmax',
+            height: '300vmax',
             opacity: '1'
           }
         },
