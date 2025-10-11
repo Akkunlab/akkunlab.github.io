@@ -1,0 +1,36 @@
+# Cloudflare Pages キャッシュ設定
+
+# 静的アセット - 1年間キャッシュ
+/_astro/*
+/*.jpg
+/*.jpeg
+/*.png
+/*.gif
+/*.webp
+/*.avif
+/*.svg
+/*.ico
+/*.woff
+/*.woff2
+/*.ttf
+/*.otf
+/*.eot
+/*.mp4
+/*.webm
+  Cache-Control: public, max-age=31536000, immutable
+
+# HTML - 1時間キャッシュ
+/*.html
+  Cache-Control: public, max-age=3600, must-revalidate
+
+# その他 - 1日キャッシュ
+/sitemap*.xml
+/robots.txt
+  Cache-Control: public, max-age=86400, must-revalidate
+
+# セキュリティヘッダー
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
