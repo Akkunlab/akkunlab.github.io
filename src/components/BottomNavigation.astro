@@ -43,7 +43,7 @@ const isRouteActive = (href: string) => {
         name={getIconName('material-symbols-light', item.activeIcon)}
         class="h-6 w-6 icon-active hidden group-[.is-active]:block"
       />
-      <span class="btm-nav-label">{item.label}</span>
+      <span class="btm-nav-label block truncate">{item.label}</span>
     </a>
   ))}
 </div>
