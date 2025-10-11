@@ -11,7 +11,9 @@ import CyberInfoPanel from './CyberInfoPanel.astro';
 
 const SOCIAL_LINKS_DATABASE_ID = import.meta.env.SOCIAL_LINKS_DATABASE_ID;
 
-const socialLinks = await fetchNotionPageList(SOCIAL_LINKS_DATABASE_ID);
+const socialLinks = await fetchNotionPageList(SOCIAL_LINKS_DATABASE_ID, {
+  sorts: [{ timestamp: 'created_time', direction: 'descending' }]
+});
 
 const currentYear = new Date().getFullYear();
 const currentPath = Astro.url.pathname;

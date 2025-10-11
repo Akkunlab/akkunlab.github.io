@@ -67,7 +67,9 @@ const skillInterests = await fetchNotionPageList(SKILLS_INTERESTS_DATABASE_ID, {
     { property: 'name', direction: 'ascending' },
   ],
 });
-const socialLinks = await fetchNotionPageList(SOCIAL_LINKS_DATABASE_ID);
+const socialLinks = await fetchNotionPageList(SOCIAL_LINKS_DATABASE_ID, {
+  sorts: [{ timestamp: 'created_time', direction: 'descending' }]
+});
 
 const sectionClass = 'py-40 px-4 md:px-16';
 const skillsCount = (skillInterests ?? []).filter(r => (r.name?.trim())).length;

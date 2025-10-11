@@ -159,10 +159,10 @@ export const fetchNotionPageList = async (
   databaseId: string, 
   options?: {
     types?: string;
-    sorts?: Array<{
-      property: string;
-      direction: 'ascending' | 'descending';
-    }>;
+    sorts?: Array<(
+      | { property: string }
+      | { timestamp: 'created_time' | 'last_edited_time' }
+    ) & { direction: 'ascending' | 'descending' }>;
   }
 ): Promise<NotionRecord[]> => {
 
