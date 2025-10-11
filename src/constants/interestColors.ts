@@ -1,7 +1,6 @@
 export const INTEREST_COLOR_MAP: Record<string, string> = {
   'プログラミング': 'from-blue-500 to-cyan-500',
   'メディアアート制作': 'from-pink-500 to-rose-500',
-  '電子工作': 'from-amber-500 to-yellow-500',
   '学問': 'from-green-500 to-emerald-500',
 };
 
