@@ -97,11 +97,11 @@ const MODE_TEXT = 'MODE: PROD';
   </div>
   
   <!-- 終了アニメーション円 -->
-  <div id="exit-circle" class="absolute top-1/2 left-1/2 w-0 h-0 bg-primary rounded-full opacity-0 pointer-events-none" style="will-change: transform, opacity; transform-origin: center center;"></div>
+  <div id="exit-circle" class="absolute top-1/2 left-1/2 w-[300vmax] h-[300vmax] bg-primary rounded-full opacity-0 pointer-events-none" style="will-change: transform, opacity; transform-origin: center center; transform: translate(-50%, -50%) scale(0.001);"></div>
 </div>
 
 <script>
-  (function () {
+  (() => {
     const animationDuration = 3000;
     const splashEl = document.getElementById('splash-screen');
     const exitEl = document.getElementById('exit-circle');
@@ -128,61 +128,58 @@ const MODE_TEXT = 'MODE: PROD';
     }
 
     // 2フレーム後にオーバーレイを表示
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
         splashScreen.style.opacity = '1';
         splashScreen.style.pointerEvents = 'auto';
       });
     });
 
     // データフローアニメーション強化
-    function enhanceDataFlow() {
+    const enhanceDataFlow = () => {
       const dataLines = splashScreen.querySelectorAll('.animate-dataFlow');
-      dataLines.forEach(function (line) {
+      dataLines.forEach((line) => {
         if (!(line instanceof HTMLElement)) return;
+
         const randomHeight = Math.random() * 50 + 50;
         const randomDelay = Math.random();
+
         line.style.height = randomHeight + '%';
         line.style.animationDelay = randomDelay + 's';
         line.style.animationDuration = (1 + Math.random()) + 's';
       });
-    }
+    };
 
     // タイピングアニメーション初期化
-    function initTyping() {
+    const initTyping = () => {
       const typingElements = splashScreen.querySelectorAll('.animate-typing');
-      typingElements.forEach(function (el, index) {
+      typingElements.forEach((el, index) => {
         if (!(el instanceof HTMLElement)) return;
-        setTimeout(function () {
+
+        setTimeout(() => {
           el.style.animation = 'expandWidth 1.2s steps(40, end), blinkCaret 0.75s step-end infinite';
         }, 300 + index * 100);
       });
-    }
+    };
 
     // 終了アニメーション開始
-    function startExitAnimation() {
-      exitCircle.style.left = '50%';
-      exitCircle.style.top = '50%';
-      exitCircle.style.transform = 'translate(-50%, -50%)';
+    const startExitAnimation = () => {
       exitCircle.classList.add('animate-circleExpand');
-      exitCircle.addEventListener(
-        'animationend',
-        function () {
+      exitCircle.addEventListener('animationend',
+        () => {
           splashScreen.classList.add('animate-fadeOut');
           document.dispatchEvent(new CustomEvent('splashScreenComplete'));
-          setTimeout(function () {
-            splashScreen.remove();
-          }, 500);
+          setTimeout(() => splashScreen.remove(), animationDuration);
         },
         { once: true }
       );
-    }
+    };
 
     initTyping();
 
-    const idle = window.requestIdleCallback || function (cb) { setTimeout(cb, 200); };
-  
-    idle(function () { enhanceDataFlow(); });
+    const idle = window.requestIdleCallback || ((cb) => { setTimeout(cb, 200); });
+
+    idle(() => { enhanceDataFlow(); });
     setTimeout(startExitAnimation, animationDuration);
   })();
 </script>
