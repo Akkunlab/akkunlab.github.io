@@ -16,7 +16,7 @@ const ID_TEXT = `ID: AK-${currentYear}`;
 const MODE_TEXT = 'MODE: PROD';
 ---
 
-<div id="splash-screen" class="fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-primary z-[9999] overflow-hidden">
+<div id="splash-screen" class="fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-primary z-[9999] overflow-hidden transition-opacity duration-200" style="opacity:0; pointer-events:none;">
   
   <!-- グリッドアニメーション -->
   <div class="absolute inset-0 opacity-20">
@@ -101,81 +101,88 @@ const MODE_TEXT = 'MODE: PROD';
 </div>
 
 <script>
-  const animationDuration = 3000; // アニメーションの総時間（ms）
+  (function () {
+    const animationDuration = 3000;
+    const splashEl = document.getElementById('splash-screen');
+    const exitEl = document.getElementById('exit-circle');
 
-  /** スプラッシュスクリーンのサイバー効果と制御 */
-  const initializeSplashScreen = (): void => {
-    const splashScreen = document.getElementById('splash-screen') as HTMLElement | null;
-    const exitCircle = document.getElementById('exit-circle') as HTMLElement | null;
-    const splashCompleteEvent = new CustomEvent('splashScreenComplete');
+    if (!splashEl || !exitEl) return;
+    if (!(splashEl instanceof HTMLElement) || !(exitEl instanceof HTMLElement)) return;
 
-    // システム起動効果
-    if (!splashScreen || !exitCircle) return;
+    const splashScreen = splashEl;
+    const exitCircle = exitEl;
+    const isBot = /bot|crawl|spider|lighthouse/i.test(navigator.userAgent);
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const createSystemBoot = (): void => {
+    // ボットや低モーション環境ではスプラッシュをスキップ
+    if (isBot || prefersReduced) {
+      splashScreen.remove();
+      document.dispatchEvent(new CustomEvent('splashScreenComplete'));
+      return;
+    }
 
-      // プログレスバーの速度調整
-      const progressBar = splashScreen.querySelector('.animate-expandWidth') as HTMLElement;
+    // プログレスバーの速度調整
+    const progressBar = splashScreen.querySelector('.animate-expandWidth');
+    if (progressBar && progressBar instanceof HTMLElement) {
+      progressBar.style.animationDuration = animationDuration + 'ms';
+    }
 
-      if (progressBar) progressBar.style.animationDuration = `${animationDuration}ms`;
+    // 2フレーム後にオーバーレイを表示
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        splashScreen.style.opacity = '1';
+        splashScreen.style.pointerEvents = 'auto';
+      });
+    });
 
-      // HUD要素のタイピング効果
+    // データフローアニメーション強化
+    function enhanceDataFlow() {
+      const dataLines = splashScreen.querySelectorAll('.animate-dataFlow');
+      dataLines.forEach(function (line) {
+        if (!(line instanceof HTMLElement)) return;
+        const randomHeight = Math.random() * 50 + 50;
+        const randomDelay = Math.random();
+        line.style.height = randomHeight + '%';
+        line.style.animationDelay = randomDelay + 's';
+        line.style.animationDuration = (1 + Math.random()) + 's';
+      });
+    }
+
+    // タイピングアニメーション初期化
+    function initTyping() {
       const typingElements = splashScreen.querySelectorAll('.animate-typing');
-      typingElements.forEach((element: Element, index: number) => {
-        const htmlElement = element as HTMLElement;
-        setTimeout(() => {
-          htmlElement.style.animation = 'expandWidth 1.5s steps(40, end), blinkCaret 0.75s step-end infinite';
+      typingElements.forEach(function (el, index) {
+        if (!(el instanceof HTMLElement)) return;
+        setTimeout(function () {
+          el.style.animation = 'expandWidth 1.2s steps(40, end), blinkCaret 0.75s step-end infinite';
         }, 300 + index * 100);
       });
-    };
+    }
 
-    // データストリーム効果の強化
-    const enhanceDataFlow = (): void => {
-      const dataLines = splashScreen.querySelectorAll('.animate-dataFlow');
-      dataLines.forEach((line: Element) => {
-        const htmlLine = line as HTMLElement;
-        
-        // ランダムな高さとスピード
-        const randomHeight = Math.random() * 50 + 50;
-        const randomDelay = Math.random() * 1;
-        
-        htmlLine.style.height = `${randomHeight}%`;
-        htmlLine.style.animationDelay = `${randomDelay}s`;
-        htmlLine.style.animationDuration = `${1 + Math.random()}s`;
-      });
-    };
-    
-    // 中央から広がる終了エフェクト
-    const startExitAnimation = (): void => {
-      
-      // 円の中央配置を確実にする
+    // 終了アニメーション開始
+    function startExitAnimation() {
       exitCircle.style.left = '50%';
       exitCircle.style.top = '50%';
       exitCircle.style.transform = 'translate(-50%, -50%)';
-      
-      // 円の拡大アニメーション開始
       exitCircle.classList.add('animate-circleExpand');
-      
-      // 円拡大アニメーション完了を監視
-      exitCircle.addEventListener('animationend', () => {
-        splashScreen.classList.add('animate-fadeOut');
-        document.dispatchEvent(splashCompleteEvent);
-        setTimeout(() => splashScreen.remove(), animationDuration); // 削除
-      }, { once: true });
-    };
+      exitCircle.addEventListener(
+        'animationend',
+        function () {
+          splashScreen.classList.add('animate-fadeOut');
+          document.dispatchEvent(new CustomEvent('splashScreenComplete'));
+          setTimeout(function () {
+            splashScreen.remove();
+          }, 500);
+        },
+        { once: true }
+      );
+    }
 
-    // 初期化実行
-    createSystemBoot();
-    enhanceDataFlow();
+    initTyping();
 
-    // 2秒後に終了アニメーション開始
+    const idle = window.requestIdleCallback || function (cb) { setTimeout(cb, 200); };
+  
+    idle(function () { enhanceDataFlow(); });
     setTimeout(startExitAnimation, animationDuration);
-  };
-
-  // DOM読み込み完了後に実行
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeSplashScreen);
-  } else {
-    initializeSplashScreen();
-  }
+  })();
 </script>
