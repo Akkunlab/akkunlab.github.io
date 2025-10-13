@@ -18,7 +18,7 @@ export interface NotionRecord {
   published?: boolean;
   image?: string;
 
-  // Skills / SocialLinks
+  // Skills
   subcategory?: string;
   name?: string;
   icon?: string;
@@ -31,4 +31,7 @@ export interface NotionRecord {
   start?: string;
   end?: string;
   dept_prog?: string;
+
+  // SocialLinks
+  color?: string;
 }
