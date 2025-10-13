@@ -27,7 +27,7 @@ type StaticPath = {
 export const getStaticPaths = async (): Promise<StaticPath[]> => {
   const PORTFOLIO_DATABASE_ID = import.meta.env.PORTFOLIO_DATABASE_ID;
   const pages = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, { 
-    types: '活動',
+    types: ['活動'],
     sorts: [{ property: 'event', direction: 'descending' }]
   });
 

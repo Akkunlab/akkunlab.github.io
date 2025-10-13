@@ -18,22 +18,17 @@ export interface NotionRecord {
   published?: boolean;
   image?: string;
 
-  // MediaCoverage
-  source?: string;
-  date?: string;
-
   // Skills / SocialLinks
   subcategory?: string;
   name?: string;
   icon?: string;
-  color?: string;
   
   // certifications
-  description?: string;
+  date?: string;
   mark?: boolean;
 
   // EducationCareer
-  dept_prog?: string;
   start?: string;
   end?: string;
+  dept_prog?: string;
 }

@@ -45,10 +45,10 @@ const { items, class: className } = Astro.props;
           {/* メタ情報 */}
           <div class="flex items-center justify-between my-2">
             <span class="inline-block text-sm text-red-300 font-mono bg-red-400/15 px-3 py-1 rounded-full border border-red-400/30 shadow-[0_0_5px_rgba(239,68,68,0.3)]">
-              {item.source}
+              {item.summary}
             </span>
             <time class="text-sm text-slate-400 font-mono">
-              {item.date ? item.date.replace(/-/g, '.') : ''}
+              {item.publish ? item.publish.replace(/-/g, '.') : ''}
             </time>
           </div>
 

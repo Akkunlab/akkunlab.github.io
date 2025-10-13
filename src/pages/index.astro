@@ -34,31 +34,31 @@ import {
 const PORTFOLIO_DATABASE_ID = import.meta.env.PORTFOLIO_DATABASE_ID;
 const EDUCATION_CAREER_DATABASE_ID = import.meta.env.EDUCATION_CAREER_DATABASE_ID;
 const CERTIFICATIONS_DATABASE_ID = import.meta.env.CERTIFICATIONS_DATABASE_ID;
-const MEDIA_COVERAGE_DATABASE_ID = import.meta.env.MEDIA_COVERAGE_DATABASE_ID;
 const SKILLS_INTERESTS_DATABASE_ID = import.meta.env.SKILLS_INTERESTS_DATABASE_ID;
 const SOCIAL_LINKS_DATABASE_ID = import.meta.env.SOCIAL_LINKS_DATABASE_ID;
 
-const works = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, { 
-  types: '作品',
+const works = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, {
+  types: ['作品', '記事'],
   sorts: [{ property: 'event', direction: 'descending' }]
 });
 const activities = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, { 
-  types: '活動',
+  types: ['活動'],
   sorts: [{ property: 'event', direction: 'descending' }]
 });
 const careers = await fetchNotionPageList(EDUCATION_CAREER_DATABASE_ID, {
-  types: 'career',
+  types: ['career'],
   sorts: [{ property: 'start', direction: 'descending' }]
 });
 const educations = await fetchNotionPageList(EDUCATION_CAREER_DATABASE_ID, {
-  types: 'education',
+  types: ['education'],
   sorts: [{ property: 'start', direction: 'descending' }]
 });
 const certifications = await fetchNotionPageList(CERTIFICATIONS_DATABASE_ID, {
   sorts: [{ property: 'date', direction: 'descending' }]
 });
-const mediaCoverage = await fetchNotionPageList(MEDIA_COVERAGE_DATABASE_ID, {
-  sorts: [{ property: 'date', direction: 'descending' }]
+const mediaCoverage = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, {
+  types: ['掲載'],
+  sorts: [{ property: 'event', direction: 'descending' }]
 });
 const skillInterests = await fetchNotionPageList(SKILLS_INTERESTS_DATABASE_ID, {
   sorts: [

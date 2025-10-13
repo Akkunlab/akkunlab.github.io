@@ -106,18 +106,21 @@ const pageToNotionRecord = async (
 // DB構造を見て published/types のフィルタを作成
 const buildListFilters = async (
   databaseId: string,
-  options?: { types?: string }
+  options?: { types?: string[] }
 ) => {
   const { types } = options || {};
   const filters: any[] = [];
+
   try {
     const dbInfo = await notion.databases.retrieve({ database_id: databaseId });
     const properties = (dbInfo as any).properties;
+
     if (properties?.published?.type === 'checkbox') {
       filters.push({ property: 'published', checkbox: { equals: true } });
     }
     if (types && properties?.types?.type === 'select') {
-      filters.push({ property: 'types', select: { equals: types } });
+      const orFilters = types.map(t => ({ property: 'types', select: { equals: t } }));
+      filters.push({ or: orFilters });
     }
   } catch (error) {
     console.warn('Database structure check failed, proceeding without filters:', error);
@@ -187,7 +190,7 @@ const listChangedPageIdsSince = async (
  * @param dbProps 
  * @returns true: マッチ, false: マッチしない
  */
-const doesPageMatchFilters = (page: any, options?: { types?: string }, dbProps?: any): boolean => {
+const doesPageMatchFilters = (page: any, options?: { types?: string[] }, dbProps?: any): boolean => {
   const properties = page?.properties || {};
 
   if (dbProps?.published?.type === 'checkbox') {
@@ -195,10 +198,9 @@ const doesPageMatchFilters = (page: any, options?: { types?: string }, dbProps?:
     if (!published) return false;
   }
 
-  // types チェック
   if (options?.types && dbProps?.types?.type === 'select') {
     const typeVal = getSelect(properties.types);
-    if (typeVal !== options.types) return false;
+    if (!options.types.includes(typeVal)) return false;
   }
 
   return true;
@@ -215,7 +217,7 @@ const doesPageMatchFilters = (page: any, options?: { types?: string }, dbProps?:
 export const fetchNotionPageList = async (
   databaseId: string, 
   options?: {
-    types?: string;
+    types?: string[];
     sorts?: Array<(
       | { property: string }
       | { timestamp: 'created_time' | 'last_edited_time' }
