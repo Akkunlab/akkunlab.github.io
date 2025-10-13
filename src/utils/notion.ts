@@ -56,6 +56,8 @@ const pageToNotionRecord = async (
 ): Promise<NotionRecord> => {
   const record: Partial<NotionRecord> = {
     id,
+
+    // Portfolio
     slug: getRichText(properties.slug),
     types: getSelect(properties.types),
     title: getTitle(properties.title),
@@ -70,24 +72,22 @@ const pageToNotionRecord = async (
     published: getCheckbox(properties.published),
     image: (await fetchNotionPage(id))?.ogImage ?? OGP_IMAGE,
 
-    // MediaCoverage
-    source: getRichText(properties.source),
-    date: getDate(properties.date),
-
-    // Skills / SocialLinks
+    // Skills
     subcategory: getSelect(properties.subcategory),
     name: getTitle(properties.name),
     icon: getRichText(properties.icon),
-    color: getRichText(properties.color),
 
     // Certifications
-    description: getRichText(properties.description),
+    date: getDate(properties.date),
     mark: getCheckbox(properties.mark),
 
     // EducationCareer
-    dept_prog: getRichText(properties.dept_prog),
     start: getDate(properties.start),
     end: getDate(properties.end),
+    dept_prog: getRichText(properties.dept_prog),
+
+    // SocialLinks
+    color: getRichText(properties.color),
   };
 
   const cleanedRecord = Object.fromEntries(
