@@ -18,8 +18,9 @@ let localStore: Record<string, CacheEntry<any>> | null = null;
 // Cloudflare KV 設定
 const { CF_ACCOUNT_ID, CF_KV_NAMESPACE_ID, CF_API_TOKEN, MODE } = import.meta.env;
 
-const isKVConfigured = () => Boolean(CF_ACCOUNT_ID && CF_KV_NAMESPACE_ID && CF_API_TOKEN);
 const isProduction = MODE === 'production';
+const isKVConfigured = () => Boolean(CF_ACCOUNT_ID && CF_KV_NAMESPACE_ID && CF_API_TOKEN);
+const isKVAvailable = () => isProduction && isKVConfigured();
 
 if (isProduction && !isKVConfigured()) {
   throw new Error('Cloudflare KV environment variables (CF_ACCOUNT_ID, CF_KV_NAMESPACE_ID, CF_API_TOKEN) are required in production.');
@@ -29,7 +30,7 @@ const kvBaseUrl = `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID
 
 /** Cloudflare KV からキャッシュを取得 */
 const kvGet = async <T,>(key: string): Promise<CacheEntry<T> | null> => {
-  if (!isKVConfigured()) return null;
+  if (!isKVAvailable()) return null;
   try {
     const res = await fetch(`${kvBaseUrl}/${encodeURIComponent(key)}`, {
       method: 'GET',
@@ -49,7 +50,7 @@ const kvGet = async <T,>(key: string): Promise<CacheEntry<T> | null> => {
 
 /** Cloudflare KV へキャッシュを保存 */
 const kvSet = async <T,>(key: string, entry: CacheEntry<T>): Promise<boolean> => {
-  if (!isKVConfigured()) return false;
+  if (!isKVAvailable()) return false;
   try {
     const res = await fetch(`${kvBaseUrl}/${encodeURIComponent(key)}`, {
       method: 'PUT',
@@ -101,7 +102,7 @@ export const getCache = async <T,>(key: string): Promise<CacheEntry<T> | null> =
   const mem = memoryStore[key] as CacheEntry<T> | undefined;
 
   if (mem) return mem;
-  if (isKVConfigured()) {
+  if (isKVAvailable()) {
     const fromKV = await kvGet<T>(key);
     if (fromKV) {
       memoryStore[key] = fromKV;
@@ -126,7 +127,7 @@ export const setCache = async <T,>(key: string, entry: CacheEntry<T>) => {
   memoryStore[key] = entry;
 
   // KV が利用可能ならKVへ保存
-  if (isKVConfigured()) {
+  if (isKVAvailable()) {
     await kvSet<T>(key, entry);
     return;
   }
