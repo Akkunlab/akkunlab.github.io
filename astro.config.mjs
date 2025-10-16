@@ -20,7 +20,7 @@ export default defineConfig({
     robotsTxt({
       policy: [{
         userAgent: '*',
-        allow: '/'
+        disallow: '/'
       }]
     }),
     optimizeImages(),
