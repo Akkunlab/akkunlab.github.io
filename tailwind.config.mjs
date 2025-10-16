@@ -50,6 +50,10 @@ module.exports = {
           from: { opacity: '0', transform: 'translateY(30px)' },
           to: { opacity: '1', transform: 'translateY(0)' }
         },
+        fadeInRight: {
+          from: { opacity: '0', transform: 'translateX(30px)' },
+          to: { opacity: '1', transform: 'translateX(0)' }
+        },
         fadeOut: {
           from: { opacity: 1 },
           to: { opacity: 0 }
@@ -179,6 +183,7 @@ module.exports = {
         slideInOut: 'slideInOut 3s cubic-bezier(0.18, 0.9, 0.18, 0.9) both',
         fadeIn: 'fadeIn 0.5s ease-out forwards',
         fadeInUp: 'fadeInUp 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards',
+        fadeInRight: 'fadeInRight 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards',
         fadeOut: 'fadeOut 1.5s ease-out forwards',
         carousel: 'carousel 14s cubic-bezier(0.77, 0, 0.18, 1) infinite',
         textReveal: 'textReveal 1s cubic-bezier(0.77, 0, 0.18, 1) forwards',

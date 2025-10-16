@@ -81,6 +81,15 @@ const animateTextFadeIn = (element: Element): void => {
 };
 
 /**
+ * スライドインアニメーション
+ * @param element - アニメーションを適用する要素
+ */
+const animateSlideInRight = (element: Element): void => {
+  element.classList.add('animate-fadeInRight');
+  element.classList.remove('opacity-0', 'translate-x-8');
+};
+
+/**
  * Workアイテムのアニメーション
  * @param element - アニメーションを適用する要素
  */
@@ -155,6 +164,8 @@ const createIntersectionObserver = (heroTexts: NodeListOf<Element>): Intersectio
           animateHeroText(heroTexts);
         } else if (entry.target.classList.contains('work-item')) {
           animateWorkItem(entry.target);
+        } else if (entry.target.classList.contains('slide-in-right')) {
+          animateSlideInRight(entry.target);
         } else if (entry.target.classList.contains('fade-in-text')) {
           animateTextFadeIn(entry.target);
         }
@@ -286,6 +297,29 @@ const setupTextAnimation = (
 };
 
 /**
+ * スライドインアニメーションの設定
+ * @param elements - 対象となる要素のリスト
+ * @param observer - Intersection Observer
+ */
+const setupSlideInRightAnimation = (
+  elements: NodeListOf<Element>,
+  observer: IntersectionObserver
+): void => {
+  elements.forEach((element: Element) => {
+    const rect: DOMRect = element.getBoundingClientRect();
+    const isVisible: boolean = 
+      rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.bottom >= 0;
+
+    if (!isVisible) {
+      observer.observe(element);
+    } else {
+      animateSlideInRight(element);
+    }
+  });
+};
+
+/**
  * スクロールに関する全アニメーションの設定を行う
  */
 export const setupScrollAnimations = (): void => {
@@ -295,6 +329,7 @@ export const setupScrollAnimations = (): void => {
   const heroTextContainer: Element | null = document.querySelector('.hero-text');
   const heroTexts: NodeListOf<Element> = document.querySelectorAll('.hero-text span');
   const fadeInTexts: NodeListOf<Element> = document.querySelectorAll('.fade-in-text');
+  const slideInRightElements: NodeListOf<Element> = document.querySelectorAll('.slide-in-right');
 
   // Intersection Observerの作成
   const observer: IntersectionObserver = createIntersectionObserver(heroTexts);
@@ -307,6 +342,9 @@ export const setupScrollAnimations = (): void => {
 
   // テキストのフェードインアニメーション設定
   setupTextAnimation(fadeInTexts, observer);
+
+  // 横方向のスライドアニメーション設定
+  setupSlideInRightAnimation(slideInRightElements, observer);
 
   // スムーススクロールの設定
   setupSmoothScroll();

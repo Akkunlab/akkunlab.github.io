@@ -11,7 +11,7 @@ const { items, class: className } = Astro.props;
 
 <div class={`cyber-media-list space-y-4 ${className}`}>
   {items.map((item) => (
-    <article class="cyber-media-item fade-in-text opacity-0 translate-y-8 group">
+    <article class="cyber-media-item slide-in-right opacity-0 translate-x-8 group">
       <a 
         href={item.link} 
         class="block relative p-3 md:p-4 bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-sm border border-slate-600/50 rounded-lg overflow-hidden group-hover:border-red-400/60 group-hover:-translate-y-0.5 group-hover:scale-[1.01] group-hover:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-2px_rgba(0,0,0,0.05),0_0_0_1px_rgba(239,68,68,0.2),0_0_25px_rgba(239,68,68,0.3),inset_0_1px_0_rgba(255,255,255,0.1)] transition-all duration-300"
