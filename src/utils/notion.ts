@@ -3,30 +3,149 @@ import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoint
 import { NotionConverter } from 'notion-to-md';
 import { MDXRenderer } from 'notion-to-md/plugins/renderer';
 import * as path from 'path';
-import * as fs from 'fs/promises';
 import * as fssync from 'fs';
-import { getCache, setCache, isTTLValid } from './cache';
-
-import { IMAGE_FORMAT, OGP_IMAGE } from '@/constants';
+import {
+  CACHE_TTL_MS,
+  getCache,
+  setCache,
+  isTTLValid,
+  getDevImageDirectory,
+  getDevImagePublicPath,
+} from './cache';
+import { ensureImageCached } from './imageCache';
+import { IMAGE_FORMAT, IMAGE_QUALITY, OGP_IMAGE } from '@/constants';
 import type { NotionRecord, Tag } from '@/types';
-
-const OUTPUT_DIR = './dist/_astro';
-const ASTRO_DIR = '/_astro';
 
 const notion = new Client({ auth: import.meta.env.NOTION_TOKEN });
 const renderer = new MDXRenderer();
 
-const makeListCacheKey = (databaseId: string, options?: any) => `notion:list:${databaseId}:${JSON.stringify(options ?? {})}`;
-const makePageCacheKey = (pageId: string, isProduction: boolean) => `notion:page:${pageId}:${isProduction ? 'prod' : 'dev'}`;
+const makeListCacheKey = (databaseId: string, options?: any) =>
+  `notion:list:${databaseId}:${JSON.stringify(options ?? {})}`;
+const makePageCacheKey = (pageId: string, isProduction: boolean) =>
+  `notion:page:${pageId}:${isProduction ? 'prod' : 'dev'}`;
 
-/* ヘルパー */
+const DEV_PAGE_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+const IMAGE_CAPTURE_REGEX = /!\[[^\]]*]\(([^)]+)\)/g;
+
+const isHttpUrl = (value: string) => /^https?:\/\//i.test(value);
+const escapeRegex = (value: string) => value.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&');
+
+/**
+ * 開発環境でキャッシュした画像のローカルパスを要求
+ * @param publicUrl 公開パス
+ * @returns 実ファイルのパス（存在しない場合は null）
+ */
+const resolveDevFsPath = (publicUrl: string): string | null => {
+  const base = getDevImagePublicPath();
+  if (!publicUrl || !base || !publicUrl.startsWith(base)) return null;
+
+  const relative = publicUrl.slice(base.length).replace(/^\/+/, '');
+  if (!relative) return null;
+
+  return path.join(getDevImageDirectory(), relative);
+};
+
+/**
+ * 開発用キャッシュに必要な画像がそろっているか確認
+ * @param content Markdown 変換後の本文
+ * @param ogImage OGP 画像のパス
+ * @returns すべての画像が利用可能なら true
+ */
+const devAssetsAvailable = (content: string, ogImage: string): boolean => {
+  const base = getDevImagePublicPath();
+  if (!base) return true;
+
+  const targets = new Set<string>();
+  if (ogImage?.startsWith(base)) targets.add(ogImage);
+
+  const escapedBase = escapeRegex(base);
+  const regex = new RegExp(`!\[[^\]]*]\((${escapedBase}[^)]+)\)`, 'g');
+
+  let match: RegExpExecArray | null;
+  while ((match = regex.exec(content))) {
+    const url = match[1];
+    if (url) targets.add(url);
+  }
+
+  for (const publicUrl of targets) {
+    const fsPath = resolveDevFsPath(publicUrl);
+    if (fsPath && !fssync.existsSync(fsPath)) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+/**
+ * Markdown 内の画像をキャッシュに取り込み、参照を差し替える
+ * @param markdown Markdown 文字列
+ * @returns 変換後の本文と OGP 画像
+ */
+const processMarkdownImages = async (
+  markdown: string,
+): Promise<{ content: string; ogImage: string }> => {
+  const matches = Array.from(markdown.matchAll(IMAGE_CAPTURE_REGEX));
+  if (matches.length === 0) return { content: markdown, ogImage: OGP_IMAGE };
+
+  const replacements = new Map<string, string>();
+  let ogImage = OGP_IMAGE;
+
+  for (const match of matches) {
+    const originalUrl = match[1]?.trim();
+    if (!originalUrl || replacements.has(originalUrl)) continue;
+
+    if (!isHttpUrl(originalUrl)) {
+      if (ogImage === OGP_IMAGE) ogImage = originalUrl;
+      continue;
+    }
+
+    try {
+      const { publicUrl } = await ensureImageCached(originalUrl, {
+        format: IMAGE_FORMAT,
+        quality: IMAGE_QUALITY,
+      });
+
+      replacements.set(originalUrl, publicUrl);
+      if (ogImage === OGP_IMAGE) ogImage = publicUrl;
+    } catch (error) {
+      console.warn('Failed to cache Notion image:', error);
+    }
+  }
+
+  let processed = markdown;
+
+  replacements.forEach((replacement, original) => {
+    processed = processed.replaceAll(`(${original})`, `(${replacement})`);
+  });
+
+  if (ogImage === OGP_IMAGE) {
+    const fallback = matches
+      .map(match => replacements.get(match[1]) ?? match[1])
+      .find(Boolean);
+    if (fallback) ogImage = fallback as string;
+  }
+
+  return { content: processed, ogImage };
+};
+
+/* ヘルパー関数 */
+/**
+ * Notion プロパティから安全に値を取り出す
+ * @param property プロパティ本体
+ * @param type 期待する型
+ * @param fallback 取得できなかった場合の既定値
+ * @param extract 実際に値を抜き出す処理
+ * @returns 抽出した値
+ */
 const getProperty = <T>(property: any, type: string, fallback: T, extract: (prop: any) => T): T =>
   property?.type === type ? extract(property) : fallback;
 
 const getRichText = (p: any) => getProperty(p, 'rich_text', '', prop => prop.rich_text[0]?.plain_text || '');
 const getSelect = (p: any) => getProperty(p, 'select', '', prop => prop.select?.name || '');
 const getTitle = (p: any) => getProperty(p, 'title', '', prop => prop.title[0]?.plain_text || '');
-const getMultiSelect = (p: any) => getProperty(p, 'multi_select', [], prop => prop.multi_select.map((tag: Tag) => ({ id: tag.id, name: tag.name })));
+const getMultiSelect = (p: any) =>
+  getProperty(p, 'multi_select', [], prop => prop.multi_select.map((tag: Tag) => ({ id: tag.id, name: tag.name })));
 const getNumber = (p: any) => getProperty(p, 'number', '', prop => prop.number?.toString() || '');
 const getUrl = (p: any) => getProperty(p, 'url', '', prop => prop.url || '');
 const getDate = (p: any) => getProperty(p, 'date', '', prop => prop.date?.start || '');
@@ -34,29 +153,26 @@ const getCheckbox = (p: any) => getProperty(p, 'checkbox', false, prop => prop.c
 const getLastEdited = (p: any) => getProperty(p, 'last_edited_time', '', prop => prop.last_edited_time);
 
 /**
- * 空段落なら &nbsp; を返す
+ * 空段落を &nbsp; に変換するトランスフォーマを設定
  */
 renderer.createBlockTransformer('paragraph', {
   transform: async ({ block, utils }) => {
-    if (block.paragraph.rich_text.length === 0) return '&nbsp;\n';
-
+    if (block.paragraph.rich_text.length === 0) return '&nbsp;\\n';
     const text = await utils.transformRichText(block.paragraph.rich_text);
-
-    return `${text}\n\n`;
+    return `${text}\\n\\n`;
   },
 });
 
 /**
- * ページをNotionRecordオブジェクトに変換
- * @param page Notionページ
- * @returns NotionRecordオブジェクト
+ * Notion ページを NotionRecord オブジェクトへ整形
+ * @param page Notion ページ
+ * @returns NotionRecord オブジェクト
  */
 const pageToNotionRecord = async (
-  { id, properties }: PageObjectResponse
+  { id, properties }: PageObjectResponse,
 ): Promise<NotionRecord> => {
   const record: Partial<NotionRecord> = {
     id,
-
     // Portfolio
     slug: getRichText(properties.slug),
     types: getSelect(properties.types),
@@ -91,22 +207,24 @@ const pageToNotionRecord = async (
   };
 
   const cleanedRecord = Object.fromEntries(
-    Object.entries(record).filter(([key, v]) => {
-      if (v === undefined) return false;                    // undefined
-      if (v === "") return false;                           // 空文字
-      if (Array.isArray(v) && v.length === 0) return false; // 空配列
-      if (key === "published" && v === true) return false;  // published=true は削除
+    Object.entries(record).filter(([key, value]) => {
+      if (value === undefined) return false;
+      if (value === '') return false;
+      if (Array.isArray(value) && value.length === 0) return false;
+      if (key === 'published' && value === true) return false;
       return true;
-    })
+    }),
   ) as Partial<NotionRecord>;
 
   return cleanedRecord as NotionRecord;
 };
 
-// DB構造を見て published/types のフィルタを作成
+/**
+ * DB 構造を参照して published/types のフィルタ条件を作成
+ */
 const buildListFilters = async (
   databaseId: string,
-  options?: { types?: string[] }
+  options?: { types?: string[] },
 ) => {
   const { types } = options || {};
   const filters: any[] = [];
@@ -119,19 +237,22 @@ const buildListFilters = async (
       filters.push({ property: 'published', checkbox: { equals: true } });
     }
     if (types && properties?.types?.type === 'select') {
-      const orFilters = types.map(t => ({ property: 'types', select: { equals: t } }));
+      const orFilters = types.map(type => ({ property: 'types', select: { equals: type } }));
       filters.push({ or: orFilters });
     }
   } catch (error) {
     console.warn('Database structure check failed, proceeding without filters:', error);
   }
+
   return filters;
 };
 
-// last_edited_time を用いたデータベース変更検知
+/**
+ * last_edited_time を利用してデータベースの変更を検知
+ */
 const hasDatabaseChangedSince = async (
   databaseId: string,
-  sinceISO: string
+  sinceISO: string,
 ): Promise<boolean> => {
   if (!sinceISO) return true;
 
@@ -149,19 +270,16 @@ const hasDatabaseChangedSince = async (
 };
 
 /**
- * 変更のあったページIDを取得
- * @param databaseId 
- * @param sinceISO 
- * @returns 変更のあったページIDのリスト
+ * 指定時刻以降に更新されたページ ID を列挙
  */
 const listChangedPageIdsSince = async (
   databaseId: string,
-  sinceISO: string
+  sinceISO: string,
 ): Promise<string[]> => {
   if (!sinceISO) return [];
 
   const changedIds: string[] = [];
-  let cursor: string | undefined = undefined;
+  let cursor: string | undefined;
 
   while (true) {
     const resp = await notion.databases.query({
@@ -171,12 +289,11 @@ const listChangedPageIdsSince = async (
       filter: { timestamp: 'last_edited_time', last_edited_time: { after: sinceISO } } as any,
     });
 
-    for (const r of resp.results as any[]) {
-      if (r?.id) changedIds.push(r.id);
+    for (const result of resp.results as any[]) {
+      if (result?.id) changedIds.push(result.id);
     }
 
     if (!resp.has_more || !resp.next_cursor) break;
-  
     cursor = resp.next_cursor as string;
   }
 
@@ -184,13 +301,13 @@ const listChangedPageIdsSince = async (
 };
 
 /**
- * ページが現在のフィルタにマッチするかを評価
- * @param page 
- * @param options 
- * @param dbProps 
- * @returns true: マッチ, false: マッチしない
+ * ページがフィルタ条件に一致するかを評価
  */
-const doesPageMatchFilters = (page: any, options?: { types?: string[] }, dbProps?: any): boolean => {
+const doesPageMatchFilters = (
+  page: any,
+  options?: { types?: string[] },
+  dbProps?: any,
+): boolean => {
   const properties = page?.properties || {};
 
   if (dbProps?.published?.type === 'checkbox') {
@@ -207,38 +324,35 @@ const doesPageMatchFilters = (page: any, options?: { types?: string[] }, dbProps
 };
 
 /**
- * Notionデータベースからページのリストを取得（publishedプロパティがある場合はtrueのみ取得）
- * @param databaseId - 対象のNotionデータベースID
- * @param options - オプション設定
- * @param options.types - フィルタリングするタイプ（typesプロパティが存在する場合のみ適用）
- * @param options.sorts - ソート設定の配列
- * @returns Notionページのリスト
+ * Notion データベースからページ一覧を取得し、キャッシュを更新
  */
 export const fetchNotionPageList = async (
-  databaseId: string, 
+  databaseId: string,
   options?: {
     types?: string[];
-    sorts?: Array<(
-      | { property: string }
-      | { timestamp: 'created_time' | 'last_edited_time' }
-    ) & { direction: 'ascending' | 'descending' }>;
-  }
+    sorts?: Array<
+      (
+        | { property: string }
+        | { timestamp: 'created_time' | 'last_edited_time' }
+      ) & { direction: 'ascending' | 'descending' }
+    >;
+  },
 ): Promise<NotionRecord[]> => {
-
   if (!databaseId) {
     throw new Error('databaseId is not defined in the environment variables.');
   }
 
   const { sorts } = options || {};
+  const isProduction = import.meta.env.MODE === 'production';
+  const listCacheTtl = isProduction ? CACHE_TTL_MS : DEV_PAGE_CACHE_TTL_MS;
 
-  // このリスト用のキャッシュキー
   const cacheKey = makeListCacheKey(databaseId, { ...(options || {}), sorts });
   const cached = await getCache<NotionRecord[]>(cacheKey);
 
-  // TTL内のキャッシュがあればAPIを叩かず即返却
-  if (cached && isTTLValid(cached.cachedAt)) return cached.value;
+  if (cached && isTTLValid(cached.cachedAt, listCacheTtl)) {
+    return cached.value;
+  }
 
-  // データベースのプロパティ情報を先に取得
   let dbProps: any = null;
   try {
     const dbInfo = await notion.databases.retrieve({ database_id: databaseId });
@@ -247,7 +361,6 @@ export const fetchNotionPageList = async (
     console.warn('Failed to get database properties:', error);
   }
 
-  // TTL切れ後に変更検知、未変更なら cachedAt を更新して返却
   if (cached) {
     try {
       const changed = await hasDatabaseChangedSince(databaseId, cached.lastChange ?? '');
@@ -257,7 +370,6 @@ export const fetchNotionPageList = async (
         return cached.value;
       }
 
-      // 変更のあったページID一覧
       const changedIds = await listChangedPageIdsSince(databaseId, cached.lastChange ?? '');
 
       if (changedIds.length === 0) {
@@ -265,85 +377,94 @@ export const fetchNotionPageList = async (
         return cached.value;
       }
 
-      // タイムスタンプソートが要求される場合はフル再取得
-      const requiresFullSort = (sorts || []).some((s) => 'timestamp' in s);
-
-      // 変更件数が大きすぎる場合はフル再取得に切り替え
+      const requiresFullSort = (sorts || []).some(sort => 'timestamp' in sort);
       const CHANGED_THRESHOLD = 100;
 
       if (changedIds.length > CHANGED_THRESHOLD || requiresFullSort) {
-        // フル再取得
         const filters = await buildListFilters(databaseId, options);
         const queryOptions: any = { database_id: databaseId };
 
-        if (filters.length > 0) queryOptions.filter = filters.length === 1 ? filters[0] : { and: filters };
-        if (sorts && sorts.length > 0) queryOptions.sorts = sorts;
+        if (filters.length > 0) {
+          queryOptions.filter = filters.length === 1 ? filters[0] : { and: filters };
+        }
+        if (sorts && sorts.length > 0) {
+          queryOptions.sorts = sorts;
+        }
 
         const response = await notion.databases.query(queryOptions);
-        const maxEdited = response.results.map((r: any) => r.last_edited_time as string | undefined).filter(Boolean).sort().pop() ?? '';
+        const maxEdited =
+          response.results
+            .map((r: any) => r.last_edited_time as string | undefined)
+            .filter(Boolean)
+            .sort()
+            .pop() ?? '';
         const records = await Promise.all(response.results.map(page => pageToNotionRecord(page as PageObjectResponse)));
-       
-        await setCache(cacheKey, { value: records, lastChange: maxEdited, cachedAt: Date.now() });
 
+        await setCache(cacheKey, { value: records, lastChange: maxEdited, cachedAt: Date.now() });
         return records;
       }
 
-      // 部分更新
       const byId = new Map<string, NotionRecord>();
-
-      for (const r of cached.value) byId.set(r.id, r);
+      for (const record of cached.value) {
+        byId.set(record.id, record);
+      }
 
       let maxEdited = cached.lastChange ?? '';
 
       for (const id of changedIds) {
         try {
-          const p = (await notion.pages.retrieve({ page_id: id })) as any;
-          const lastEdited = p.last_edited_time as string | undefined;
+          const page = (await notion.pages.retrieve({ page_id: id })) as any;
+          const lastEdited = page.last_edited_time as string | undefined;
           if (lastEdited && lastEdited > maxEdited) maxEdited = lastEdited;
 
-          if (doesPageMatchFilters(p, options, dbProps)) {
-            const rec = await pageToNotionRecord(p as PageObjectResponse);
-            byId.set(rec.id, rec);
+          if (doesPageMatchFilters(page, options, dbProps)) {
+            const record = await pageToNotionRecord(page as PageObjectResponse);
+            byId.set(record.id, record);
           } else {
             byId.delete(id);
           }
-        } catch (e) {
-          // 取得失敗時はスキップ
+        } catch (error) {
+          // ページ取得に失敗した場合はスキップ
         }
       }
 
-      // ソート適用
       let merged = Array.from(byId.values());
 
       if (sorts && sorts.length > 0) {
-        for (const s of sorts.slice().reverse()) {
-          const dir = s.direction === 'ascending' ? 1 : -1;
-          if ('property' in s) {
-            const prop = s.property;
-            merged = merged.sort((a: any, b: any) => ((a as any)[prop] ?? '') > ((b as any)[prop] ?? '') ? dir : -dir);
+        for (const sort of sorts.slice().reverse()) {
+          const direction = sort.direction === 'ascending' ? 1 : -1;
+          if ('property' in sort) {
+            const prop = sort.property;
+            merged = merged.sort((a: any, b: any) => ((a as any)[prop] ?? '') > ((b as any)[prop] ?? '') ? direction : -direction);
           }
         }
       }
 
       await setCache(cacheKey, { value: merged, lastChange: maxEdited, cachedAt: Date.now() });
-
       return merged;
-    } catch (e) {
+    } catch (error) {
       await setCache(cacheKey, { ...cached, cachedAt: Date.now() });
-
       return cached.value;
     }
   }
 
-  // キャッシュが無い場合はフル取得
   const filters = await buildListFilters(databaseId, options);
   const queryOptions: any = { database_id: databaseId };
 
-  if (filters.length > 0) queryOptions.filter = filters.length === 1 ? filters[0] : { and: filters };
-  if (sorts && sorts.length > 0) queryOptions.sorts = sorts;
+  if (filters.length > 0) {
+    queryOptions.filter = filters.length === 1 ? filters[0] : { and: filters };
+  }
+  if (sorts && sorts.length > 0) {
+    queryOptions.sorts = sorts;
+  }
 
   const response = await notion.databases.query(queryOptions);
-  const maxEdited = response.results.map((r: any) => r.last_edited_time as string | undefined).filter(Boolean).sort().pop() ?? '';
+  const maxEdited =
+    response.results
+      .map((r: any) => r.last_edited_time as string | undefined)
+      .filter(Boolean)
+      .sort()
+      .pop() ?? '';
   const records = await Promise.all(response.results.map(page => pageToNotionRecord(page as PageObjectResponse)));
 
   await setCache(cacheKey, { value: records, lastChange: maxEdited, cachedAt: Date.now() });
@@ -351,90 +472,73 @@ export const fetchNotionPageList = async (
 };
 
 /**
- * 指定ページをMarkdown文字列で取得（本番環境は画像をダウンロード）
- * @param pageId - ページID
- * @returns ページのコンテンツとOGP画像URL
+ * Notion ページを Markdown 文字列として取得し、画像をキャッシュ
+ * @param pageId ページ ID
+ * @returns ページ本文と OGP 画像
  */
-export const fetchNotionPage = async (pageId: string): Promise<{ content: string; ogImage: string } | null> => {
+export const fetchNotionPage = async (
+  pageId: string,
+): Promise<{ content: string; ogImage: string } | null> => {
+  const isProduction = import.meta.env.MODE === 'production';
+  const cacheKey = makePageCacheKey(pageId, isProduction);
+  const cached = await getCache<{ content: string; ogImage: string }>(cacheKey);
+
+  const ttl = isProduction ? CACHE_TTL_MS : DEV_PAGE_CACHE_TTL_MS;
+  const assetsReady = !cached || isProduction || devAssetsAvailable(cached.value.content, cached.value.ogImage);
+
+  if (cached && assetsReady && isTTLValid(cached.cachedAt, ttl)) {
+    return cached.value;
+  }
+
+  let pageMeta: { last_edited_time?: string } | null = null;
+  try {
+    pageMeta = (await notion.pages.retrieve({ page_id: pageId })) as any;
+  } catch (error) {
+    if (cached && assetsReady) {
+      console.warn('Failed to retrieve page metadata, using cached content:', error);
+      return cached.value;
+    }
+    console.error('Failed to retrieve page metadata:', error);
+    return null;
+  }
+
+  if (
+    cached &&
+    assetsReady &&
+    pageMeta?.last_edited_time &&
+    cached.lastChange === pageMeta.last_edited_time
+  ) {
+    await setCache(cacheKey, { ...cached, cachedAt: Date.now() });
+    return cached.value;
+  }
+
   try {
     const n2m = new NotionConverter(notion).withRenderer(renderer);
-    const isProduction = import.meta.env.MODE === 'production';
-    let ogImage = OGP_IMAGE;
-
-    // キャッシュ: まずページメタで更新有無を軽量チェック
-    const cacheKey = makePageCacheKey(pageId, isProduction);
-    const cached = await getCache<{ content: string; ogImage: string }>(cacheKey);
-
-    // TTL内のキャッシュがあれば即返却
-    if (cached && isTTLValid(cached.cachedAt)) {
-      if (isProduction && cached.value.ogImage.startsWith(ASTRO_DIR)) {
-        const filename = path.basename(cached.value.ogImage);
-        const localPath = path.join(OUTPUT_DIR, filename);
-        if (fssync.existsSync(localPath)) {
-          return cached.value;
-        }
-      } else {
-        return cached.value;
-      }
-    }
-
-    let pageMeta: { last_edited_time?: string } | null = null;
-    try {
-      pageMeta = (await notion.pages.retrieve({ page_id: pageId })) as any;
-    } catch (e) {
-      if (cached && isTTLValid(cached.cachedAt)) return cached.value;
-    }
-
-    // 変更がなくキャッシュがあれば即返却
-    if (cached && pageMeta?.last_edited_time && cached.lastChange === pageMeta.last_edited_time) {
-      if (isProduction && cached.value.ogImage.startsWith(ASTRO_DIR)) {
-        const filename = path.basename(cached.value.ogImage);
-        const localPath = path.join(OUTPUT_DIR, filename);
-        if (fssync.existsSync(localPath)) {
-          await setCache(cacheKey, { ...cached, cachedAt: Date.now() });
-          return cached.value;
-        }
-      } else {
-        await setCache(cacheKey, { ...cached, cachedAt: Date.now() });
-        return cached.value;
-      }
-    }
-
-    if (isProduction) {
-
-      // 本番環境：画像をダウンロード
-      await fs.mkdir(OUTPUT_DIR, { recursive: true });
-
-      n2m.downloadMediaTo({
-        outputDir: OUTPUT_DIR,
-        transformPath: (local) => {
-          const filename = `${path.parse(local).name}.${IMAGE_FORMAT}`;
-          ogImage = path.posix.join(ASTRO_DIR, filename);
-          return ogImage;
-        },
-        preserveExternalUrls: true,
-      });
-    } else {
-
-      // 開発環境：画像をダウンロードしない
-      n2m.useDirectStrategy();
-    }
+    n2m.useDirectStrategy();
 
     const { content } = await n2m.convert(pageId);
+    const processed = await processMarkdownImages(content);
 
-    // 開発環境の場合、コンテンツから最初の画像を取得
-    if (!isProduction) ogImage = content.match(/!\[[^\]]*]\(([^)]+)\)/)?.[1] ?? OGP_IMAGE;
+    const result = {
+      content: processed.content,
+      ogImage: processed.ogImage || OGP_IMAGE,
+    };
 
-    const result = { content, ogImage };
-
-    // 新しいコンテンツと最終変更時刻でキャッシュを更新
-    const lastChange = (pageMeta?.last_edited_time as string) ?? undefined;
-
-    await setCache(cacheKey, { value: result, lastChange, cachedAt: Date.now() });
+    await setCache(cacheKey, {
+      value: result,
+      lastChange: pageMeta?.last_edited_time ?? undefined,
+      cachedAt: Date.now(),
+    });
 
     return result;
   } catch (error) {
     console.error('Error fetching page from Notion:', error);
+
+    if (cached && assetsReady) {
+      console.warn('Falling back to cached page content due to error.');
+      return cached.value;
+    }
+
     return null;
   }
 };

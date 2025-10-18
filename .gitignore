@@ -32,3 +32,4 @@ test/
 
 # local cache
 .cache/
+public/_notion-cache/
