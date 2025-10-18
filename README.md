@@ -41,3 +41,4 @@ All commands are run from the root of the project, from a terminal:
 - **Infrastructure**
   - [Cloudflare Pages](https://www.cloudflare.com/ja-jp/developer-platform/pages/)
   - [Cloudflare KV](https://www.cloudflare.com/ja-jp/developer-platform/products/workers-kv/)
+  - [Cloudflare R2](https://www.cloudflare.com/ja-jp/developer-platform/products/r2/)
