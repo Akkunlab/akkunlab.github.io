@@ -20,6 +20,8 @@ interface EnsureImageOptions {
 const { MODE } = import.meta.env;
 
 const isProduction = MODE === 'production';
+const MAX_WIDTH = 1920;
+const MAX_HEIGHT = 1080;
 
 /**
  * 指定したディレクトリが存在しない場合は作成
@@ -79,12 +81,23 @@ const downloadAndConvert = async (url: string, format: ImageFormat, quality: num
   const buffer = Buffer.from(arrayBuffer);
 
   const pipeline = sharp(buffer).rotate();
+  const metadata = await pipeline.metadata();
+  const { width = 0, height = 0 } = metadata;
 
-  if (format === 'avif') {
-    return pipeline.avif({ quality }).toBuffer();
+  let processedPipeline = pipeline;
+
+  if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+    processedPipeline = pipeline.resize(MAX_WIDTH, MAX_HEIGHT, {
+      fit: 'inside',
+      withoutEnlargement: true,
+    });
   }
 
-  return pipeline.webp({ quality }).toBuffer();
+  if (format === 'avif') {
+    return processedPipeline.avif({ quality }).toBuffer();
+  }
+
+  return processedPipeline.webp({ quality }).toBuffer();
 };
 
 let r2Client: S3Client | null = null;
