@@ -16,6 +16,11 @@ interface ImportMetaEnv {
 	readonly CF_ACCOUNT_ID: string;
 	readonly CF_KV_NAMESPACE_ID: string;
 	readonly CF_API_TOKEN: string;
+
+	// Cloudflare R2 (S3 compatible)
+	readonly CF_R2_ACCESS_KEY_ID: string;
+	readonly CF_R2_SECRET_ACCESS_KEY: string;
+	readonly CF_R2_BUCKET_NAME: string;
 }
 
 interface ImportMeta {
