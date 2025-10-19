@@ -21,6 +21,7 @@ interface ImportMetaEnv {
 	readonly CF_R2_ACCESS_KEY_ID: string;
 	readonly CF_R2_SECRET_ACCESS_KEY: string;
 	readonly CF_R2_BUCKET_NAME: string;
+	readonly CF_R2_PUBLIC_BASE_URL?: string;
 }
 
 interface ImportMeta {

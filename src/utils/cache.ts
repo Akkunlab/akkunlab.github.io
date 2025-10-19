@@ -25,6 +25,7 @@ const {
   CF_R2_ACCESS_KEY_ID,
   CF_R2_SECRET_ACCESS_KEY,
   CF_R2_BUCKET_NAME,
+  CF_R2_PUBLIC_BASE_URL,
 } = import.meta.env;
 
 const isProduction = MODE === 'production';
@@ -206,7 +207,9 @@ export const getR2Config = () => {
     accessKeyId: CF_R2_ACCESS_KEY_ID,
     secretAccessKey: CF_R2_SECRET_ACCESS_KEY,
     bucketName: CF_R2_BUCKET_NAME,
-    publicBaseUrl: `https://${CF_R2_BUCKET_NAME}.${CF_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    publicBaseUrl:
+      (CF_R2_PUBLIC_BASE_URL && CF_R2_PUBLIC_BASE_URL.replace(/\/+$/, '')) ||
+      `https://${CF_R2_BUCKET_NAME}.${CF_ACCOUNT_ID}.r2.cloudflarestorage.com`,
   };
 };
 

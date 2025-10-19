@@ -157,9 +157,9 @@ const getLastEdited = (p: any) => getProperty(p, 'last_edited_time', '', prop =>
  */
 renderer.createBlockTransformer('paragraph', {
   transform: async ({ block, utils }) => {
-    if (block.paragraph.rich_text.length === 0) return '&nbsp;\\n';
+    if (block.paragraph.rich_text.length === 0) return '&nbsp;\n';
     const text = await utils.transformRichText(block.paragraph.rich_text);
-    return `${text}\\n\\n`;
+    return `${text}\n\n`;
   },
 });
 

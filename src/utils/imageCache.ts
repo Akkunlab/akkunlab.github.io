@@ -23,6 +23,8 @@ const isProduction = MODE === 'production';
 const MAX_WIDTH = 1920;
 const MAX_HEIGHT = 1080;
 
+let r2Client: S3Client | null = null;
+
 /**
  * 指定したディレクトリが存在しない場合は作成
  * @param dir ディレクトリパス
@@ -46,7 +48,50 @@ const slugify = (input: string) =>
     .replace(/^-+|-+$/g, '') || 'image';
 
 /**
- * 画像 URL とフォーマットからキャッシュ用ファイル名を生成
+ * Notion の URL から blockId とファイル名を抽出
+ * @param urlObj URL オブジェクト
+ * @returns 抽出された識別情報
+ */
+const extractNotionIdentity = (urlObj: URL) => {
+  const segments = urlObj.pathname.split('/').filter(Boolean);
+  const lastSegment = segments.length > 0 ? segments[segments.length - 1] : undefined;
+  const decodedLast = lastSegment ? decodeURIComponent(lastSegment) : '';
+
+  const normalizeUuid = (value: string) => {
+    const hex = value.replace(/[^0-9a-f]/gi, '').toLowerCase();
+    return hex.length === 32 ? hex : '';
+  };
+
+  const identity: { blockId?: string; fileName?: string } = {};
+
+  const queryBlockId =
+    urlObj.searchParams.get('id') ??
+    urlObj.searchParams.get('blockId') ??
+    urlObj.searchParams.get('block_id');
+  if (queryBlockId) {
+    const normalized = normalizeUuid(queryBlockId);
+    identity.blockId = normalized || queryBlockId;
+  }
+
+  if (!identity.blockId) {
+    for (let i = segments.length - 1; i >= 0; i -= 1) {
+      const normalized = normalizeUuid(segments[i]);
+      if (normalized) {
+        identity.blockId = normalized;
+        break;
+      }
+    }
+  }
+
+  if (decodedLast && decodedLast !== 'download') {
+    identity.fileName = decodedLast;
+  }
+
+  return identity;
+};
+
+/**
+ * キャッシュ用のファイル名を構築
  * @param url 画像の取得元 URL
  * @param format 変換後のフォーマット
  * @returns キャッシュ用ファイル名
@@ -54,10 +99,20 @@ const slugify = (input: string) =>
 const buildFileName = (url: string, format: ImageFormat) => {
   try {
     const urlObj = new URL(url);
-    const base = decodeURIComponent(path.posix.basename(urlObj.pathname));
-    const { name } = path.posix.parse(base);
-    const hash = hashString(url);
-    return `${slugify(name)}-${hash.slice(0, 10)}.${format}`;
+    const { blockId, fileName } = extractNotionIdentity(urlObj);
+
+    const parsed = fileName ? path.posix.parse(fileName) : null;
+    const baseName = parsed?.name || fileName;
+    const safeBase = slugify(baseName || 'image');
+
+    const hashSourceParts: string[] = [];
+    if (blockId) hashSourceParts.push(blockId);
+    if (baseName) hashSourceParts.push(baseName);
+    if (hashSourceParts.length === 0) hashSourceParts.push(url);
+
+    const hash = hashString(hashSourceParts.join('_'));
+
+    return `${safeBase}-${hash.slice(0, 10)}.${format}`;
   } catch {
     const hash = hashString(url);
     return `${hash}.${format}`;
@@ -99,8 +154,6 @@ const downloadAndConvert = async (url: string, format: ImageFormat, quality: num
 
   return processedPipeline.webp({ quality }).toBuffer();
 };
-
-let r2Client: S3Client | null = null;
 
 /**
  * Cloudflare R2 へアクセスするための S3 互換クライアントを取得
@@ -155,7 +208,7 @@ export const ensureImageCached = async (
   }
 
   const { client, config } = getR2Client();
-  const objectKey = `notion/${fileName}`;
+  const objectKey = `portfolio/${fileName}`;
 
   try {
     await client.send(
@@ -164,7 +217,10 @@ export const ensureImageCached = async (
         Key: objectKey,
       }),
     );
-  } catch (error) {
+  } catch (error: any) {
+
+    if (error?.$metadata?.httpStatusCode !== 404) throw error;
+
     const buffer = await downloadAndConvert(sourceUrl, format, quality);
 
     await client.send(
@@ -177,10 +233,8 @@ export const ensureImageCached = async (
     );
   }
 
-  const baseUrl = `https://${config.bucketName}.${config.accountId}.r2.cloudflarestorage.com`;
-
   return {
-    publicUrl: `${baseUrl}/${objectKey}`,
+    publicUrl: `${config.publicBaseUrl}/${objectKey}`,
     objectKey,
   };
 };
