@@ -229,6 +229,7 @@ export const ensureImageCached = async (
         Key: objectKey,
         Body: buffer,
         ContentType: format === 'avif' ? 'image/avif' : 'image/webp',
+        CacheControl: 'public, max-age=31536000, immutable',
       }),
     );
   }
