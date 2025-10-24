@@ -54,11 +54,13 @@ const tags = buildTagsFromPages(pages);
     <!-- 活動コンテンツ -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20 mb-12">
       {pages.map((page) => (
-        <article class="work-item">
+        <article
+          class="work-item"
+          data-tags={generateTagString(page.tags, page.category)}
+        >
           <a
             href={`/activities/${page.slug}`}
             class="card card-item"
-            data-tags={generateTagString(page.tags, page.category)}
           >
             <AnimatedImage src={page.image ?? ''} alt={page.title ?? ''} class="aspect-video" />
             <div class="card-body p-0 pt-2">
