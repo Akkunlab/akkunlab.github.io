@@ -3,7 +3,7 @@
  * @param cards - フィルタリング対象のカード要素
  * @param tag - フィルタリングするタグ
  */
-const filterCards = (cards: NodeListOf<HTMLAnchorElement>, tag: string): void => {
+const filterCards = (cards: NodeListOf<HTMLElement>, tag: string): void => {
   cards.forEach(card => {
     const tags = (card.dataset.tags || '').split(',');
     card.style.display = (tag === 'all' || tags.includes(tag)) ? 'block' : 'none';
@@ -41,7 +41,7 @@ const setActiveButton = (buttons: NodeListOf<HTMLButtonElement>, tag: string): v
  */
 const setupButtonListeners = (
   buttons: NodeListOf<HTMLButtonElement>, 
-  cards: NodeListOf<HTMLAnchorElement>
+  cards: NodeListOf<HTMLElement>
 ): void => {
   buttons.forEach(button => {
     button.addEventListener('click', () => {
@@ -94,7 +94,7 @@ export const generateTagString = (
  */
 export const filterTags = (): void => {
   const buttons = document.querySelectorAll<HTMLButtonElement>('button.filter-btn');
-  const cards = document.querySelectorAll<HTMLAnchorElement>('.card-item');
+  const cards = document.querySelectorAll<HTMLElement>('.work-item');
   const urlParams = new URLSearchParams(window.location.search);
   const initialTag = urlParams.get('tag') || 'all';
 
