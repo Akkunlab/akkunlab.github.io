@@ -102,9 +102,12 @@ const shouldShowUpdatedDate = updated && publish &&
               {[category, ...(tags ?? []).map(tag => tag.name)]
                 .filter(Boolean)
                 .map((name) => (
-                  <span class="text-primary bg-primary/10 px-3 py-1 border border-button-border rounded-full">
-                    #{name}
-                  </span>
+                  <a
+                    class="text-primary bg-primary-content hover:bg-button-active/5 px-3 py-1 border border-button-border rounded-full shadow-md transition-colors duration-200 cursor-pointer select-none"
+                    href={`/works?tag=${encodeURIComponent(name.toLowerCase())}`}
+                  >
+                    {name}
+                  </a>
                 ))}
             </div>
           )}

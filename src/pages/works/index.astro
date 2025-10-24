@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets';
 import Layout from '@/layouts/Layout.astro';
 import { fetchNotionPageList } from '@/utils/notion';
-import { TAGS } from '@/constants';
+import { IMAGE_FORMAT, IMAGE_QUALITY, TAGS } from '@/constants';
 import SectionHeading from '@/components/SectionHeading.astro';
 import AnimatedImage from '@/components/AnimatedImage.astro';
 
@@ -23,7 +23,13 @@ const pages = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, {
       <Image 
         src={heroImage_1} 
         alt="作品背景画像" 
-        class="w-full h-full object-cover transform transition-transform ease-out duration-1000 will-change-transform" 
+        class="w-full h-full object-cover transform transition-transform ease-out duration-1000 will-change-transform"
+        loading="eager"
+        widths={[640, 960, 1280, 1536, 1920]}
+        sizes="100vw"
+        format={IMAGE_FORMAT}
+        quality={IMAGE_QUALITY}
+        fetchpriority="high"
       />
       <div class="absolute inset-0 bg-gradient-to-b from-white/10 via-white/80 to-white"></div>
     </div>

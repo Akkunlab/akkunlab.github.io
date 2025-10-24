@@ -3,6 +3,8 @@ import { Image } from 'astro:assets';
 import Layout from '@/layouts/Layout.astro';
 import Button from '@/components/Button.astro';
 import notFoundImage from '@/assets/images/404.png';
+
+import { IMAGE_FORMAT, IMAGE_QUALITY } from '@/constants';
 ---
 
 <Layout title="404">
@@ -37,6 +39,12 @@ import notFoundImage from '@/assets/images/404.png';
             src={notFoundImage} 
             alt="家出したキャラクター" 
             class="w-48 h-48 md:w-64 md:h-64 object-contain fade-in-text"
+            loading="eager"
+            widths={[192, 256]}
+            sizes="256px"
+            format={IMAGE_FORMAT}
+            quality={IMAGE_QUALITY}
+            fetchpriority="high"
           />
         </div>
       </div>
