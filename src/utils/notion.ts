@@ -13,6 +13,7 @@ import {
   getDevImagePublicPath,
 } from './cache';
 import { ensureImageCached } from './imageCache';
+import { normalizeTagName } from './filterTags';
 import { IMAGE_FORMAT, IMAGE_QUALITY, OGP_IMAGE } from '@/constants';
 import type { NotionRecord, Tag } from '@/types';
 
@@ -173,6 +174,7 @@ const pageToNotionRecord = async (
 ): Promise<NotionRecord> => {
   const record: Partial<NotionRecord> = {
     id,
+
     // Portfolio
     slug: getRichText(properties.slug),
     types: getSelect(properties.types),
@@ -541,4 +543,46 @@ export const fetchNotionPage = async (
 
     return null;
   }
+};
+
+/**
+ * Notion のページ配列からタグ一覧を生成
+ * @param pages Notion から取得したページ配列
+ * @returns 使用回数の多い順にソートされたタグ配列
+ */
+export const buildTagsFromPages = (pages: NotionRecord[]): Tag[] => {
+  const counts = new Map<string, Tag>();
+
+  for (const page of pages) {
+
+    // tags
+    for (const tag of page.tags ?? []) {
+      if (!tag.name) continue;
+
+      const name = tag.name.trim();
+
+      if (!name) continue;
+
+      const id = normalizeTagName(name);
+      counts.set(id, {id, name, count: (counts.get(id)?.count ?? 0) + 1});
+    }
+
+    // category
+    if (page.category) {
+      const name = page.category.trim();
+
+      if (name) {
+        const id = normalizeTagName(name);
+        counts.set(id, {id, name, count: (counts.get(id)?.count ?? 0) + 1});
+      }
+    }
+  }
+
+  // 出現回数が多い順、同じなら名前の辞書順
+  const sorted = [...counts.values()].sort(
+    (a, b) => b.count - a.count || a.name.localeCompare(b.name)
+  );
+  const allTag: Tag = { id: 'all', name: 'All', count: pages.length };
+
+  return [allTag, ...sorted];
 };
