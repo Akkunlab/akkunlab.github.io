@@ -582,7 +582,7 @@ export const buildTagsFromPages = (pages: NotionRecord[]): Tag[] => {
   const sorted = [...counts.values()].sort(
     (a, b) => b.count - a.count || a.name.localeCompare(b.name)
   );
-  const allTag: Tag = { id: 'all', name: 'All', count: pages.length };
+  const allTag: Tag = { id: 'all', name: 'すべて', count: pages.length };
 
   return [allTag, ...sorted];
 };
