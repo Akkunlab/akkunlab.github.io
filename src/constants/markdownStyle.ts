@@ -32,5 +32,5 @@ export const MARKDOWN_STYLES = `
   [&_em]:text-purple-600 [&_em]:italic
 
   /* Images */
-  [&_img]:rounded-lg
+  [&_img]:rounded-lg [&_img]:w-full [&_img]:h-auto [&_img]:object-contain
 `.trim();
