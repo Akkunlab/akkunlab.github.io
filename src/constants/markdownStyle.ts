@@ -30,4 +30,7 @@ export const MARKDOWN_STYLES = `
   [&_a]:text-primary [&_a:hover]:text-primary-hover [&_a]:underline [&_a]:transition-colors
   [&_strong]:text-primary [&_strong]:font-bold
   [&_em]:text-purple-600 [&_em]:italic
+
+  /* Images */
+  [&_img]:rounded-lg
 `.trim();
