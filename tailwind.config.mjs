@@ -217,9 +217,10 @@ module.exports = {
           color: '#ffffff',
         },
       });
-      
-      // カスタムbox-shadowユーティリティ
+
       addUtilities({
+
+        // カスタムbox-shadowユーティリティ
         '.shadow-skill-card': {
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1)',
         },
@@ -237,6 +238,19 @@ module.exports = {
         },
         '.shadow-skill-category-hover': {
           boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35), 0 0 40px rgba(59, 130, 246, 0.3), 0 0 60px rgba(59, 130, 246, 0.2)',
+        },
+
+        // スクロールバー非表示ユーティリティ
+        '.scrollbar-hide': {
+          '-ms-overflow-style': 'none',
+          'scrollbar-width': 'none',
+        },
+      });
+
+      // スクロールバー非表示ユーティリティ
+      addBase({
+        '.scrollbar-hide::-webkit-scrollbar': {
+          display: 'none',
         },
       });
     },

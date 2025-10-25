@@ -18,7 +18,7 @@ const tags = buildTagsFromPages(pages);
 ---
 
 <Layout title="作品">
-  <section id="activities" class="pt-36 pb-40 px-4 md:px-16 relative">
+  <section class="pt-36 pb-40">
     
     <!-- 背景画像 -->
     <div class="absolute inset-0 h-[600px] z-0 parallax-bg overflow-hidden">
@@ -40,7 +40,7 @@ const tags = buildTagsFromPages(pages);
     <SectionHeading title="作品" />
     
     <!-- タグ -->
-    <div class="my-8">
+    <div class="mt-8 px-4 md:px-16 pb-8 overflow-x-auto md:overflow-visible whitespace-nowrap md:whitespace-normal scrollbar-hide">
       {tags.map((tag) => (
         <button
           class="btn filter-btn btn-outline rounded-full btn-md m-1.5 text-base hover:bg-button-active hover:text-button-active-content backdrop-blur-lg shadow-xl border border-button-border"
@@ -52,7 +52,7 @@ const tags = buildTagsFromPages(pages);
     </div>
 
     <!-- 作品 -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20 mb-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12 px-4 md:px-16">
       {pages.map((page) => (
         <article
           class="work-item"
