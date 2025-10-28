@@ -2,6 +2,7 @@
 import { fetchNotionPage, fetchNotionPageList } from '@/utils/notion';
 import { markdownToHtml } from '@/utils/markdown';
 import { formatDateShort } from '@/utils/dateFormat';
+import { getIconName } from '@/utils/icon';
 import Layout from '@/layouts/Layout.astro';
 import Breadcrumb from '@/components/Breadcrumb.astro';
 import Button from '@/components/Button.astro';
@@ -16,11 +17,12 @@ type StaticPath = {
   props: {
     id: string,
     title: string,
+    category: string,
+    tags: Tag[],
+    link: string,
     event: string,
     publish: string,
-    updated: string,
-    category: string,
-    tags: Tag[]
+    updated: string
   }
 };
 
@@ -36,16 +38,17 @@ export const getStaticPaths = async (): Promise<StaticPath[]> => {
     props: { 
       id: page.id as string,
       title: page.title as string,
+      category: page.category as string,
+      tags: page.tags as Tag[],
+      link: page.link as string,
       event: page.event as string,
       publish: page.publish as string,
-      updated: page.updated as string,
-      category: page.category as string,
-      tags: page.tags as Tag[]
+      updated: page.updated as string
     }
   }));
 };
 
-const { id: pageId, title, event, publish, updated, category, tags } = Astro.props;
+const { id: pageId, title, category, tags, link, event, publish, updated } = Astro.props;
 const pageData = pageId ? await fetchNotionPage(pageId) : null;
 const content = pageData ? pageData.content : null;
 const htmlContent = content ? await markdownToHtml(content) : null;
@@ -103,7 +106,7 @@ const shouldShowUpdatedDate = updated && publish &&
                 .filter(Boolean)
                 .map((name) => (
                   <a
-                    class="text-primary bg-primary-content hover:bg-button-active/5 px-3 py-1 border border-button-border rounded-full shadow-md transition-colors duration-200 cursor-pointer select-none"
+                    class="text-primary bg-primary-content hover:bg-primary hover:text-primary-content px-3 py-1 border border-button-border rounded-full shadow-md transition-colors duration-200 cursor-pointer select-none"
                     href={`/activities?tag=${encodeURIComponent(name.toLowerCase())}`}
                   >
                     {name}
@@ -123,13 +126,21 @@ const shouldShowUpdatedDate = updated && publish &&
       {htmlContent && (
         <div class="p-4 md:p-8 bg-primary-content border border-button-border rounded-0 md:rounded-lg shadow-lg">
           <div class={`prose prose-slate max-w-none ${MARKDOWN_STYLES}`} set:html={htmlContent} />
+          {link && (
+            <div class="mt-4 md:mt-8 flex justify-center">
+              <Button text="活動を見る！" href={link} target="_blank" rel="noopener noreferrer" />
+            </div>
+          )}
         </div>
       )}
     </div>
 
     <!-- ボタン -->
     <div class="mt-12 flex justify-center">
-      <Button text="活動一覧に戻る！" href="/activities" type="arrow-back" />
+      <a href="/works" class="inline-flex items-center font-bold text-primary bg-primary-content px-16 py-4 border border-button-border rounded-full shadow-lg transition hover:bg-primary hover:text-primary-content">
+        <Icon name={getIconName('material-symbols-light', 'arrow-back')} class="w-6 h-6 mt-0.5 mr-2 relative z-10" />
+        作品一覧に戻る！
+      </a>
     </div>
   </div>
 </Layout>
