@@ -14,6 +14,8 @@ export const COLOR: string = '#000';
 export const IMAGE_QUALITY: number = 45;
 export const IMAGE_FORMAT: "webp" | "avif" = 'avif';
 
+export const PREVIEW_ITEMS_COUNT: number = 6;
+
 export const HERO_TITLE_LINES: Array<string> = [
   'テクノロジーと',
   'デザインの融合で',

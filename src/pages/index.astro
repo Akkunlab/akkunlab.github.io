@@ -28,7 +28,8 @@ import {
   AUTHOR_SUMMARY,
   HERO_TITLE_LINES,
   IMAGE_FORMAT,
-  IMAGE_QUALITY
+  IMAGE_QUALITY,
+  PREVIEW_ITEMS_COUNT
 } from '@/constants';
 
 const PORTFOLIO_DATABASE_ID = import.meta.env.PORTFOLIO_DATABASE_ID;
@@ -123,7 +124,7 @@ const skillsCount = (skillInterests ?? []).filter(r => (r.name?.trim())).length;
 
     <!-- 作品コンテンツ -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20 mb-12">
-      {works.map((work) => (
+      {works.slice(0, PREVIEW_ITEMS_COUNT).map((work) => (
         <article class="work-item">
           <a href={`/works/${work.slug}`} class="card card-item">
             <AnimatedImage src={work.image ?? ''} alt={work.title ?? ''} class="aspect-video" />
@@ -163,7 +164,7 @@ const skillsCount = (skillInterests ?? []).filter(r => (r.name?.trim())).length;
 
     <!-- 活動コンテンツ -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20 mb-12">
-      {activities.map((activity) => (
+      {activities.slice(0, PREVIEW_ITEMS_COUNT).map((activity) => (
         <article class="work-item">
           <a href={`/activities/${activity.slug}`} class="card card-item">
             <AnimatedImage src={activity.image ?? ''} alt={activity.title ?? ''} class="aspect-video" />
