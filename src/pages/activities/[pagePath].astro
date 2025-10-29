@@ -124,10 +124,10 @@ const shouldShowUpdatedDate = updated && publish &&
     <!-- コンテンツセクション -->
     <div class="max-w-4xl mx-auto my-16">
       {htmlContent && (
-        <div class="p-4 md:p-8 bg-primary-content border border-button-border rounded-0 md:rounded-lg shadow-lg">
+        <div class="px-4 py-8 md:p-8 bg-primary-content border border-button-border rounded-0 md:rounded-lg shadow-lg">
           <div class={`prose prose-slate max-w-none ${MARKDOWN_STYLES}`} set:html={htmlContent} />
           {link && (
-            <div class="mt-4 md:mt-8 flex justify-center">
+            <div class="mt-8 flex justify-center">
               <Button text="活動を見る！" href={link} target="_blank" rel="noopener noreferrer" />
             </div>
           )}
