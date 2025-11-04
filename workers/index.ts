@@ -43,6 +43,8 @@ export default {
       const pageData = await notionRes.json();
       const title = pageData.properties?.title?.title?.[0]?.plain_text || '(Untitled)';
 
+      console.log("Notion response:", JSON.stringify(pageData, null, 2)); // デバッグ用ログ
+
       // OpenRouter APIを使って記事生成
       const prompt = USER_PROMPT_TEMPLATE(title);
       const model = env.MODEL || DEFAULT_MODEL;
@@ -73,6 +75,8 @@ export default {
 
       const data = await openrouterRes.json();
       const generatedText = data.choices?.[0]?.message?.content?.trim() ?? '';
+
+      console.log("OpenRouter response:", JSON.stringify(data, null, 2)); // デバッグ用ログ
 
       // Notionページを更新
       await fetch(`https://api.notion.com/v1/blocks/${pageId}/children`, {
