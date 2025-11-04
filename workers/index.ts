@@ -96,23 +96,13 @@ export default {
     }
 
     try {
-      const { pageId } = await req.json();
+      const { pageId, title, summary } = await req.json();
+
+      console.log(req.json());
       
       if (!pageId) return new Response('Missing pageId', { status: 400 });
-
-      // Notionページからタイトル取得
-      const notionRes = await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
-        headers: {
-          'Authorization': `Bearer ${env.NOTION_API_KEY}`,
-          'Notion-Version': NOTION_API_VERSION,
-          'Content-Type': 'application/json',
-        },
-      });
-      const pageData = await notionRes.json();
-      const title = pageData.properties?.title?.title?.[0]?.plain_text || '';
-      const summary = pageData.properties?.summary?.rich_text?.[0]?.plain_text || '';
-
-      console.log("Notion response:", JSON.stringify(pageData, null, 2)); // デバッグ用ログ
+      if (!title) return new Response('Missing title', { status: 400 });
+      if (!summary) return new Response('Missing summary', { status: 400 });
 
       // OpenRouter APIを使って記事生成
       const prompt = USER_PROMPT_TEMPLATE(title, summary);
