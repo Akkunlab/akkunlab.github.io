@@ -3,16 +3,19 @@ const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const SITE_URL = 'https://akkunlab.dev';
 const SITE_TITLE = 'Akkunlab Portfolio Generator';
 
-const USER_PROMPT_TEMPLATE = (title: string, summary: string) => `
+const USER_PROMPT_TEMPLATE = (title: string, summary: string, category: string, tags: string[]) => `
 次のタイトルと概要から、ブログのような語り口のポートフォリオ紹介文を書いてください。
 
 タイトル: 『${title}』
 概要: ${summary}
+カテゴリ: ${category}
+タグ: ${tags.join(', ')}
 
 【条件】
 - 一つの物語のように流れる文章にする。
 - 技術やデザインの工夫を自然な流れで紹介する。
 - 感情と理性のバランスを取り、作品の人間的な側面を伝える。
+- カテゴリやタグの情報も考慮して、作品の特徴を表現する。
 - 出力は日本語のMarkdownで、見出しなし・段落のみ。
 `;
 
@@ -100,20 +103,29 @@ export default {
       const pageId = body.data?.id;
       const title = body.data?.properties?.title?.title?.[0]?.plain_text || '';
       const summary = body.data?.properties?.summary?.rich_text?.[0]?.plain_text || '';
-      
-      console.log('Extracted values:', { pageId, title, summary });
-      
+      const category = body.data?.properties?.category?.select?.name || '';
+      const tags = body.data?.properties?.tags?.multi_select?.map((tag: any) => tag.name) || [];
+
       if (!pageId) return new Response('Missing pageId', { status: 400 });
       if (!title) return new Response('Missing title', { status: 400 });
       if (!summary) return new Response('Missing summary', { status: 400 });
 
       // OpenRouter APIを使って記事生成
-      const prompt = USER_PROMPT_TEMPLATE(title, summary);
+      const prompt = USER_PROMPT_TEMPLATE(title, summary, category, tags);
       const model = env.MODEL;
       const systemPrompt = env.SYSTEM_PROMPT || 'You are a professional writer creating creative and structured portfolio descriptions.';
 
-      console.log(`System prompt: ${systemPrompt.slice(0, 10)}...`); // デバッグ用ログ
-      
+      // デバッグ用ログ
+      console.log('Request parameters:', JSON.stringify({
+        pageId,
+        title,
+        summary,
+        category,
+        tags,
+        model,
+        systemPrompt,
+      }, null, 2));
+
       const openrouterRes = await fetch(OPENROUTER_API_URL, {
         method: 'POST',
         headers: {
