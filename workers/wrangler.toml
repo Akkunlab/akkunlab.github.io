@@ -5,3 +5,4 @@ compatibility_date = "2025-06-17"
 [vars]
 NOTION_API_KEY = ""
 OPENROUTER_API_KEY = ""
+MODEL = ""
