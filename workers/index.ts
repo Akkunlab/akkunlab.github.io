@@ -96,9 +96,10 @@ export default {
     }
 
     try {
-      const { pageId, title, summary } = await req.json();
-
-      console.log(req.json());
+      const body = await req.json();
+      console.log('Request body:', JSON.stringify(body, null, 2));
+      
+      const { pageId, title, summary } = body;
       
       if (!pageId) return new Response('Missing pageId', { status: 400 });
       if (!title) return new Response('Missing title', { status: 400 });
