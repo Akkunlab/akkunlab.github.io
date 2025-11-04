@@ -3,18 +3,22 @@ const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const SITE_URL = 'https://akkunlab.dev';
 const SITE_TITLE = 'Akkunlab Portfolio Generator';
 
-const SYSTEM_PROMPT = 'You are a professional writer creating creative and structured portfolio descriptions.';
-
 const USER_PROMPT_TEMPLATE = (title: string) => `
-Write a portfolio project description based on the title below.
-Include: concept, features, and technologies used.
-Title: '${title}'
-Output in markdown with headings.
+次のタイトルから、ブログのような語り口のポートフォリオ紹介文を書いてください。
+
+タイトル: 『${title}』
+
+【条件】
+- 一つの物語のように流れる文章にする。
+- 技術やデザインの工夫を自然な流れで紹介する。
+- 感情と理性のバランスを取り、作品の人間的な側面を伝える。
+- 出力は日本語のMarkdownで、見出しなし・段落のみ。
 `;
 
 export interface Env {
   NOTION_API_KEY: string;
   OPENROUTER_API_KEY: string;
+  SYSTEM_PROMPT?: string;
   MODEL?: string;
 }
 
@@ -111,6 +115,7 @@ export default {
       // OpenRouter APIを使って記事生成
       const prompt = USER_PROMPT_TEMPLATE(title);
       const model = env.MODEL;
+      const systemPrompt = env.SYSTEM_PROMPT || 'You are a professional writer creating creative and structured portfolio descriptions.';
 
       const openrouterRes = await fetch(OPENROUTER_API_URL, {
         method: 'POST',
@@ -125,7 +130,7 @@ export default {
           messages: [
             {
               role: 'system',
-              content: SYSTEM_PROMPT,
+              content: systemPrompt,
             },
             {
               role: 'user',
