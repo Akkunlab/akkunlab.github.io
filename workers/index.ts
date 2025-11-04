@@ -3,10 +3,11 @@ const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const SITE_URL = 'https://akkunlab.dev';
 const SITE_TITLE = 'Akkunlab Portfolio Generator';
 
-const USER_PROMPT_TEMPLATE = (title: string) => `
-次のタイトルから、ブログのような語り口のポートフォリオ紹介文を書いてください。
+const USER_PROMPT_TEMPLATE = (title: string, summary: string) => `
+次のタイトルと概要から、ブログのような語り口のポートフォリオ紹介文を書いてください。
 
 タイトル: 『${title}』
+概要: ${summary}
 
 【条件】
 - 一つの物語のように流れる文章にする。
@@ -108,16 +109,17 @@ export default {
         },
       });
       const pageData = await notionRes.json();
-      const title = pageData.properties?.title?.title?.[0]?.plain_text || '(Untitled)';
+      const title = pageData.properties?.title?.title?.[0]?.plain_text || '';
+      const summary = pageData.properties?.summary?.rich_text?.[0]?.plain_text || '';
 
       console.log("Notion response:", JSON.stringify(pageData, null, 2)); // デバッグ用ログ
 
       // OpenRouter APIを使って記事生成
-      const prompt = USER_PROMPT_TEMPLATE(title);
+      const prompt = USER_PROMPT_TEMPLATE(title, summary);
       const model = env.MODEL;
       const systemPrompt = env.SYSTEM_PROMPT || 'You are a professional writer creating creative and structured portfolio descriptions.';
 
-      console.log("System prompt:", systemPrompt.slice(0, 10)); // デバッグ用ログ
+      console.log(`System prompt: ${systemPrompt.slice(0, 10)}...`); // デバッグ用ログ
       
       const openrouterRes = await fetch(OPENROUTER_API_URL, {
         method: 'POST',
