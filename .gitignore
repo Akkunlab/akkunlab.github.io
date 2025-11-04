@@ -33,3 +33,7 @@ test/
 # local cache
 .cache/
 public/_notion-cache/
+
+# Cloudflare Workers
+.wrangler/
+.dev.vars
