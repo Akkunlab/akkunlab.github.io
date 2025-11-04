@@ -37,8 +37,10 @@ All commands are run from the root of the project, from a terminal:
   - [Notion-to-MD](https://github.com/souvikinator/notion-to-md)
   - [Sharp](https://sharp.pixelplumbing.com/)
   - [Remark](https://remark.js.org/)
+  - [OpenRouter](https://openrouter.ai/)
 
 - **Infrastructure**
   - [Cloudflare Pages](https://www.cloudflare.com/ja-jp/developer-platform/pages/)
   - [Cloudflare KV](https://www.cloudflare.com/ja-jp/developer-platform/products/workers-kv/)
   - [Cloudflare R2](https://www.cloudflare.com/ja-jp/developer-platform/products/r2/)
+  - [Cloudflare Workers](https://www.cloudflare.com/ja-jp/developer-platform/products/workers/)
