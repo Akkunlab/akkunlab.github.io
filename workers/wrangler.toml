@@ -2,11 +2,6 @@ name = "portfolio-generator"
 main = "index.ts"
 compatibility_date = "2025-06-17"
 
-[vars]
-NOTION_API_KEY = ""
-OPENROUTER_API_KEY = ""
-MODEL = ""
-
 [observability.logs]
 enabled = true
 head_sampling_rate = 1
