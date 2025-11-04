@@ -18,6 +18,70 @@ export interface Env {
   MODEL?: string;
 }
 
+/**
+ * MarkdownテキストをNotionブロック形式に変換
+ */
+function parseMarkdownToNotionBlocks(markdown: string): any[] {
+  const lines = markdown.split('\n').filter((line: string) => line.trim() !== '');
+  const blocks: any[] = [];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    
+    // 見出し (# ## ###)
+    if (trimmed.startsWith('# ')) {
+      blocks.push({
+        object: 'block',
+        type: 'heading_1',
+        heading_1: { rich_text: [{ type: 'text', text: { content: trimmed.slice(2) } }] },
+      });
+    } else if (trimmed.startsWith('## ')) {
+      blocks.push({
+        object: 'block',
+        type: 'heading_2',
+        heading_2: { rich_text: [{ type: 'text', text: { content: trimmed.slice(3) } }] },
+      });
+    } else if (trimmed.startsWith('### ')) {
+      blocks.push({
+        object: 'block',
+        type: 'heading_3',
+        heading_3: { rich_text: [{ type: 'text', text: { content: trimmed.slice(4) } }] },
+      });
+    }
+    // 箇条書き (- または *)
+    else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+      blocks.push({
+        object: 'block',
+        type: 'bulleted_list_item',
+        bulleted_list_item: { rich_text: [{ type: 'text', text: { content: trimmed.slice(2) } }] },
+      });
+    }
+    // 番号付きリスト (1. 2. など)
+    else if (/^\d+\.\s/.test(trimmed)) {
+      blocks.push({
+        object: 'block',
+        type: 'numbered_list_item',
+        numbered_list_item: { rich_text: [{ type: 'text', text: { content: trimmed.replace(/^\d+\.\s/, '') } }] },
+      });
+    }
+    // コードブロック (```)
+    else if (trimmed.startsWith('```')) {
+      // コードブロックの開始/終了マーカーはスキップ
+      continue;
+    }
+    // 通常の段落
+    else {
+      blocks.push({
+        object: 'block',
+        type: 'paragraph',
+        paragraph: { rich_text: [{ type: 'text', text: { content: trimmed } }] },
+      });
+    }
+  }
+
+  return blocks;
+}
+
 export default {
   async fetch(req: Request, env: Env) {
 
@@ -77,6 +141,9 @@ export default {
 
       console.log("OpenRouter response:", JSON.stringify(data, null, 2)); // デバッグ用ログ
 
+      // MarkdownをNotionブロックに変換
+      const blocks = parseMarkdownToNotionBlocks(generatedText);
+
       // Notionページを更新
       await fetch(`https://api.notion.com/v1/blocks/${pageId}/children`, {
         method: 'PATCH',
@@ -86,13 +153,7 @@ export default {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          children: [
-            {
-              object: 'block',
-              type: 'paragraph',
-              paragraph: { rich_text: [{ type: 'text', text: { content: generatedText } }] },
-            },
-          ],
+          children: blocks,
         }),
       });
 
