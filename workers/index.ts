@@ -117,6 +117,8 @@ export default {
       const model = env.MODEL;
       const systemPrompt = env.SYSTEM_PROMPT || 'You are a professional writer creating creative and structured portfolio descriptions.';
 
+      console.log("System prompt:", systemPrompt.slice(0, 10)); // デバッグ用ログ
+      
       const openrouterRes = await fetch(OPENROUTER_API_URL, {
         method: 'POST',
         headers: {
