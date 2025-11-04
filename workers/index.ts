@@ -21,7 +21,7 @@ export interface Env {
 /**
  * MarkdownテキストをNotionブロック形式に変換
  */
-function parseMarkdownToNotionBlocks(markdown: string): any[] {
+const parseMarkdownToNotionBlocks = (markdown: string): any[] => {
   const lines = markdown.split('\n').filter((line: string) => line.trim() !== '');
   const blocks: any[] = [];
 
@@ -80,7 +80,7 @@ function parseMarkdownToNotionBlocks(markdown: string): any[] {
   }
 
   return blocks;
-}
+};
 
 export default {
   async fetch(req: Request, env: Env) {
