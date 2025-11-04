@@ -2,7 +2,6 @@ const NOTION_API_VERSION = '2022-06-28';
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const SITE_URL = 'https://akkunlab.dev';
 const SITE_TITLE = 'Akkunlab Portfolio Generator';
-const DEFAULT_MODEL = 'qwen/qwen-2.5-72b-instruct:free';
 
 const SYSTEM_PROMPT = 'You are a professional writer creating creative and structured portfolio descriptions.';
 
@@ -47,7 +46,7 @@ export default {
 
       // OpenRouter APIを使って記事生成
       const prompt = USER_PROMPT_TEMPLATE(title);
-      const model = env.MODEL || DEFAULT_MODEL;
+      const model = env.MODEL;
 
       const openrouterRes = await fetch(OPENROUTER_API_URL, {
         method: 'POST',

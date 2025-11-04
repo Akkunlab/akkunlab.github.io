@@ -2,6 +2,9 @@ name = "portfolio-generator"
 main = "index.ts"
 compatibility_date = "2025-06-17"
 
+[vars]
+MODEL = "qwen/qwen-2.5-72b-instruct:free"
+
 [observability.logs]
 enabled = true
 head_sampling_rate = 1
