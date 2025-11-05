@@ -3,13 +3,26 @@ const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const SITE_URL = 'https://akkunlab.dev';
 const SITE_TITLE = 'Akkunlab Portfolio Generator';
 
-const WORKS_PROMPT_TEMPLATE = (title: string, summary: string, category: string, tags: string[]) => `
-次のタイトルと概要から、ブログのような語り口のポートフォリオ紹介文を書いてください。
+interface Env {
+  API_KEY: string;
+  NOTION_API_KEY: string;
+  OPENROUTER_API_KEY: string;
+  WORKS_SYSTEM_PROMPT: string;
+  ACTIVITIES_SYSTEM_PROMPT: string;
+  MODEL: string;
+}
 
+const createBaseInfo = (title: string, summary: string, category: string, tags: string[]) => `
 タイトル: 『${title}』
 概要: ${summary}
 カテゴリ: ${category}
 タグ: ${tags.join(', ')}
+`.trim();
+
+const WORKS_PROMPT_TEMPLATE = (title: string, summary: string, category: string, tags: string[]) => `
+次のタイトルと概要から、ブログのような語り口のポートフォリオ紹介文を書いてください。
+
+${createBaseInfo(title, summary, category, tags)}
 
 【条件】
 - 一つの物語のように流れる文章にする。
@@ -22,10 +35,7 @@ const WORKS_PROMPT_TEMPLATE = (title: string, summary: string, category: string,
 const ACTIVITIES_PROMPT_TEMPLATE = (title: string, summary: string, category: string, tags: string[]) => `
 次のタイトルと概要から、活動内容を紹介する文章を書いてください。
 
-タイトル: 『${title}』
-概要: ${summary}
-カテゴリ: ${category}
-タグ: ${tags.join(', ')}
+${createBaseInfo(title, summary, category, tags)}
 
 【条件】
 - 活動の背景、目的、成果を明確に伝える。
@@ -35,14 +45,83 @@ const ACTIVITIES_PROMPT_TEMPLATE = (title: string, summary: string, category: st
 - 出力は日本語のMarkdownで、見出しなし・段落のみ。
 `;
 
-export interface Env {
-  API_KEY: string;
-  NOTION_API_KEY: string;
-  OPENROUTER_API_KEY: string;
-  WORKS_SYSTEM_PROMPT: string;
-  ACTIVITIES_SYSTEM_PROMPT: string;
-  MODEL: string;
-}
+const SLUG_GENERATION_PROMPT = (title: string, summary: string, category: string, tags: string[]) => `
+次の情報から、URLに使用する適切なslugを生成してください。
+
+${createBaseInfo(title, summary, category, tags)}
+
+【条件】
+- 英語で簡潔に表現する
+- 単語の区切りは必ずハイフン(-)を使用
+- できるだけ短く、わかりやすく（1〜3単語程度）
+- 小文字のみ使用
+- 特殊文字は使わない（英数字とハイフンのみ）
+- 内容を的確に表現する
+
+【出力形式】
+slugのみを出力してください（説明や他の文字は不要）。
+
+例: web-audio-visualizer
+例: robotics-competition-2024
+例: interactive-art-installation
+`;
+
+/**
+ * OpenRouterのヘッダーを生成
+ */
+const createOpenRouterHeaders = (apiKey: string) => ({
+  'Authorization': `Bearer ${apiKey}`,
+  'HTTP-Referer': SITE_URL,
+  'X-Title': SITE_TITLE,
+  'Content-Type': 'application/json',
+});
+
+/**
+ * Notion APIのヘッダーを生成
+ */
+const createNotionHeaders = (apiKey: string) => ({
+  'Authorization': `Bearer ${apiKey}`,
+  'Notion-Version': NOTION_API_VERSION,
+  'Content-Type': 'application/json',
+});
+
+/**
+ * LLMを呼び出してテキストを生成
+ */
+const callLLM = async (
+  apiKey: string,
+  model: string,
+  systemPrompt: string,
+  userPrompt: string,
+  temperature: number = 0.7
+): Promise<string> => {
+  const response = await fetch(OPENROUTER_API_URL, {
+    method: 'POST',
+    headers: createOpenRouterHeaders(apiKey),
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+      temperature,
+    }),
+  });
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content?.trim() ?? '';
+};
+
+/**
+ * 生成されたslugを正規化
+ */
+const normalizeSlug = (slug: string): string => {
+  return slug
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, '') // 英数字とハイフンのみ許可
+    .replace(/-+/g, '-')        // 連続するハイフンを1つに
+    .replace(/^-|-$/g, '');     // 先頭と末尾のハイフンを削除
+};
 
 /**
  * MarkdownテキストをNotionブロック形式に変換
@@ -165,53 +244,59 @@ export default {
         systemPrompt,
       }, null, 2));
 
-      const openrouterRes = await fetch(OPENROUTER_API_URL, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${env.OPENROUTER_API_KEY}`,
-          'HTTP-Referer': SITE_URL,
-          'X-Title': SITE_TITLE,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model,
-          messages: [
-            {
-              role: 'system',
-              content: systemPrompt,
-            },
-            {
-              role: 'user',
-              content: prompt,
-            },
-          ],
-          temperature: 0.7,
-        }),
-      });
+      // 1. slug生成
+      const slugPrompt = SLUG_GENERATION_PROMPT(title, summary, category, tags);
+      const rawSlug = await callLLM(
+        env.OPENROUTER_API_KEY,
+        model,
+        'あなたはURLスラッグ生成の専門家です。与えられた情報から、SEOに適した簡潔で分かりやすいslugを生成してください。',
+        slugPrompt,
+        0.3
+      );
+      const generatedSlug = normalizeSlug(rawSlug);
+      console.log("Generated slug:", generatedSlug);
 
-      const data = await openrouterRes.json();
-      const generatedText = data.choices?.[0]?.message?.content?.trim() ?? '';
+      // 2. 本文生成
+      const generatedText = await callLLM(
+        env.OPENROUTER_API_KEY,
+        model,
+        systemPrompt,
+        prompt,
+        0.7
+      );
+      console.log("Generated text length:", generatedText.length);
 
-      console.log("OpenRouter response:", JSON.stringify(data, null, 2)); // デバッグ用ログ
-
-      // MarkdownをNotionブロックに変換
+      // 3. Notionページの本文を更新
       const blocks = parseMarkdownToNotionBlocks(generatedText);
 
-      // Notionページを更新
       await fetch(`https://api.notion.com/v1/blocks/${pageId}/children`, {
         method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${env.NOTION_API_KEY}`,
-          'Notion-Version': NOTION_API_VERSION,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          children: blocks,
-        }),
+        headers: createNotionHeaders(env.NOTION_API_KEY),
+        body: JSON.stringify({ children: blocks }),
       });
 
+      // 4. Notionページのslugプロパティを更新
+      if (generatedSlug) {
+        await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
+          method: 'PATCH',
+          headers: createNotionHeaders(env.NOTION_API_KEY),
+          body: JSON.stringify({
+            properties: {
+              slug: {
+                rich_text: [
+                  {
+                    type: 'text',
+                    text: { content: generatedSlug },
+                  },
+                ],
+              },
+            },
+          }),
+        });
+      }
+
       return new Response(
-        JSON.stringify({ ok: true, title, generatedText }),
+        JSON.stringify({ ok: true, title, generatedText, slug: generatedSlug }),
         { headers: { 'Content-Type': 'application/json; charset=utf-8' } }
       );
     } catch (err: any) {
