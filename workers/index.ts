@@ -45,25 +45,24 @@ ${createBaseInfo(title, summary, category, tags)}
 - 出力は日本語のMarkdownで、見出しなし・段落のみ。
 `;
 
-const SLUG_GENERATION_PROMPT = (title: string, summary: string, category: string, tags: string[]) => `
-次の情報から、URLに使用する適切なslugを生成してください。
+const SLUG_GENERATION_PROMPT = (title: string) => `
+次のタイトルから、URLに使用する適切なslugを生成してください。
 
-${createBaseInfo(title, summary, category, tags)}
+タイトル: 『${title}』
 
 【条件】
 - 英語で簡潔に表現する
 - 単語の区切りは必ずハイフン(-)を使用
-- できるだけ短く、わかりやすく（1〜3単語程度）
+- できるだけ短く、わかりやすく（1〜5単語程度）
 - 小文字のみ使用
 - 特殊文字は使わない（英数字とハイフンのみ）
-- 内容を的確に表現する
 
 【出力形式】
 slugのみを出力してください（説明や他の文字は不要）。
 
-例: web-audio-visualizer
-例: robotics-competition-2024
-例: interactive-art-installation
+例: title: YouSync, slug: yousync
+例: title: オンラインイベントを開催！, slug: online-event
+例: title: 県北BCP2024 #2に参加！, slug: kenpoku-bcp-2024-2
 `;
 
 /**
@@ -245,7 +244,7 @@ export default {
       }, null, 2));
 
       // 1. slug生成
-      const slugPrompt = SLUG_GENERATION_PROMPT(title, summary, category, tags);
+      const slugPrompt = SLUG_GENERATION_PROMPT(title);
       const rawSlug = await callLLM(
         env.OPENROUTER_API_KEY,
         model,
