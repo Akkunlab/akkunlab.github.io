@@ -108,6 +108,8 @@ const callLLM = async (
   });
 
   const data = await response.json();
+  console.log("OpenRouter response:", JSON.stringify(data, null, 2)); // デバッグ用ログ
+
   return data.choices?.[0]?.message?.content?.trim() ?? '';
 };
 
@@ -253,7 +255,6 @@ export default {
         0.3
       );
       const generatedSlug = normalizeSlug(rawSlug);
-      console.log("Generated slug:", generatedSlug);
 
       // 2. 本文生成
       const generatedText = await callLLM(
@@ -263,7 +264,6 @@ export default {
         prompt,
         0.7
       );
-      console.log("Generated text length:", generatedText.length);
 
       // 3. Notionページの本文を更新
       const blocks = parseMarkdownToNotionBlocks(generatedText);
