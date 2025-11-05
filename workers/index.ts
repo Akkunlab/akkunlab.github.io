@@ -3,7 +3,7 @@ const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const SITE_URL = 'https://akkunlab.dev';
 const SITE_TITLE = 'Akkunlab Portfolio Generator';
 
-const USER_PROMPT_TEMPLATE = (title: string, summary: string, category: string, tags: string[]) => `
+const WORKS_PROMPT_TEMPLATE = (title: string, summary: string, category: string, tags: string[]) => `
 次のタイトルと概要から、ブログのような語り口のポートフォリオ紹介文を書いてください。
 
 タイトル: 『${title}』
@@ -19,12 +19,29 @@ const USER_PROMPT_TEMPLATE = (title: string, summary: string, category: string, 
 - 出力は日本語のMarkdownで、見出しなし・段落のみ。
 `;
 
+const ACTIVITIES_PROMPT_TEMPLATE = (title: string, summary: string, category: string, tags: string[]) => `
+次のタイトルと概要から、活動内容を紹介する文章を書いてください。
+
+タイトル: 『${title}』
+概要: ${summary}
+カテゴリ: ${category}
+タグ: ${tags.join(', ')}
+
+【条件】
+- 活動の背景、目的、成果を明確に伝える。
+- 学びや経験、得られた知見を具体的に表現する。
+- 参加した動機や、活動を通じて得た気づきも含める。
+- カテゴリやタグの情報も考慮して、活動の特徴を表現する。
+- 出力は日本語のMarkdownで、見出しなし・段落のみ。
+`;
+
 export interface Env {
   API_KEY: string;
   NOTION_API_KEY: string;
   OPENROUTER_API_KEY: string;
-  SYSTEM_PROMPT?: string;
-  MODEL?: string;
+  WORKS_SYSTEM_PROMPT: string;
+  ACTIVITIES_SYSTEM_PROMPT: string;
+  MODEL: string;
 }
 
 /**
@@ -115,6 +132,7 @@ export default {
     try {
       const body = await req.json();
       const pageId = body.data?.id;
+      const types = body.data?.properties?.types?.select?.name || '';
       const title = body.data?.properties?.title?.title?.[0]?.plain_text || '';
       const summary = body.data?.properties?.summary?.rich_text?.[0]?.plain_text || '';
       const category = body.data?.properties?.category?.select?.name || '';
@@ -124,14 +142,21 @@ export default {
       if (!title) return new Response('Missing title', { status: 400 });
       if (!summary) return new Response('Missing summary', { status: 400 });
 
-      // OpenRouter APIを使って記事生成
-      const prompt = USER_PROMPT_TEMPLATE(title, summary, category, tags);
+      // typesに応じてプロンプトを切り替え
+      const prompt = types === '活動' 
+        ? ACTIVITIES_PROMPT_TEMPLATE(title, summary, category, tags)
+        : WORKS_PROMPT_TEMPLATE(title, summary, category, tags);
+      
+      const systemPrompt = types === '活動'
+        ? env.ACTIVITIES_SYSTEM_PROMPT
+        : env.WORKS_SYSTEM_PROMPT;
+      
       const model = env.MODEL;
-      const systemPrompt = env.SYSTEM_PROMPT || 'You are a professional writer creating creative and structured portfolio descriptions.';
 
       // デバッグ用ログ
       console.log('Request parameters:', JSON.stringify({
         pageId,
+        types,
         title,
         summary,
         category,
