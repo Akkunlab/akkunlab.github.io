@@ -20,6 +20,7 @@ const USER_PROMPT_TEMPLATE = (title: string, summary: string, category: string, 
 `;
 
 export interface Env {
+  API_KEY: string;
   NOTION_API_KEY: string;
   OPENROUTER_API_KEY: string;
   SYSTEM_PROMPT?: string;
@@ -92,6 +93,19 @@ const parseMarkdownToNotionBlocks = (markdown: string): any[] => {
 
 export default {
   async fetch(req: Request, env: Env) {
+
+    // APIキー認証チェック
+    const authHeader = req.headers.get('API-Key');
+
+    if (!authHeader || authHeader !== env.API_KEY) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized: Invalid or missing API key' }),
+        { 
+          status: 401,
+          headers: { 'Content-Type': 'application/json; charset=utf-8' }
+        }
+      );
+    }
 
     // POSTリクエストのみ許可
     if (req.method !== 'POST') {
