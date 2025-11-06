@@ -38,7 +38,7 @@ const { title, showSplash = false } = Astro.props;
 ─────────────────────────────────────────────────────────────────────
 
 -->
-<html lang="ja">
+<html lang="ja" class="overflow-x-hidden">
 
   <head>
     <meta charset="UTF-8">
@@ -73,7 +73,7 @@ const { title, showSplash = false } = Astro.props;
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
     <link rel="icon" type="image/png" href="/android-touch-icon.png" sizes="192x192">
   </head>
-  <body class="font-body text-light-text">
+  <body class="font-body text-light-text overflow-x-hidden">
     {showSplash && <SplashScreen />}
     <Header />
     <main>
