@@ -27,6 +27,7 @@ module.exports = {
         'primary-hover': '#0e285e',
         'light-text': '#212121',
         'dark-text': ' #dedede',
+        'main-bg': '#fff',
         'button-active': '#1f1f1f',
         'button-active-content': '#f2f2f2',
         'button-border': 'rgba(255, 255, 255, 0.35)',
