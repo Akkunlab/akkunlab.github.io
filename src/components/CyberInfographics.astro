@@ -156,33 +156,42 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
   
-  function animateCounter(counterElement: Element | null, counterGlow: Element | null, progressBar: HTMLElement, targetCount: number) {
+  const animateCounter = (counterElement: Element | null, counterGlow: Element | null, progressBar: HTMLElement, targetCount: number) => {
     if (!counterElement || !counterGlow || !progressBar) return;
     
     let startTime: number | null = null;
     const duration = 2000;
     
-    // イージングアウト関数
-    function easeOutQuart(t: number): number {
-      return 1 - Math.pow(1 - t, 4);
+    // イージング
+    const easeOutCubic = (t: number): number => {
+      return 1 - Math.pow(1 - t, 3);
     }
     
-    function animate(currentTime: number) {
+    const animate = (currentTime: number) => {
       if (startTime === null) startTime = currentTime;
+
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
 
-      const easedProgress = easeOutQuart(progress);
-      const currentCount = Math.round(easedProgress * targetCount);
+      // 進行度に応じてイージングを適用
+      const easedProgress = easeOutCubic(progress);
+      
+      // 小数点を含む現在値を計算
+      const currentValue = easedProgress * targetCount;
+      const currentCount = Math.floor(currentValue);
 
       if (counterElement) counterElement.textContent = currentCount.toString();
       if (counterGlow) counterGlow.textContent = currentCount.toString();
 
-      const progressPercent = (currentCount / targetCount) * 100;
-      progressBar.style.width = progressPercent + '%';
+      const progressPercent = easedProgress * 100;
+      progressBar.style.width = progressPercent.toFixed(3) + '%';
       
       if (progress < 1) {
         requestAnimationFrame(animate);
+      } else {
+        if (counterElement) counterElement.textContent = targetCount.toString();
+        if (counterGlow) counterGlow.textContent = targetCount.toString();
+        progressBar.style.width = '100%';
       }
     }
     
