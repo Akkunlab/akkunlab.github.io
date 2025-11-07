@@ -44,3 +44,4 @@ All commands are run from the root of the project, from a terminal:
   - [Cloudflare KV](https://www.cloudflare.com/ja-jp/developer-platform/products/workers-kv/)
   - [Cloudflare R2](https://www.cloudflare.com/ja-jp/developer-platform/products/r2/)
   - [Cloudflare Workers](https://www.cloudflare.com/ja-jp/developer-platform/products/workers/)
+  - [X API](https://developer.x.com/en/docs/twitter-api)
