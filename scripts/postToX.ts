@@ -1,5 +1,5 @@
 /**
- * ツイートを投稿するスクリプト
+ * Xに投稿するスクリプト
  * Run: npx tsx scripts/post_to_x.ts
  */
 
@@ -37,7 +37,7 @@ const getTwitterClient = (): TwitterApi => {
 };
 
 /**
- * ツイートを投稿
+ * Xに投稿
  * @param text ツイート内容
  */
 const postTweet = async (text: string): Promise<void> => {
