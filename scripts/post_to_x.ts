@@ -1,3 +1,8 @@
+/**
+ * ツイートを投稿するスクリプト
+ * Run: npx tsx scripts/post_to_x.ts
+ */
+
 import { config } from 'dotenv';
 import { TwitterApi } from 'twitter-api-v2';
 
@@ -11,6 +16,7 @@ Hello World!
 
 /**
  * 環境変数から認証情報を取得
+ * @return TwitterApiクライアント
  */
 const getTwitterClient = (): TwitterApi => {
   const { X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, X_ACCESS_SECRET } = process.env;
@@ -32,6 +38,7 @@ const getTwitterClient = (): TwitterApi => {
 
 /**
  * ツイートを投稿
+ * @param text ツイート内容
  */
 const postTweet = async (text: string): Promise<void> => {
   try {
