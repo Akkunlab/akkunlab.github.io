@@ -222,7 +222,7 @@ const pageToNotionRecord = async (
 };
 
 /**
- * DB 構造を参照して published/types のフィルタ条件を作成
+ * DB 構造を参照して published/publish/types のフィルタ条件を作成
  */
 const buildListFilters = async (
   databaseId: string,
@@ -235,9 +235,18 @@ const buildListFilters = async (
     const dbInfo = await notion.databases.retrieve({ database_id: databaseId });
     const properties = (dbInfo as any).properties;
 
+    // published が true のものだけ取得
     if (properties?.published?.type === 'checkbox') {
       filters.push({ property: 'published', checkbox: { equals: true } });
     }
+
+    // publish が現在時刻より前のものだけ取得
+    if (properties?.publish?.type === 'date') {
+      const now = new Date().toISOString();
+      filters.push({ property: 'publish', date: { on_or_before: now } });
+    }
+
+    // types フィルタ
     if (types && properties?.types?.type === 'select') {
       const orFilters = types.map(type => ({ property: 'types', select: { equals: type } }));
       filters.push({ or: orFilters });
@@ -312,11 +321,22 @@ const doesPageMatchFilters = (
 ): boolean => {
   const properties = page?.properties || {};
 
+  // published が true かチェック
   if (dbProps?.published?.type === 'checkbox') {
     const published = getCheckbox(properties.published);
     if (!published) return false;
   }
 
+  // publish が現在時刻より前かチェック
+  if (dbProps?.publish?.type === 'date') {
+    const publishDate = getDate(properties.publish);
+    if (publishDate) {
+      const now = new Date().toISOString();
+      if (publishDate > now) return false;
+    }
+  }
+
+  // types フィルタ
   if (options?.types && dbProps?.types?.type === 'select') {
     const typeVal = getSelect(properties.types);
     if (!options.types.includes(typeVal)) return false;
