@@ -96,7 +96,7 @@ const callLLM = async (
 ): Promise<string> => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  let response;
+  let response: Response | undefined;
 
   try {
     response = await fetch(OPENROUTER_API_URL, {
