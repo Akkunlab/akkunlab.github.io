@@ -94,23 +94,38 @@ const callLLM = async (
   userPrompt: string,
   temperature: number = 0.7
 ): Promise<string> => {
-  const response = await fetch(OPENROUTER_API_URL, {
-    method: 'POST',
-    headers: createOpenRouterHeaders(apiKey),
-    body: JSON.stringify({
-      model,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt },
-      ],
-      temperature,
-    }),
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  console.log("[callLLM] OpenRouter API呼び出し準備:", {
+    model,
+    systemPrompt,
+    userPrompt,
+    temperature
   });
 
-  const data = await response.json();
-  console.log("OpenRouter response:", JSON.stringify(data, null, 2)); // デバッグ用ログ
+  let response;
 
-  return data.choices?.[0]?.message?.content?.trim() ?? '';
+  try {
+    response = await fetch(OPENROUTER_API_URL, {
+      method: 'POST',
+      headers: createOpenRouterHeaders(apiKey),
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        temperature,
+      }),
+    });
+    console.log("[callLLM] OpenRouter API応答 status:", response.status);
+    const data = await response.json();
+    console.log("[callLLM] OpenRouter response:", JSON.stringify(data, null, 2));
+    return data.choices?.[0]?.message?.content?.trim() ?? '';
+  } catch (err: any) {
+    console.error("[callLLM] fetch error:", err, response ? await response.text().catch(() => "") : "");
+    throw err;
+  }
 };
 
 /**
@@ -299,7 +314,8 @@ export default {
         { headers: { 'Content-Type': 'application/json; charset=utf-8' } }
       );
     } catch (err: any) {
-      return new Response(`Error: ${err.message}`, { status: 500 });
+      console.error("[fetch handler] Error detail:", err && err.stack ? err.stack : err);
+      return new Response(`Error: ${err && err.message ? err.message : err}\n${err && err.stack ? err.stack : ''}`, { status: 500 });
     }
   },
 };
