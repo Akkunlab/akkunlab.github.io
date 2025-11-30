@@ -96,13 +96,6 @@ const callLLM = async (
 ): Promise<string> => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  console.log("[callLLM] OpenRouter API呼び出し準備:", {
-    model,
-    systemPrompt,
-    userPrompt,
-    temperature
-  });
-
   let response;
 
   try {
@@ -118,9 +111,10 @@ const callLLM = async (
         temperature,
       }),
     });
-    console.log("[callLLM] OpenRouter API応答 status:", response.status);
+
     const data = await response.json();
     console.log("[callLLM] OpenRouter response:", JSON.stringify(data, null, 2));
+
     return data.choices?.[0]?.message?.content?.trim() ?? '';
   } catch (err: any) {
     console.error("[callLLM] fetch error:", err, response ? await response.text().catch(() => "") : "");

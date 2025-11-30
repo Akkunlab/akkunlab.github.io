@@ -3,7 +3,7 @@ main = "index.ts"
 compatibility_date = "2025-06-17"
 
 [vars]
-MODEL = "qwen/qwen-2.5-72b-instruct:free"
+MODEL = "qwen/qwen-2.5-72b-instruct"
 
 [observability.logs]
 enabled = true
