@@ -197,8 +197,103 @@ const parseMarkdownToNotionBlocks = (markdown: string): any[] => {
   return blocks;
 };
 
+/**
+ * バックグラウンドで処理を実行
+ */
+const processInBackground = async (body: any, env: Env) => {
+  try {
+    const pageId = body.data?.id;
+    const types = body.data?.properties?.types?.select?.name || '';
+    const title = body.data?.properties?.title?.title?.[0]?.plain_text || '';
+    const summary = body.data?.properties?.summary?.rich_text?.[0]?.plain_text || '';
+    const category = body.data?.properties?.category?.select?.name || '';
+    const tags = body.data?.properties?.tags?.multi_select?.map((tag: any) => tag.name) || [];
+
+    if (!pageId || !title || !summary) {
+      console.error('Missing required fields:', { pageId, title, summary });
+      return;
+    }
+
+    // typesに応じてプロンプトを切り替え
+    const prompt = types === '活動'
+      ? ACTIVITIES_PROMPT_TEMPLATE(title, summary, category, tags)
+      : WORKS_PROMPT_TEMPLATE(title, summary, category, tags);
+
+    const systemPrompt = types === '活動'
+      ? env.ACTIVITIES_SYSTEM_PROMPT
+      : env.WORKS_SYSTEM_PROMPT;
+
+    const model = env.MODEL;
+
+    // デバッグ用ログ
+    console.log('Request parameters:', JSON.stringify({
+      pageId,
+      types,
+      title,
+      summary,
+      category,
+      tags,
+      model,
+      systemPrompt,
+    }, null, 2));
+
+    // 1. slug生成
+    const slugPrompt = SLUG_GENERATION_PROMPT(title);
+    const rawSlug = await callLLM(
+      env.OPENROUTER_API_KEY,
+      model,
+      'あなたはURLスラッグ生成の専門家です。与えられた情報から、SEOに適した簡潔で分かりやすいslugを生成してください。',
+      slugPrompt,
+      0.3
+    );
+    const generatedSlug = normalizeSlug(rawSlug);
+
+    // 2. 本文生成
+    const generatedText = await callLLM(
+      env.OPENROUTER_API_KEY,
+      model,
+      systemPrompt,
+      prompt,
+      0.7
+    );
+
+    // 3. Notionページの本文を更新
+    const blocks = parseMarkdownToNotionBlocks(generatedText);
+
+    await fetch(`https://api.notion.com/v1/blocks/${pageId}/children`, {
+      method: 'PATCH',
+      headers: createNotionHeaders(env.NOTION_API_KEY),
+      body: JSON.stringify({ children: blocks }),
+    });
+
+    // 4. Notionページのslugプロパティを更新
+    if (generatedSlug) {
+      await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
+        method: 'PATCH',
+        headers: createNotionHeaders(env.NOTION_API_KEY),
+        body: JSON.stringify({
+          properties: {
+            slug: {
+              rich_text: [
+                {
+                  type: 'text',
+                  text: { content: generatedSlug },
+                },
+              ],
+            },
+          },
+        }),
+      });
+    }
+
+    console.log('Background processing completed successfully:', { title, slug: generatedSlug });
+  } catch (err: any) {
+    console.error("[processInBackground] Error detail:", err && err.stack ? err.stack : err);
+  }
+};
+
 export default {
-  async fetch(req: Request, env: Env) {
+  async fetch(req: Request, env: Env, ctx: ExecutionContext) {
 
     // APIキー認証チェック
     const authHeader = req.headers.get('API-Key');
@@ -206,7 +301,7 @@ export default {
     if (!authHeader || authHeader !== env.API_KEY) {
       return new Response(
         JSON.stringify({ error: 'Unauthorized: Invalid or missing API key' }),
-        { 
+        {
           status: 401,
           headers: { 'Content-Type': 'application/json; charset=utf-8' }
         }
@@ -220,91 +315,12 @@ export default {
 
     try {
       const body = await req.json();
-      const pageId = body.data?.id;
-      const types = body.data?.properties?.types?.select?.name || '';
-      const title = body.data?.properties?.title?.title?.[0]?.plain_text || '';
-      const summary = body.data?.properties?.summary?.rich_text?.[0]?.plain_text || '';
-      const category = body.data?.properties?.category?.select?.name || '';
-      const tags = body.data?.properties?.tags?.multi_select?.map((tag: any) => tag.name) || [];
 
-      if (!pageId) return new Response('Missing pageId', { status: 400 });
-      if (!title) return new Response('Missing title', { status: 400 });
-      if (!summary) return new Response('Missing summary', { status: 400 });
-
-      // typesに応じてプロンプトを切り替え
-      const prompt = types === '活動' 
-        ? ACTIVITIES_PROMPT_TEMPLATE(title, summary, category, tags)
-        : WORKS_PROMPT_TEMPLATE(title, summary, category, tags);
-      
-      const systemPrompt = types === '活動'
-        ? env.ACTIVITIES_SYSTEM_PROMPT
-        : env.WORKS_SYSTEM_PROMPT;
-      
-      const model = env.MODEL;
-
-      // デバッグ用ログ
-      console.log('Request parameters:', JSON.stringify({
-        pageId,
-        types,
-        title,
-        summary,
-        category,
-        tags,
-        model,
-        systemPrompt,
-      }, null, 2));
-
-      // 1. slug生成
-      const slugPrompt = SLUG_GENERATION_PROMPT(title);
-      const rawSlug = await callLLM(
-        env.OPENROUTER_API_KEY,
-        model,
-        'あなたはURLスラッグ生成の専門家です。与えられた情報から、SEOに適した簡潔で分かりやすいslugを生成してください。',
-        slugPrompt,
-        0.3
-      );
-      const generatedSlug = normalizeSlug(rawSlug);
-
-      // 2. 本文生成
-      const generatedText = await callLLM(
-        env.OPENROUTER_API_KEY,
-        model,
-        systemPrompt,
-        prompt,
-        0.7
-      );
-
-      // 3. Notionページの本文を更新
-      const blocks = parseMarkdownToNotionBlocks(generatedText);
-
-      await fetch(`https://api.notion.com/v1/blocks/${pageId}/children`, {
-        method: 'PATCH',
-        headers: createNotionHeaders(env.NOTION_API_KEY),
-        body: JSON.stringify({ children: blocks }),
-      });
-
-      // 4. Notionページのslugプロパティを更新
-      if (generatedSlug) {
-        await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
-          method: 'PATCH',
-          headers: createNotionHeaders(env.NOTION_API_KEY),
-          body: JSON.stringify({
-            properties: {
-              slug: {
-                rich_text: [
-                  {
-                    type: 'text',
-                    text: { content: generatedSlug },
-                  },
-                ],
-              },
-            },
-          }),
-        });
-      }
+      // バックグラウンドで処理
+      ctx.waitUntil(processInBackground(body, env));
 
       return new Response(
-        JSON.stringify({ ok: true, title, generatedText, slug: generatedSlug }),
+        JSON.stringify({ ok: true }),
         { headers: { 'Content-Type': 'application/json; charset=utf-8' } }
       );
     } catch (err: any) {
