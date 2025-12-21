@@ -1,6 +1,6 @@
 /**
  * Xに投稿するスクリプト
- * Run: npx tsx scripts/post_to_x.ts
+ * Run: npx tsx scripts/postToX.ts
  */
 
 import { config } from 'dotenv';
