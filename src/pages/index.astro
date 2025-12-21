@@ -80,7 +80,7 @@ const skillsCount = (skillInterests ?? []).filter(r => (r.name?.trim())).length;
 <Layout showSplash={true}>
   
   <!-- ヒーローセクション -->
-  <section class="fixed top-0 left-0 right-0 bottom-0 z-0">
+  <section class="relative h-screen">
     <HeroCarousel />
     <div class="absolute inset-0 flex items-end pl-[3%] pb-[200px] md:pb-8">
       <h2 class="text-4xl sm:text-6xl lg:text-8xl font-bold text-primary-content hero-text">
@@ -94,7 +94,7 @@ const skillsCount = (skillInterests ?? []).filter(r => (r.name?.trim())).length;
   </section>
 
   <!-- コンテンツラッパー -->
-  <div class="relative mt-[100vh] bg-main-bg rounded-t-[24px] md:rounded-t-[32px] z-10">
+  <div class="relative bg-main-bg z-10">
 
     <!-- インフォグラフィックスセクション -->
     <section id="infographics" class={sectionClass.replace('md:px-16', 'max-w-[1300px] mx-auto')}>
