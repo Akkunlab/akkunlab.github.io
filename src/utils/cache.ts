@@ -174,6 +174,46 @@ export const setCache = async <T>(key: string, entry: CacheEntry<T>) => {
 };
 
 /**
+ * 開発モード用の JSON キャッシュを削除
+ * @param key キャッシュキー
+ */
+const deleteDevCache = async (key: string) => {
+  const filename = `${keyToFilename(key)}.json`;
+  const filePath = path.join(DEV_CONTENT_DIR, filename);
+  if (fssync.existsSync(filePath)) {
+    await fs.unlink(filePath);
+  }
+};
+
+/**
+ * Cloudflare KV からキャッシュを削除
+ * @param key キャッシュキー
+ */
+const kvDelete = async (key: string) => {
+  if (!isKVAvailable()) return;
+
+  await fetch(`${kvBaseUrl}/${encodeURIComponent(key)}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${CF_API_TOKEN}` },
+  });
+};
+
+/**
+ * キャッシュを削除（メモリ、KV、ローカルから削除）
+ * @param key キャッシュキー
+ */
+export const deleteCache = async (key: string) => {
+  delete memoryStore[key];
+
+  if (isKVAvailable()) {
+    await kvDelete(key);
+    return;
+  }
+
+  await deleteDevCache(key);
+};
+
+/**
  * TTL の有効期限内かどうかを判定
  * @param cachedAt キャッシュ保存時刻
  * @param ttlMs 有効期限（ミリ秒）
