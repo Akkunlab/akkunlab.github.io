@@ -19,7 +19,7 @@ export default defineConfig({
     robotsTxt({
       policy: [{
         userAgent: '*',
-        disallow: '/'
+        allow: '/'
       }]
     }),
     playformCompress(),
