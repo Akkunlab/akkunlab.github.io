@@ -4,7 +4,13 @@ export const SITE_URL: string = 'https://akkunlab.pages.dev/';
 
 export const AUTHOR: string = '岸本 篤';
 export const AUTHOR_ENGLISH: string = 'Atsushi Kishimoto';
-export const AUTHOR_SUMMARY: string = '江蘇省生まれ。小学生の頃からモノづくりに取り組む。福島工業高等専門学校を卒業し、茨城大学工学部を経て、筑波大学大学院情報学学位プログラムに所属。パソコン甲子園、技育展、高専プロコンに出場し、2021年にAWS Robot Delivery Challenge準優勝を果たす。2023年には常陸frogs（現・茨城frogs）5期生に選抜される。';
+export const AUTHOR_SUMMARY: string = `江蘇省生まれ。小学生の頃からモノづくりに取り組む。福島工業高等専門学校を卒業し、茨城大学工学部を経て、筑波大学大学院情報学学位プログラムに所属。感性工学・HCIを軸に、人の感じ方や使いやすさを起点にした体験設計の研究と実装に取り組む。
+
+パソコン甲子園、技育展、高専プロコンに出場し、2021年にAWS Robot Delivery Challenge準優勝を果たす。2023年に常陸frogs（現・茨城frogs）5期生に選抜される。2025年、チーム今橋製作所として県北BCPアイデアソンで茨城県知事賞を受賞。
+
+ソフト・ハード双方の基盤として、応用情報技術者、ディジタル技術検定1級情報、第二種電気工事士を有する。2023年からOLIENT TECH株式会社でフロントエンドエンジニアとして開発に従事。2025年からMonoLu株式会社ではマネージャーとして推進責任を担いながら、デザインとフロントエンド実装も一貫してリードしている。加えて、業務委託としてAI開発も手掛けている。
+
+「テクノロジーとデザインの融合で人々を幸せに」をミッションに、心地よさと使いやすさを体験として形にするクリエイターとして挑み続けている。`;
 
 export const OGP_IMAGE: string = '/ogp.png';
 
