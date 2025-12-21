@@ -1,20 +1,12 @@
 ---
 import type { NotionRecord } from '@/types/NotionRecord';
+import { escapeAndNl2br } from '@/utils/escapeAndNl2br';
 
 interface Props {
   items: NotionRecord[];
 }
 
 const { items } = Astro.props;
-
-const escapeAndNl2br = (input: string) =>
-  (input || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
-    .replace(/\r?\n/g, '<br />');
 ---
 
 <div class="cyber-timeline relative py-6 pl-0">
