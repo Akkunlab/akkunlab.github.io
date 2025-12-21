@@ -2,7 +2,7 @@ name: Daily Cloudflare Pages Rebuild
 
 on:
   schedule:
-    - cron: "0 10 * * *"  # 毎日19:00(JST)に自動実行（UTC基準）
+    - cron: "0 15 * * *"  # 毎日24:00(JST)に自動実行（UTC基準）
   workflow_dispatch:
 
 jobs:
