@@ -90,6 +90,27 @@ const animateSlideInRight = (element: Element): void => {
 };
 
 /**
+ * セクションヘッディングの文字スライドアニメーション
+ * @param element - アニメーションを適用する要素
+ */
+const animateSectionHeading = (element: Element): void => {
+  // 文字のスライドインアニメーション
+  const letters = element.querySelectorAll('.heading-letter');
+  letters.forEach((letter: Element) => {
+    const delay = letter.getAttribute('data-delay') || '0s';
+    (letter as HTMLElement).style.animationDelay = delay;
+    letter.classList.add('animate-slideIn');
+    letter.classList.remove('opacity-0');
+  });
+
+  // プログレスバーのアニメーション
+  const progressBar = element.querySelector('.heading-progress-bar');
+  if (progressBar) {
+    progressBar.classList.add('animate-expandWidth');
+  }
+};
+
+/**
  * Workアイテムのアニメーション
  * @param element - アニメーションを適用する要素
  */
@@ -168,6 +189,8 @@ const createIntersectionObserver = (heroTexts: NodeListOf<Element>): Intersectio
           animateSlideInRight(entry.target);
         } else if (entry.target.classList.contains('fade-in-text')) {
           animateTextFadeIn(entry.target);
+        } else if (entry.target.classList.contains('section-heading')) {
+          animateSectionHeading(entry.target);
         }
 
         // 一度アニメーションが実行されたら監視を解除
@@ -307,7 +330,7 @@ const setupSlideInRightAnimation = (
 ): void => {
   elements.forEach((element: Element) => {
     const rect: DOMRect = element.getBoundingClientRect();
-    const isVisible: boolean = 
+    const isVisible: boolean =
       rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
       rect.bottom >= 0;
 
@@ -315,6 +338,29 @@ const setupSlideInRightAnimation = (
       observer.observe(element);
     } else {
       animateSlideInRight(element);
+    }
+  });
+};
+
+/**
+ * セクションヘッディングアニメーションの設定
+ * @param elements - 対象となる要素のリスト
+ * @param observer - Intersection Observer
+ */
+const setupSectionHeadingAnimation = (
+  elements: NodeListOf<Element>,
+  observer: IntersectionObserver
+): void => {
+  elements.forEach((element: Element) => {
+    const rect: DOMRect = element.getBoundingClientRect();
+    const isVisible: boolean =
+      rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.bottom >= 0;
+
+    if (!isVisible) {
+      observer.observe(element);
+    } else {
+      animateSectionHeading(element);
     }
   });
 };
@@ -330,6 +376,7 @@ export const setupScrollAnimations = (): void => {
   const heroTexts: NodeListOf<Element> = document.querySelectorAll('.hero-text span');
   const fadeInTexts: NodeListOf<Element> = document.querySelectorAll('.fade-in-text');
   const slideInRightElements: NodeListOf<Element> = document.querySelectorAll('.slide-in-right');
+  const sectionHeadingElements: NodeListOf<Element> = document.querySelectorAll('.section-heading');
 
   // Intersection Observerの作成
   const observer: IntersectionObserver = createIntersectionObserver(heroTexts);
@@ -345,6 +392,9 @@ export const setupScrollAnimations = (): void => {
 
   // 横方向のスライドアニメーション設定
   setupSlideInRightAnimation(slideInRightElements, observer);
+
+  // セクションヘッディングのアニメーション設定
+  setupSectionHeadingAnimation(sectionHeadingElements, observer);
 
   // スムーススクロールの設定
   setupSmoothScroll();

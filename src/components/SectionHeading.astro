@@ -6,7 +6,7 @@ interface Props {
 const { title } = Astro.props;
 ---
 
-<div class="relative overflow-hidden py-4 px-4 max-w-[500px] w-full mx-auto rounded-full border border-slate-600 hover:border-purple-500 transition-all duration-500 shadow-lg shadow-slate-600/20 hover:shadow-purple-500/30 hover:shadow-xl">
+<div class="section-heading relative overflow-hidden py-4 px-4 max-w-[500px] w-full mx-auto rounded-full border border-slate-600 hover:border-purple-500 transition-all duration-500 shadow-lg shadow-slate-600/20 hover:shadow-purple-500/30 hover:shadow-xl">
   
   <!-- グラデーション背景 -->
   <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-gray-900 to-black opacity-95 rounded-full">
@@ -34,14 +34,23 @@ const { title } = Astro.props;
   <div class="relative z-10 text-center flex flex-col justify-center">
     
     <!-- タイトル -->
-    <h2 class="text-3xl sm:text-5xl leading-tight sm:leading-none font-bold text-primary-content whitespace-nowrap truncate opacity-0 animate-fadeInUpGlow drop-shadow-lg">
-      {title}
+    <h2 class="text-3xl sm:text-5xl leading-tight sm:leading-none font-bold text-primary-content whitespace-nowrap drop-shadow-lg">
+      {title.split('').map((letter, index) => (
+        <span class="inline-block overflow-hidden">
+          <span
+            class="heading-letter inline-block relative opacity-0"
+            data-delay={`${index * 0.05}s`}
+          >
+            {letter}
+          </span>
+        </span>
+      ))}
     </h2>
-    
+
     <!-- プログレスバー -->
     <div class="mt-3 flex justify-center">
       <div class="w-[60%] h-0.5 bg-gray-800 rounded-full overflow-hidden shadow-inner">
-        <div class="h-full bg-gradient-to-r from-slate-400 via-purple-500 to-pink-500 rounded-full w-0 animate-expandWidth animation-delay-[1000ms] shadow-sm shadow-slate-400/50"></div>
+        <div class="heading-progress-bar h-full bg-gradient-to-r from-slate-400 via-purple-500 to-pink-500 rounded-full w-0 shadow-sm shadow-slate-400/50"></div>
       </div>
     </div>
   </div>
