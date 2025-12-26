@@ -1,0 +1,12 @@
+name = "portfolio-generator"
+main = "index.ts"
+compatibility_date = "2025-06-17"
+
+[vars]
+MODEL = "qwen/qwen-2.5-72b-instruct"
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+invocation_logs = true
+persist = true

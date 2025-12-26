@@ -1,0 +1,264 @@
+---
+import { Icon } from 'astro-icon/components';
+import { getIconName } from '@/utils/icon';
+import { fetchNotionPageList } from '@/utils/notion';
+import {
+  AUTHOR,
+  AUTHOR_ENGLISH,
+  NAV_ITEMS,
+} from '@/constants';
+import CyberInfoPanel from './CyberInfoPanel.astro';
+
+const SOCIAL_LINKS_DATABASE_ID = import.meta.env.SOCIAL_LINKS_DATABASE_ID;
+
+const socialLinks = await fetchNotionPageList(SOCIAL_LINKS_DATABASE_ID, {
+  sorts: [{ timestamp: 'created_time', direction: 'descending' }]
+});
+
+const currentYear = new Date().getFullYear();
+const currentPath = Astro.url.pathname;
+const isHomePage = currentPath === '/' || currentPath === '';
+---
+
+<footer class="relative bg-footer-bg text-dark-text pt-16 pb-8 md:pb-8 z-10">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+      <!-- インフォメーション -->
+      <div class="md:col-span-1">
+        <h2 class="text-2xl font-bold mb-3">{AUTHOR_ENGLISH.toUpperCase()}</h2>
+        <p class="mb-4">
+          テクノロジーとデザインの融合で<br />
+          人々に感動と幸せを届けるクリエイター
+        </p>
+        <div class="flex space-x-2">
+          {socialLinks.map(item => (
+            <a 
+              href={item.link} 
+              class="btn btn-circle bg-transparent hover:bg-primary-content hover:text-base-300 border border-primary-content"
+              target="_blank" 
+              rel="noopener noreferrer"
+              aria-label={item.name}
+              title={item.name}
+            >
+              <Icon 
+                name={getIconName('prime', item.icon ?? '')}
+                size={24}
+                style={{ transform: item.icon === 'twitter' ? 'scale(0.625)' : 'scale(1)' }} />
+            </a>
+          ))}
+        </div>
+      </div>
+      
+      <!-- リンク -->
+      <div class="md:col-span-1 pl-0 lg:pl-4">
+        <h3 class="text-xl font-bold mb-3">リンク</h3>
+        <ul class="space-y-0">
+          {NAV_ITEMS.map(item => (
+            <li class="mb-0">
+              <a
+                href={item.href}
+                class="btn btn-ghost hover:bg-header-hover transition-colors h-9 min-h-9 text-base"
+                data-scroll={isHomePage && item.href.startsWith('/#') ? 'true' : 'false'}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- サイバーインフォメーション -->
+      <CyberInfoPanel
+        title="思考システム"
+        systemMessage="システム起動中..."
+        statusItems={[
+          { id: "01", name: "ハッカー思考", status: "稼働中", statusColor: "text-green-400" },
+          { id: "02", name: "デザイン思考", status: "同期中", statusColor: "text-amber-400" },
+          { id: "03", name: "創発エンジン", status: "出力中", statusColor: "text-green-400" }
+        ]}
+      />
+    </div>
+    
+    <!-- Copyright -->
+    <div class="border-t border-gray-700 mt-12 pt-8 text-center">
+      <p 
+        id="copyright"
+        class="cursor-pointer hover:text-primary transition-all duration-300 select-none transform hover:scale-105"
+        title="何かが起こるかも...?"
+      >
+        &copy; {currentYear} {AUTHOR} / {AUTHOR_ENGLISH}
+      </p>
+      <div 
+        id="copyright-container" 
+        class="fixed inset-0 pointer-events-none z-[9999] hidden bg-black bg-opacity-80 animate-rainbow-bg"
+      >
+        <div class="absolute inset-0 flex items-center justify-center">
+          <div 
+            id="surprise-text" 
+            class="text-2xl md:text-6xl font-bold text-transparent bg-gradient-to-r from-cyan-200 via-purple-200 to-pink-200 bg-clip-text transition-all duration-300 ease-out"
+          >
+            🎉 サプライズ！ 🎉
+          </div>
+        </div>
+
+        <!-- 花火エフェクト -->
+        <div id="fireworks-container" class="absolute inset-0"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- モバイル用セーフエリアスペース -->
+  <div
+    class="md:hidden"
+    style="
+      height: 64px;
+      height: calc(64px + constant(safe-area-inset-bottom));
+      height: calc(64px + env(safe-area-inset-bottom));
+    "
+    aria-hidden="true"
+  >
+  </div>
+</footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', (): void => {
+    const copyrightEl: HTMLElement | null = document.getElementById('copyright');
+    const easterEggContainer: HTMLElement | null = document.getElementById('copyright-container');
+    const surpriseText: HTMLElement | null = document.getElementById('surprise-text');
+    const fireworksContainer: HTMLElement | null = document.getElementById('fireworks-container');
+    
+    if (!copyrightEl || !easterEggContainer || !surpriseText || !fireworksContainer) return;
+    
+    let isEasterEggActive: boolean = false;
+    
+    const messages: string[] = [
+      '🎉 サプライズ！ 🎉',
+      '🤖 テックの匠 🤖',
+      '⚒️ 未来を創るクリエイター ⚒️',
+      '★ 感性のエンジニア ★',
+      '💻 革新のイノベーター 💻'
+    ];
+    
+    const sparkColors: string[] = [
+      'bg-red-400', 'bg-blue-400', 'bg-green-400', 'bg-yellow-400', 
+      'bg-purple-400', 'bg-pink-400', 'bg-cyan-400', 'bg-orange-400'
+    ];
+    
+    // 花火を作成する関数
+    function createFirework(x: number, y: number): void {
+      for (let i = 0; i < 12; i++) {
+        const spark: HTMLDivElement = document.createElement('div');
+        const colorClass: string = sparkColors[Math.floor(Math.random() * sparkColors.length)];
+        spark.className = `absolute w-2 h-2 rounded-full ${colorClass}`;
+        spark.style.left = x + 'px';
+        spark.style.top = y + 'px';
+        spark.style.zIndex = '1000';
+        
+        const angle: number = (i * 30) * Math.PI / 180;
+        const distance: number = 50 + Math.random() * 100;
+        const endX: number = x + Math.cos(angle) * distance;
+        const endY: number = y + Math.sin(angle) * distance;
+        
+        if (fireworksContainer) {
+          fireworksContainer.appendChild(spark);
+          
+          // Web Animations APIを使用してアニメーション
+          spark.animate([
+            { 
+              transform: 'translate(0, 0) scale(1)',
+              opacity: '1'
+            },
+            { 
+              transform: `translate(${endX - x}px, ${endY - y}px) scale(0)`,
+              opacity: '0'
+            }
+          ], {
+            duration: 1000 + Math.random() * 500,
+            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            fill: 'forwards'
+          }).addEventListener('finish', () => {
+            if (spark.parentNode) {
+              spark.remove();
+            }
+          });
+        }
+      }
+    }
+    
+    // ランダム花火を発生させる
+    function randomFireworks(): void {
+      if (!isEasterEggActive) return;
+      
+      const x: number = Math.random() * window.innerWidth;
+      const y: number = Math.random() * window.innerHeight;
+      createFirework(x, y);
+      
+      setTimeout((): void => {
+        if (isEasterEggActive) {
+          randomFireworks();
+        }
+      }, 200 + Math.random() * 800);
+    }
+    
+    copyrightEl.addEventListener('click', (): void => {
+      isEasterEggActive = true;
+      easterEggContainer.classList.remove('hidden');
+      
+      // レインボー背景を適用
+      easterEggContainer.className = 'fixed inset-0 pointer-events-none z-[9999] bg-gradient-to-br from-pink-500 via-purple-500 to-cyan-500 opacity-80 animate-pulse';
+      
+      // テキストアニメーション
+      let messageIndex: number = 0;
+      const textInterval: number = window.setInterval((): void => {
+
+        // フェードアウト
+        surpriseText.style.opacity = '0';
+        surpriseText.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+          surpriseText.textContent = messages[messageIndex % messages.length];
+
+          // テキストの色をランダムに変更
+          const gradients = [
+            'bg-gradient-to-r from-cyan-200 via-purple-200 to-pink-200',
+            'bg-gradient-to-r from-green-200 via-blue-200 to-purple-300',
+            'bg-gradient-to-r from-yellow-200 via-red-200 to-pink-200',
+            'bg-gradient-to-r from-blue-200 via-purple-200 to-cyan-200'
+          ];
+          const randomGradient = gradients[Math.floor(Math.random() * gradients.length)];
+          surpriseText.className = `text-2xl md:text-6xl font-bold text-transparent ${randomGradient} bg-clip-text transition-all duration-300 ease-out`;
+          
+          // フェードイン
+          setTimeout(() => {
+            surpriseText.style.opacity = '1';
+            surpriseText.style.transform = 'translateY(0)';
+          }, 50);
+          
+          messageIndex++;
+        }, 200);
+      }, 1200);
+      
+      // ランダム花火開始
+      randomFireworks();
+      
+      // 終了
+      setTimeout((): void => {
+        isEasterEggActive = false;
+        easterEggContainer.classList.add('hidden');
+
+        // 元のクラスに戻す
+        easterEggContainer.className = 'fixed inset-0 pointer-events-none z-[9999] hidden bg-black bg-opacity-80';
+        window.clearInterval(textInterval);
+
+        if (fireworksContainer) fireworksContainer.innerHTML = '';
+
+        // 初期状態に戻す
+        surpriseText.textContent = '🎉 サプライズ！ 🎉';
+        surpriseText.className = 'text-2xl md:text-6xl font-bold text-transparent bg-gradient-to-r from-cyan-200 via-purple-200 to-pink-200 bg-clip-text transition-all duration-300 ease-out';
+        surpriseText.style.opacity = '1';
+        surpriseText.style.transform = 'translateY(0)';
+      }, 7200);
+    });
+  });
+</script>

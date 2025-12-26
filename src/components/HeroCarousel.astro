@@ -1,0 +1,36 @@
+---
+import { Image } from 'astro:assets';
+import { IMAGE_FORMAT, IMAGE_QUALITY } from '@/constants';
+
+import heroImage_1 from '@/assets/images/hero-image_1.jpg';
+import heroImage_2 from '@/assets/images/hero-image_2.jpg';
+
+const heroImages = [
+  {
+    src: heroImage_1,
+    alt: 'メインビジュアル 1',
+  },
+  {
+    src: heroImage_2,
+    alt: 'メインビジュアル 2',
+  }
+];
+const carouselDuration = 14; // seconds
+---
+
+<div class="relative inset-0">
+  {[0, 1, 0].map((imageIndex, sequenceIndex) => (
+    <Image 
+      src={heroImages[imageIndex].src}
+      alt={heroImages[imageIndex].alt}
+      class="absolute animate-carousel h-screen w-full object-cover opacity-0"
+      style={{ animationDelay: `${carouselDuration * (0.9 - 0.45 * sequenceIndex)}s` }}
+      loading={sequenceIndex === 1 ? "eager" : "lazy"}
+      widths={[640, 960, 1280, 1536, 1920]}
+      sizes="100vw"
+      format={IMAGE_FORMAT}
+      quality={IMAGE_QUALITY}
+      fetchpriority={sequenceIndex === 1 ? 'high' : 'auto'}
+    />
+  ))}
+</div>

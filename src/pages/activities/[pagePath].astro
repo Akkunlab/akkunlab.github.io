@@ -1,0 +1,147 @@
+---
+import { fetchNotionPage, fetchNotionPageList } from '@/utils/notion';
+import { markdownToHtml } from '@/utils/markdown';
+import { formatDateShort } from '@/utils/dateFormat';
+import { getIconName } from '@/utils/icon';
+import { normalizeTagName } from '@/utils/filterTags';
+import Layout from '@/layouts/Layout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import Button from '@/components/Button.astro';
+import { MARKDOWN_STYLES } from '@/constants';
+import { Icon } from 'astro-icon/components';
+import type { Tag } from '@/types/Tag';
+
+type StaticPath = {
+  params: {
+    pagePath: string
+  },
+  props: {
+    id: string,
+    title: string,
+    category: string,
+    tags: Tag[],
+    link: string,
+    event: string,
+    publish: string,
+    updated: string
+  }
+};
+
+export const getStaticPaths = async (): Promise<StaticPath[]> => {
+  const PORTFOLIO_DATABASE_ID = import.meta.env.PORTFOLIO_DATABASE_ID;
+  const pages = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, { 
+    types: ['活動'],
+    sorts: [{ property: 'event', direction: 'descending' }]
+  });
+
+  return pages.map((page) => ({
+    params: { pagePath: page.slug as string },
+    props: { 
+      id: page.id as string,
+      title: page.title as string,
+      category: page.category as string,
+      tags: page.tags as Tag[],
+      link: page.link as string,
+      event: page.event as string,
+      publish: page.publish as string,
+      updated: page.updated as string
+    }
+  }));
+};
+
+const { id: pageId, title, category, tags, link, event, publish, updated } = Astro.props;
+const pageData = pageId ? await fetchNotionPage(pageId) : null;
+const content = pageData ? pageData.content : null;
+const htmlContent = content ? await markdownToHtml(content) : null;
+
+const breadcrumbItems = [
+  { label: 'ホーム', href: '/', isHome: true },
+  { label: '活動', href: '/activities' },
+  { label: title }
+];
+
+const shouldShowUpdatedDate = updated && publish && 
+  new Date(updated).toDateString() !== new Date(publish).toDateString() && 
+  new Date(updated) > new Date(publish);
+---
+
+<Layout title={title}>
+  <div class="pt-36 pb-40 px-0 md:px-16 min-h-screen bg-content-bg">
+
+    <!-- ヘッダーセクション -->
+    <div class="max-w-4xl mx-auto px-4 md:px-0">
+      
+      <!-- パンくずリスト -->
+      <Breadcrumb items={breadcrumbItems} />
+
+      <!-- タイトル -->
+      <div>
+        <h1 class="text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary pb-2">
+          {title}
+        </h1>
+
+        <div class="my-6">
+
+          <!-- 日付 -->
+          <div class="text-light-text text-sm inline-flex items-center gap-2 flex-wrap mb-4">
+            <time class="inline-flex items-center gap-1" datetime={event}>
+              <Icon name="material-symbols-light:calendar-month" class="w-5 h-5" />
+              実施日: {formatDateShort(event)}
+            </time>
+            <time class="inline-flex items-center gap-1" datetime={publish}>
+              <Icon name="material-symbols-light:public" class="w-5 h-5" />
+              公開日: {formatDateShort(publish)}
+            </time>
+            {shouldShowUpdatedDate && (
+              <time class="inline-flex items-center gap-1" datetime={updated}>
+                <Icon name="material-symbols-light:update" class="w-5 h-5" />
+                更新日: {formatDateShort(updated)}
+              </time>
+            )}
+          </div>
+
+          <!-- カテゴリ・タグ -->
+          {(category || (tags && tags.length > 0)) && (
+            <div class="flex flex-wrap gap-2">
+              {[category, ...(tags ?? []).map(tag => tag.name)]
+                .filter(Boolean)
+                .map((name) => (
+                  <a
+                    class="text-primary bg-primary-content hover:bg-primary hover:text-primary-content px-3 py-1 border border-button-border rounded-full shadow-md transition-colors duration-200 cursor-pointer select-none"
+                    href={`/activities?tag=${normalizeTagName(name)}`}
+                  >
+                    {name}
+                  </a>
+                ))}
+            </div>
+          )}
+        </div>
+
+        <!-- Divider -->
+        <div class="w-full h-1 bg-gradient-to-r from-primary to-secondary"></div>
+      </div>
+    </div>
+
+    <!-- コンテンツセクション -->
+    <div class="max-w-4xl mx-auto my-16">
+      {htmlContent && (
+        <div class="px-4 py-8 md:p-8 bg-primary-content border border-button-border rounded-0 md:rounded-lg shadow-lg">
+          <div class={`prose prose-slate max-w-none ${MARKDOWN_STYLES}`} set:html={htmlContent} />
+          {link && (
+            <div class="mt-8 flex justify-center">
+              <Button text="活動を見る！" href={link} target="_blank" rel="noopener noreferrer" />
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+
+    <!-- ボタン -->
+    <div class="mt-12 flex justify-center">
+      <a href="/activities" class="inline-flex items-center font-bold text-primary bg-primary-content px-16 py-4 border border-button-border rounded-full shadow-lg transition hover:bg-primary hover:text-primary-content">
+        <Icon name={getIconName('material-symbols-light', 'arrow-back')} class="w-6 h-6 mt-0.5 mr-2 relative z-10" />
+        活動一覧に戻る！
+      </a>
+    </div>
+  </div>
+</Layout>

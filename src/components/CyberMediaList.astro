@@ -1,0 +1,63 @@
+---
+import type { NotionRecord } from '@/types/NotionRecord';
+
+interface Props {
+  items: NotionRecord[];
+  class?: string;
+}
+
+const { items, class: className } = Astro.props;
+---
+
+<div class={`cyber-media-list space-y-4 ${className}`}>
+  {items.map((item) => (
+    <article class="cyber-media-item slide-in-right opacity-0 translate-x-8 group">
+      <a 
+        href={item.link} 
+        class="block relative p-3 md:p-4 bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-sm border border-slate-600/50 rounded-lg overflow-hidden group-hover:border-red-400/60 group-hover:-translate-y-0.5 group-hover:scale-[1.01] group-hover:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-2px_rgba(0,0,0,0.05),0_0_0_1px_rgba(239,68,68,0.2),0_0_25px_rgba(239,68,68,0.3),inset_0_1px_0_rgba(255,255,255,0.1)] transition-all duration-300"
+        target="_blank" 
+        rel="noopener noreferrer"
+      >
+        {/* ホログラフィック効果 */}
+        <div class="absolute inset-0 bg-gradient-to-r from-red-500/10 via-transparent to-orange-500/10 pointer-events-none"></div>
+        
+        {/* アニメーション付きスキャンライン */}
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-red-400/15 to-transparent w-0 group-hover:w-full transition-all duration-700 ease-out"></div>
+        
+        {/* グロー境界線 */}
+        <div class="absolute inset-0 rounded-lg border border-red-400/30 shadow-[0_0_10px_rgba(239,68,68,0.3)] group-hover:shadow-[0_0_20px_rgba(239,68,68,0.5)] transition-all duration-300"></div>
+        
+        {/* 角のアクセント */}
+        <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-red-400 opacity-60 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div class="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-red-400 opacity-60 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div class="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-red-400 opacity-60 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-red-400 opacity-60 group-hover:opacity-100 transition-opacity duration-300"></div>
+        
+        {/* ステータスインジケーター */}
+        <div class="absolute top-3 right-3 flex items-center space-x-1">
+          <div class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
+          <div class="w-1 h-1 bg-blue-400 rounded-full animate-[dataFlow_2s_ease-in-out_infinite]"></div>
+        </div>
+        
+        {/* コンテンツ */}
+        <div class="relative z-10">
+
+          {/* メタ情報 */}
+          <div class="flex items-center justify-between my-2">
+            <span class="inline-block text-sm text-red-300 font-mono bg-red-400/15 px-3 py-1 rounded-full border border-red-400/30 shadow-[0_0_5px_rgba(239,68,68,0.3)]">
+              {item.summary}
+            </span>
+            <time class="text-sm text-slate-400 font-mono">
+              {item.publish ? item.publish.replace(/-/g, '.') : ''}
+            </time>
+          </div>
+
+          {/* タイトル */}
+          <h3 class="text-primary-content transition-colors duration-300 line-clamp-3 [-webkit-line-clamp:3] [-webkit-box-orient:vertical] [display:-webkit-box] overflow-hidden">
+            {item.title}
+          </h3>
+        </div>
+      </a>
+    </article>
+  ))}
+</div>

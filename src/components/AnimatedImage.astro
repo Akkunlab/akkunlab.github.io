@@ -1,0 +1,53 @@
+---
+import { Image } from 'astro:assets';
+import { IMAGE_FORMAT, IMAGE_QUALITY } from '@/constants';
+
+interface Props {
+  src: ImageMetadata | string;
+  alt: string;
+  class?: string;
+  loading?: 'eager' | 'lazy';
+  noScale?: boolean;
+  widths?: number[];
+  sizes?: string;
+  format?: 'avif' | 'webp';
+  quality?: number;
+  fetchpriority?: 'high' | 'low' | 'auto';
+}
+
+const {
+  src,
+  alt,
+  class: className,
+  loading = 'lazy',
+  noScale = false,
+  widths,
+  sizes,
+  format = IMAGE_FORMAT,
+  quality = IMAGE_QUALITY,
+  fetchpriority = 'auto',
+} = Astro.props;
+
+const imageClass = `transition-transform duration-500 ${noScale ? '' : 'hover:scale-110'} image-animation opacity-0 w-full h-full object-cover ${className || ''}`;
+---
+
+<div class="animated-image-container relative overflow-hidden rounded-xl">
+  <figure class="relative w-full h-full image-wrapper">
+    {typeof src === 'string' ? (
+      <img src={src} alt={alt} class={imageClass} loading={loading} />
+    ) : (
+      <Image
+        src={src}
+        alt={alt}
+        class={imageClass}
+        loading={loading}
+        widths={widths}
+        sizes={sizes}
+        format={format}
+        quality={quality}
+        fetchpriority={fetchpriority}
+      />
+    )}
+  </figure>
+  <div class="absolute inset-0 bg-base-300 curtain-animation opacity-0"></div>
+</div>

@@ -1,0 +1,185 @@
+---
+import { AUTHOR_ENGLISH } from '@/constants';
+
+const currentDate = new Date();
+const currentYear = currentDate.getFullYear();
+const currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0');
+const currentDay = String(currentDate.getDate()).padStart(2, '0');
+
+const SYSTEM_INIT_TEXT = '[ SYSTEM INITIALIZATION ]';
+const SUB_TEXT = 'LOADING SYSTEM...';
+const VERSION_TEXT = `VERSION ${currentYear}.${currentMonth}.${currentDay}`;
+const INTERFACE_READY_TEXT = 'INTERFACE READY';
+const STATUS_ONLINE_TEXT = 'STATUS: ONLINE';
+const NET_SECURE_TEXT = 'NET: SECURE';
+const ID_TEXT = `ID: AK-${currentYear}`;
+const MODE_TEXT = 'MODE: PROD';
+---
+
+<div id="splash-screen" class="fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-primary z-[9999] overflow-hidden transition-opacity duration-200" style="opacity:0; pointer-events:none;">
+  
+  <!-- グリッドアニメーション -->
+  <div class="absolute inset-0 opacity-20">
+    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent animate-scanLine"></div>
+    <div class="absolute top-0 left-0 w-full h-full">
+      {Array.from({ length: 20 }).map((_, i) => (
+        <div 
+          class="absolute w-px bg-gradient-to-b from-transparent via-cyan-400/30 to-transparent animate-dataFlow"
+          style={`left: ${(i + 1) * 5}%; height: 100%; animation-delay: ${i * 0.05}s;`}
+        ></div>
+      ))}
+    </div>
+  </div>
+
+  <!-- 中央コンテンツコンテナ -->
+  <div class="relative flex flex-col items-center justify-center h-full px-8">
+    
+    <!-- フレーム -->
+    <div class="absolute inset-8 border-2 border-cyan-400/50 animate-pulse"></div>
+    
+    <!-- システムステータス -->
+    <div class="mb-6 text-center">
+      <div class="text-cyan-400 text-sm font-mono tracking-wider mb-2 animate-fadeInUpGlow">
+        {SYSTEM_INIT_TEXT}
+      </div>
+      <div class="text-cyan-300/70 text-xs font-mono tracking-widest animate-typing overflow-hidden whitespace-nowrap border-r-2 border-cyan-400">
+        {SUB_TEXT}
+      </div>
+    </div>
+    
+    <!-- サイバー効果付きメインテキスト -->
+    <div class="relative mb-6">
+      
+      <!-- メインテキスト -->
+      <h1 class="relative text-4xl sm:text-6xl md:text-8xl lg:text-[120px] font-bold text-primary-content">
+        {AUTHOR_ENGLISH.toUpperCase().split(' ').map((part, partIndex) => (
+          <div class="block mb-2">
+            {part.split('').map((letter, letterIndex) => (
+              <span class="inline-block overflow-hidden">
+                <span
+                  class="inline-block animate-slideInOut relative opacity-0"
+                  style={`animation-delay: ${0.5 + (partIndex * part.length + letterIndex) * 0.03}s;`}
+                >
+                  {letter}
+                </span>
+              </span>
+            ))}
+          </div>
+        ))}
+      </h1>
+    </div>
+    
+    <!-- プログレスバー -->
+    <div class="w-64 md:w-96 bg-gray-800 h-1 rounded-full overflow-hidden mb-4">
+      <div class="h-full bg-gradient-to-r from-cyan-400 to-blue-500 animate-expandWidth"></div>
+    </div>
+    
+    <!-- システム情報 -->
+    <div class="text-center space-y-1 opacity-70">
+      <div class="text-cyan-300 text-xs font-mono tracking-wider animate-fadeInUp" style="animation-delay: 1.2s;">
+        {VERSION_TEXT}
+      </div>
+      <div class="text-cyan-300/50 text-xs font-mono tracking-wider animate-fadeInUp" style="animation-delay: 1.4s;">
+        {INTERFACE_READY_TEXT}
+      </div>
+    </div>
+  </div>
+
+  <!-- コーナーHUD要素 -->
+  <div class="absolute top-16 left-16 text-cyan-400 font-mono text-xs opacity-60">
+    <div class="animate-fadeInUp">{STATUS_ONLINE_TEXT}</div>
+    <div class="animate-fadeInUp" style="animation-delay: 0.3s;">{NET_SECURE_TEXT}</div>
+  </div>
+  
+  <div class="absolute top-16 right-16 text-cyan-400 font-mono text-xs opacity-60 text-right">
+    <div class="animate-fadeInUp">{ID_TEXT}</div>
+    <div class="animate-fadeInUp" style="animation-delay: 0.3s;">{MODE_TEXT}</div>
+  </div>
+  
+  <!-- 終了アニメーション円 -->
+  <div id="exit-circle" class="absolute top-1/2 left-1/2 w-[300vmax] h-[300vmax] bg-primary rounded-full opacity-0 pointer-events-none" style="will-change: transform, opacity; transform-origin: center center; transform: translate(-50%, -50%) scale(0.001);"></div>
+</div>
+
+<script>
+  (() => {
+    const animationDuration = 3000;
+    const splashEl = document.getElementById('splash-screen');
+    const exitEl = document.getElementById('exit-circle');
+
+    if (!splashEl || !exitEl) return;
+    if (!(splashEl instanceof HTMLElement) || !(exitEl instanceof HTMLElement)) return;
+
+    const splashScreen = splashEl;
+    const exitCircle = exitEl;
+    const isBot = /bot|crawl|spider|lighthouse/i.test(navigator.userAgent);
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // ボットや低モーション環境ではスプラッシュをスキップ
+    if (isBot || prefersReduced) {
+      splashScreen.remove();
+      document.dispatchEvent(new CustomEvent('splashScreenComplete'));
+      return;
+    }
+
+    // プログレスバーの速度調整
+    const progressBar = splashScreen.querySelector('.animate-expandWidth');
+    if (progressBar && progressBar instanceof HTMLElement) {
+      progressBar.style.animationDuration = animationDuration + 'ms';
+    }
+
+    // 2フレーム後にオーバーレイを表示
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        splashScreen.style.opacity = '1';
+        splashScreen.style.pointerEvents = 'auto';
+      });
+    });
+
+    // データフローアニメーション強化
+    const enhanceDataFlow = () => {
+      const dataLines = splashScreen.querySelectorAll('.animate-dataFlow');
+      dataLines.forEach((line) => {
+        if (!(line instanceof HTMLElement)) return;
+
+        const randomHeight = Math.random() * 50 + 50;
+        const randomDelay = Math.random();
+
+        line.style.height = randomHeight + '%';
+        line.style.animationDelay = randomDelay + 's';
+        line.style.animationDuration = (1 + Math.random()) + 's';
+      });
+    };
+
+    // タイピングアニメーション初期化
+    const initTyping = () => {
+      const typingElements = splashScreen.querySelectorAll('.animate-typing');
+      typingElements.forEach((el, index) => {
+        if (!(el instanceof HTMLElement)) return;
+
+        setTimeout(() => {
+          el.style.animation = 'expandWidth 1.2s steps(40, end), blinkCaret 0.75s step-end infinite';
+        }, 300 + index * 100);
+      });
+    };
+
+    // 終了アニメーション開始
+    const startExitAnimation = () => {
+      exitCircle.classList.add('animate-circleExpand');
+      exitCircle.addEventListener('animationend',
+        () => {
+          splashScreen.classList.add('animate-fadeOut');
+          document.dispatchEvent(new CustomEvent('splashScreenComplete'));
+          setTimeout(() => splashScreen.remove(), animationDuration);
+        },
+        { once: true }
+      );
+    };
+
+    initTyping();
+
+    const idle = window.requestIdleCallback || ((cb) => { setTimeout(cb, 200); });
+
+    idle(() => { enhanceDataFlow(); });
+    setTimeout(startExitAnimation, animationDuration);
+  })();
+</script>

@@ -1,0 +1,201 @@
+---
+import { Icon } from 'astro-icon/components'
+import { getIconName } from '@/utils/icon'
+
+export interface Props {
+  title: string;
+  icon: string;
+  count: number;
+  color: 'cyan' | 'purple' | 'orange' | 'green';
+  href?: string;
+}
+
+const { title, icon, count, color, href } = Astro.props;
+
+const themes = {
+  cyan: {
+    via: 'via-cyan-900',
+    text: 'text-cyan-400',
+    textGlow: 'text-cyan-300',
+    border: 'border-cyan-500/30',
+    hoverBorder: 'hover:border-cyan-500/60',
+    shadow: 'shadow-cyan-500/30',
+    hoverShadow: 'hover:shadow-cyan-500/40',
+    gradIcon: 'from-cyan-500 to-blue-500',
+    gradProgress: 'from-cyan-500 to-blue-500',
+    gradBg: 'from-cyan-500/5 to-blue-500/5',
+    gradAccent: 'from-cyan-400/10 via-transparent to-cyan-400/10',
+    gradScanline: 'from-transparent via-cyan-400 to-transparent',
+    borderAccent: 'border-cyan-400',
+    shadowIcon: 'shadow-cyan-500/30'
+  },
+  purple: {
+    via: 'via-purple-900',
+    text: 'text-purple-400',
+    textGlow: 'text-purple-300',
+    border: 'border-purple-500/30',
+    hoverBorder: 'hover:border-purple-500/60',
+    shadow: 'shadow-purple-500/30',
+    hoverShadow: 'hover:shadow-purple-500/40',
+    gradIcon: 'from-purple-500 to-pink-500',
+    gradProgress: 'from-purple-500 to-pink-500',
+    gradBg: 'from-purple-500/5 to-pink-500/5',
+    gradAccent: 'from-purple-400/10 via-transparent to-purple-400/10',
+    gradScanline: 'from-transparent via-purple-400 to-transparent',
+    borderAccent: 'border-purple-400',
+    shadowIcon: 'shadow-purple-500/30'
+  },
+  orange: {
+    via: 'via-orange-900',
+    text: 'text-orange-400',
+    textGlow: 'text-orange-300',
+    border: 'border-orange-500/30',
+    hoverBorder: 'hover:border-orange-500/60',
+    shadow: 'shadow-orange-500/30',
+    hoverShadow: 'hover:shadow-orange-500/40',
+    gradIcon: 'from-orange-500 to-red-500',
+    gradProgress: 'from-orange-500 to-red-500',
+    gradBg: 'from-orange-500/5 to-red-500/5',
+    gradAccent: 'from-orange-400/10 via-transparent to-orange-400/10',
+    gradScanline: 'from-transparent via-orange-400 to-transparent',
+    borderAccent: 'border-orange-400',
+    shadowIcon: 'shadow-orange-500/30'
+  },
+  green: {
+    via: 'via-green-900',
+    text: 'text-green-400',
+    textGlow: 'text-green-300',
+    border: 'border-green-500/30',
+    hoverBorder: 'hover:border-green-500/60',
+    shadow: 'shadow-green-500/30',
+    hoverShadow: 'hover:shadow-green-500/40',
+    gradIcon: 'from-green-500 to-emerald-500',
+    gradProgress: 'from-green-500 to-emerald-500',
+    gradBg: 'from-green-500/5 to-emerald-500/5',
+    gradAccent: 'from-green-400/10 via-transparent to-green-400/10',
+    gradScanline: 'from-transparent via-green-400 to-transparent',
+    borderAccent: 'border-green-400',
+    shadowIcon: 'shadow-green-500/30'
+  }
+} as const;
+
+const Component = href ? 'a' : 'div';
+const linkProps = href ? { href, 'data-scroll': 'true' } : {};
+
+const colors = themes[color];
+---
+
+<Component class={`group relative transform hover:scale-105 md:hover:scale-110 transition-all duration-700 infographic-card block no-underline ${href ? 'cursor-pointer' : ''}`} data-count={count} {...linkProps}>
+  <div class={`bg-gradient-to-br from-slate-900 ${colors.via} to-slate-900 p-6 xl:p-12 rounded-2xl border-2 ${colors.border} ${colors.hoverBorder} transition-all duration-500 hover:shadow-2xl ${colors.hoverShadow} overflow-hidden relative`}>
+
+    <!-- サイバーフレーム -->
+    <div class={`absolute inset-0 ${colors.gradBg} rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500`}></div>
+    <div class={`absolute top-0 left-0 w-full h-full border-2 border-transparent ${colors.gradAccent} rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`}></div>
+    
+    <!-- 強化されたスキャンライン -->
+    <div class={`absolute top-0 left-0 w-full h-1 ${colors.gradScanline} opacity-0 group-hover:opacity-100 group-hover:animate-scanLine`}></div>
+    <div class={`absolute bottom-0 right-0 w-full h-1 ${colors.gradScanline} opacity-0 group-hover:opacity-100 group-hover:animate-scanLine`} style="animation-delay: 0.3s;"></div>
+    
+    <!-- コーナーアクセント -->
+    <div class={`absolute top-2 left-2 w-6 h-6 border-t-2 border-l-2 ${colors.borderAccent} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
+    <div class={`absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 ${colors.borderAccent} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
+    
+    <!-- アイコン -->
+    <div class="relative text-center mb-6 md:mb-8">
+      <div class={`inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full bg-gradient-to-r ${colors.gradIcon} mb-4 md:mb-6 group-hover:animate-glow group-hover:scale-110 transition-transform duration-500 shadow-2xl ${colors.shadowIcon}`}>
+        <Icon name={getIconName('material-symbols-light', icon)} class="h-8 w-8 md:h-10 md:w-10 lg:h-12 lg:w-12 text-white" />
+      </div>
+    </div>
+    
+    <!-- 数値 -->
+    <div class="text-center relative z-10">
+      <div class={`text-5xl md:text-6xl lg:text-7xl font-bold ${colors.text} mb-2 md:mb-4 relative counter-number`}>
+        0
+        <div class={`absolute inset-0 ${colors.textGlow} opacity-20 blur-sm counter-glow`}>0</div>
+      </div>
+      <div class="text-lg lg:text-2xl font-semibold text-dark-text mb-2 md:mb-3 tracking-wider">{title}</div>
+    </div>
+    
+    <!-- 進行バー -->
+    <div class="mt-8 relative">
+      <div class="w-full h-2 bg-slate-700 rounded-full overflow-hidden shadow-inner">
+        <div class={`progress-bar h-full bg-gradient-to-r ${colors.gradProgress} rounded-full shadow-lg ${colors.shadow}`} style="width: 0%;"></div>
+      </div>
+    </div>
+  </div>
+</Component>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const cards = document.querySelectorAll('.infographic-card');
+  
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const card = entry.target as HTMLElement;
+        const counterElement = card.querySelector('.counter-number');
+        const counterGlow = card.querySelector('.counter-glow');
+        const progressBar = card.querySelector('.progress-bar') as HTMLElement;
+        const targetCount = parseInt(card.getAttribute('data-count') || '0');
+        
+        animateCounter(counterElement, counterGlow, progressBar, targetCount);
+      }
+    });
+  }, { threshold: 0.3 });
+  
+  cards.forEach(card => {
+    observer.observe(card);
+    
+    card.addEventListener('mouseenter', function(this: HTMLElement) {
+      const counterElement = this.querySelector('.counter-number');
+      const counterGlow = this.querySelector('.counter-glow');
+      const progressBar = this.querySelector('.progress-bar') as HTMLElement;
+      const targetCount = parseInt(this.getAttribute('data-count') || '0');
+      
+      animateCounter(counterElement, counterGlow, progressBar, targetCount);
+    });
+  });
+  
+  const animateCounter = (counterElement: Element | null, counterGlow: Element | null, progressBar: HTMLElement, targetCount: number) => {
+    if (!counterElement || !counterGlow || !progressBar) return;
+    
+    let startTime: number | null = null;
+    const duration = 2000;
+    
+    // イージング
+    const easeOutCubic = (t: number): number => {
+      return 1 - Math.pow(1 - t, 3);
+    }
+    
+    const animate = (currentTime: number) => {
+      if (startTime === null) startTime = currentTime;
+
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // 進行度に応じてイージングを適用
+      const easedProgress = easeOutCubic(progress);
+      
+      // 小数点を含む現在値を計算
+      const currentValue = easedProgress * targetCount;
+      const currentCount = Math.floor(currentValue);
+
+      if (counterElement) counterElement.textContent = currentCount.toString();
+      if (counterGlow) counterGlow.textContent = currentCount.toString();
+
+      const progressPercent = easedProgress * 100;
+      progressBar.style.width = progressPercent.toFixed(3) + '%';
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        if (counterElement) counterElement.textContent = targetCount.toString();
+        if (counterGlow) counterGlow.textContent = targetCount.toString();
+        progressBar.style.width = '100%';
+      }
+    }
+    
+    requestAnimationFrame(animate);
+  }
+});
+</script>

@@ -1,0 +1,49 @@
+{
+  "name": "akkunlab.github.io",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/sitemap": "3.4.2",
+    "@astrojs/tailwind": "^6.0.2",
+    "@aws-sdk/client-s3": "^3.744.0",
+    "@fontsource/noto-sans-jp": "^5.2.6",
+    "@iconify-json/devicon": "^1.2.29",
+    "@iconify-json/material-symbols-light": "^1.2.27",
+    "@iconify-json/prime": "^1.2.2",
+    "@iconify/tools": "^4.1.2",
+    "@notionhq/client": "^2.3.0",
+    "@playform/compress": "0.0.4",
+    "astro": "^5.12.8",
+    "astro-icon": "1.1.0",
+    "astro-robots-txt": "1.0.0",
+    "axios": "^1.13.2",
+    "dotenv": "^17.2.3",
+    "notion-to-md": "4.0.0-alpha.5",
+    "remark": "^15.0.1",
+    "remark-breaks": "^4.0.0",
+    "remark-html": "^16.0.1",
+    "sharp": "^0.33.5",
+    "tailwindcss": "^3.4.17",
+    "twitter-api-v2": "^1.27.0",
+    "typescript": "^5.8.3",
+    "unist-util-visit": "^5.0.0"
+  },
+  "packageManager": "pnpm@8.15.5+sha1.a58c038faac410c947dbdb93eb30994037d0fce2",
+  "devDependencies": {
+    "daisyui": "^4.12.24",
+    "fast-glob": "^3.3.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "@iconify/tools": "^4.1.2"
+    }
+  }
+}
