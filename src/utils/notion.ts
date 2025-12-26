@@ -65,7 +65,12 @@ const getMultiSelect = (p: any) =>
   getProperty(p, 'multi_select', [], prop => prop.multi_select.map((tag: Tag) => ({ id: tag.id, name: tag.name })));
 const getNumber = (p: any) => getProperty(p, 'number', '', prop => prop.number?.toString() || '');
 const getUrl = (p: any) => getProperty(p, 'url', '', prop => prop.url || '');
-const getDate = (p: any) => getProperty(p, 'date', '', prop => prop.date?.start || '');
+const getDate = (p: any) => getProperty(p, 'date', '', prop => {
+  const start = prop.date?.start || '';
+  const end = prop.date?.end || '';
+  if (start && end) return `${start}/${end}`;
+  return start;
+});
 const getCheckbox = (p: any) => getProperty(p, 'checkbox', false, prop => prop.checkbox === true);
 const getLastEdited = (p: any) => getProperty(p, 'last_edited_time', '', prop => prop.last_edited_time);
 
