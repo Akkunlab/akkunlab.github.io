@@ -61,9 +61,11 @@ const { items } = Astro.props;
           
           {/* コンテンツ */}
           <div class="relative z-10">
-            <time class="inline-block text-sm text-cyan-300 font-mono bg-cyan-400/15 px-3 py-1.5 rounded-full border border-cyan-400/30 shadow-[0_0_5px_rgba(34,211,238,0.3)]">
-              {item.start ? item.start.split('-').slice(0, 2).join('/') : ''}
-              {item.end ? ` - ${item.end.split('-').slice(0, 2).join('/')}` : ' -'}
+            <time class="inline-block text-sm text-cyan-300 font-mono bg-cyan-400/15 px-3 py-1.5 rounded-full border border-cyan-400/30 shadow-[0_0_5px_rgba(34,211,238,0.3)] [&_a]:no-underline [&_a]:text-inherit [&_a]:pointer-events-none">
+              <span aria-hidden="true">
+                {item.start ? item.start.split('-').slice(0, 2).join('/') : ''}
+                {item.end ? ` - ${item.end.split('-').slice(0, 2).join('/')}` : ' -'}
+              </span>
             </time>
             <h3 class="text-lg sm:text-base font-bold text-primary-content mt-3 mb-2 flex items-center">
               {item.name}
