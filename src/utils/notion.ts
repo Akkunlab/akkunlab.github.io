@@ -277,10 +277,11 @@ const doesPageMatchFilters = (
     if (!getCheckbox(properties.published)) return false;
   }
 
-  // publish が現在時刻より前かチェック
+  // publish が現在日付以前かチェック
   if (dbProps?.publish?.type === 'date') {
     const publishDate = getDate(properties.publish);
-    if (publishDate && publishDate > new Date().toISOString()) return false;
+    const now = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Tokyo' });
+    if (publishDate && publishDate > now) return false;
   }
 
   // types フィルタ

@@ -15,7 +15,7 @@ const socialLinks = await fetchNotionPageList(SOCIAL_LINKS_DATABASE_ID, {
   sorts: [{ timestamp: 'created_time', direction: 'descending' }]
 });
 
-const currentYear = new Date().getFullYear();
+const currentYear = new Date().toLocaleDateString('en-US', { timeZone: 'Asia/Tokyo', year: 'numeric' });
 const currentPath = Astro.url.pathname;
 const isHomePage = currentPath === '/' || currentPath === '';
 ---
