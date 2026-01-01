@@ -249,7 +249,7 @@ const buildListFilters = (
 
   // publish が現在日付以前のものを取得
   if (dbProps?.publish?.type === 'date') {
-    const now = new Date().toISOString().split('T')[0];
+    const now = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Tokyo' });
     filters.push({ property: 'publish', date: { on_or_before: now } });
   }
 
