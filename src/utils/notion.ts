@@ -247,9 +247,9 @@ const buildListFilters = (
     filters.push({ property: 'published', checkbox: { equals: true } });
   }
 
-  // publish が現在時刻より前のものだけ取得
+  // publish が現在日付以前のものを取得
   if (dbProps?.publish?.type === 'date') {
-    const now = new Date().toISOString();
+    const now = new Date().toISOString().split('T')[0];
     filters.push({ property: 'publish', date: { on_or_before: now } });
   }
 
