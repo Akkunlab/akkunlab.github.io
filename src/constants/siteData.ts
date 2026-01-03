@@ -4,7 +4,7 @@ export const SITE_URL: string = 'https://akkunlab.dev/';
 
 export const AUTHOR: string = '岸本 篤';
 export const AUTHOR_ENGLISH: string = 'Atsushi Kishimoto';
-export const AUTHOR_SUMMARY: string = `江蘇省生まれ。小学生の頃からモノづくりに取り組む。福島工業高等専門学校を卒業し、茨城大学工学部を経て、筑波大学大学院情報学学位プログラムに所属。感性工学・HCIを軸に、人の感じ方や使いやすさを起点にした体験設計の研究と実装に取り組む。
+export const AUTHOR_SUMMARY: string = `福島県いわき市生まれ。小学生の頃からモノづくりに取り組む。福島工業高等専門学校を卒業し、茨城大学工学部を経て、筑波大学大学院情報学学位プログラムに所属。感性工学・HCIを軸に、人の感じ方や使いやすさを起点にした体験設計の研究と実装に取り組む。
 
 パソコン甲子園、技育展、高専プロコンに出場し、2021年にAWS Robot Delivery Challenge準優勝を果たす。2023年に常陸frogs（現・茨城frogs）5期生に選抜される。2025年、チーム今橋製作所として県北BCPアイデアソンで茨城県知事賞を受賞。
 
