@@ -53,7 +53,7 @@ const ogImageUrl = resolveImageUrl(ogImage || OGP_IMAGE);
 ============================================================
 
 -->
-<html lang="ja" class="overflow-x-hidden min-h-screen bg-header-bg">
+<html lang="ja" class="overflow-x-hidden min-h-screen">
 
   <head>
     <meta charset="UTF-8">
@@ -94,7 +94,7 @@ const ogImageUrl = resolveImageUrl(ogImage || OGP_IMAGE);
       <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     )}
   </head>
-  <body class="font-body text-light-text overflow-x-hidden min-w-[360px] min-h-screen bg-header-bg">
+  <body class="font-body text-light-text overflow-x-hidden min-w-[360px] min-h-screen">
     {showSplash && <SplashScreen />}
     <Header />
     <main>
