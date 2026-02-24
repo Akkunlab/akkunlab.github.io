@@ -20,7 +20,11 @@ export default defineConfig({
       policy: [{
         userAgent: '*',
         allow: '/'
-      }]
+      }],
+      sitemap: [
+        `${SITE_URL}sitemap-index.xml`,
+        `${SITE_URL}sitemap-images.xml`,
+      ],
     }),
     playformCompress(),
   ]

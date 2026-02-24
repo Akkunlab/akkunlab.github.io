@@ -9,7 +9,23 @@ import path from 'path';
 const DEFAULT_IMAGE_WIDTH = 640;
 const DEFAULT_IMAGE_HEIGHT = 360;
 
+const GENERIC_ALT_TEXTS = new Set(['image', 'img', '画像', '']);
+
 const BASE_DIRECTORY = path.resolve(process.cwd(), 'public');
+
+/**
+ * 画像URLからファイル名ベースの alt テキストを生成
+ */
+const generateAltFromUrl = (url: string): string => {
+
+  // URLからパス部分を取得（クエリ・フラグメント除去）
+  const pathPart = url.split(/[?#]/)[0] || url;
+  const filename = path.basename(pathPart, path.extname(pathPart));
+
+  // ハッシュ部分（末尾の -xxxxxxxxxxxx）を除去し、区切り文字をスペースに変換
+  const cleaned = filename.replace(/-[a-f0-9]{8,}$/, '').replace(/[-_]/g, ' ').trim();
+  return cleaned || filename;
+};
 
 /**
  * 与えられた画像パス/URLの実サイズを取得
@@ -55,9 +71,9 @@ const getImageIntrinsicSize = async (
 };
 
 /**
- * Remark プラグイン： 画像ノードに実寸サイズを追加
+ * Remark プラグイン： 画像ノードにサイズ・alt・loading 属性を追加
  */
-const addImageDimensions = () => async (tree: any): Promise<void> => {
+const enhanceImages = () => async (tree: any): Promise<void> => {
   const pendingTasks: Promise<void>[] = [];
 
   visit(tree, 'image', (node: any) => {
@@ -68,6 +84,16 @@ const addImageDimensions = () => async (tree: any): Promise<void> => {
         node.data.hProperties ??= {};
         node.data.hProperties.width = width;
         node.data.hProperties.height = height;
+        node.data.hProperties.loading = 'lazy';
+
+        // alt テキストが空もしくは汎用的な場合、URLから生成
+        const currentAlt = (node.alt || '').trim();
+        if (GENERIC_ALT_TEXTS.has(currentAlt.toLowerCase())) {
+          const generated = generateAltFromUrl(node.url);
+          if (generated) {
+            node.alt = generated;
+          }
+        }
       })()
     );
   });
@@ -84,8 +110,8 @@ export const markdownToHtml = async (markdownContent: string): Promise<string> =
   try {
     const html = await remark()
       .use(remarkBreaks)
-      .use(addImageDimensions)
-      .use(remarkHtml)
+      .use(enhanceImages)
+      .use(remarkHtml, { sanitize: false })
       .process(markdownContent);
 
     return html.toString();

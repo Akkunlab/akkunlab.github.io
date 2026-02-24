@@ -37,3 +37,6 @@ public/_notion-cache/
 # Cloudflare Workers
 .wrangler/
 .dev.vars
+
+# Claude Code settings
+.claude/settings.local.json

@@ -7,7 +7,7 @@ import { normalizeTagName } from '@/utils/filterTags';
 import Layout from '@/layouts/Layout.astro';
 import Breadcrumb from '@/components/Breadcrumb.astro';
 import Button from '@/components/Button.astro';
-import { MARKDOWN_STYLES } from '@/constants';
+import { MARKDOWN_STYLES, SITE_URL, AUTHOR } from '@/constants';
 import { Icon } from 'astro-icon/components';
 import type { Tag } from '@/types/Tag';
 
@@ -18,6 +18,7 @@ type StaticPath = {
   props: {
     id: string,
     title: string,
+    summary: string,
     category: string,
     tags: Tag[],
     link: string,
@@ -29,16 +30,17 @@ type StaticPath = {
 
 export const getStaticPaths = async (): Promise<StaticPath[]> => {
   const PORTFOLIO_DATABASE_ID = import.meta.env.PORTFOLIO_DATABASE_ID;
-  const pages = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, { 
+  const pages = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, {
     types: ['活動'],
     sorts: [{ property: 'event', direction: 'descending' }]
   });
 
   return pages.map((page) => ({
     params: { pagePath: page.slug as string },
-    props: { 
+    props: {
       id: page.id as string,
       title: page.title as string,
+      summary: (page.summary as string) || '',
       category: page.category as string,
       tags: page.tags as Tag[],
       link: page.link as string,
@@ -49,9 +51,10 @@ export const getStaticPaths = async (): Promise<StaticPath[]> => {
   }));
 };
 
-const { id: pageId, title, category, tags, link, event, publish, updated } = Astro.props;
+const { id: pageId, title, summary, category, tags, link, event, publish, updated } = Astro.props;
 const pageData = pageId ? await fetchNotionPage(pageId) : null;
 const content = pageData ? pageData.content : null;
+const ogImage = pageData?.ogImage;
 const htmlContent = content ? await markdownToHtml(content) : null;
 
 const breadcrumbItems = [
@@ -60,12 +63,28 @@ const breadcrumbItems = [
   { label: title }
 ];
 
-const shouldShowUpdatedDate = updated && publish && 
-  new Date(updated).toDateString() !== new Date(publish).toDateString() && 
+const shouldShowUpdatedDate = updated && publish &&
+  new Date(updated).toDateString() !== new Date(publish).toDateString() &&
   new Date(updated) > new Date(publish);
+
+const siteUrl = SITE_URL.replace(/\/+$/, '');
+const canonicalUrl = `${siteUrl}${Astro.url.pathname}`;
+const resolveUrl = (img: string) => /^https?:\/\//.test(img) ? img : `${siteUrl}${img.startsWith('/') ? '' : '/'}${img}`;
+const ogImageUrl = ogImage ? resolveUrl(ogImage) : undefined;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Event',
+  name: title,
+  description: summary || `${title} - ${AUTHOR}の活動`,
+  organizer: { '@type': 'Person', name: AUTHOR },
+  url: canonicalUrl,
+  startDate: event || undefined,
+  ...(ogImageUrl && { image: { '@type': 'ImageObject', url: ogImageUrl } }),
+};
 ---
 
-<Layout title={title}>
+<Layout title={title} description={summary} ogImage={ogImage} ogType="article" jsonLd={jsonLd}>
   <div class="pt-36 pb-40 px-0 md:px-16 min-h-screen bg-content-bg">
 
     <!-- ヘッダーセクション -->
