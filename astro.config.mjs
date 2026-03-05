@@ -4,6 +4,7 @@ import { SITE_URL } from './src/constants/siteData';
 import tailwind from "@astrojs/tailwind";
 import icon from "astro-icon";
 import sitemap from "@astrojs/sitemap";
+import sitemapImages from "./src/integrations/sitemap-images";
 import robotsTxt from "astro-robots-txt";
 import playformCompress from "@playform/compress";
 
@@ -16,15 +17,13 @@ export default defineConfig({
       iconDir: 'src/assets/icons',
     }),
     sitemap(),
+    sitemapImages(),
     robotsTxt({
       policy: [{
         userAgent: '*',
         allow: '/'
       }],
-      sitemap: [
-        `${SITE_URL}sitemap-index.xml`,
-        `${SITE_URL}sitemap-images.xml`,
-      ],
+      sitemap: `${SITE_URL}sitemap-index.xml`,
     }),
     playformCompress(),
   ]
