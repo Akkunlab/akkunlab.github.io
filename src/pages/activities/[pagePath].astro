@@ -74,12 +74,13 @@ const ogImageUrl = ogImage ? resolveUrl(ogImage) : undefined;
 
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'Event',
-  name: title,
+  '@type': 'Article',
+  headline: title,
   description: summary || `${title} - ${AUTHOR}の活動`,
-  organizer: { '@type': 'Person', name: AUTHOR },
+  author: { '@type': 'Person', name: AUTHOR },
   url: canonicalUrl,
-  startDate: event || undefined,
+  datePublished: publish || undefined,
+  ...(shouldShowUpdatedDate && { dateModified: updated }),
   ...(ogImageUrl && { image: { '@type': 'ImageObject', url: ogImageUrl } }),
 };
 ---
