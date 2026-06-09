@@ -13,6 +13,7 @@ import {
   getDevImageDirectory,
   getDevImagePublicPath,
 } from './cache';
+import type { CacheEntry } from './cache';
 import { ensureImageCached } from './imageCache';
 import { normalizeTagName } from './tagUtils';
 import { isHttpUrl } from './url';
@@ -452,6 +453,54 @@ export const fetchNotionPage = async (
 };
 
 /**
+ * 変更なし: 削除されたページだけ反映し、キャッシュの有効期限を延長する
+ */
+const reconcileUnchanged = async (
+  databaseId: string,
+  filters: any[],
+  cached: CacheEntry<NotionRecord[]>,
+  cacheKey: string,
+): Promise<NotionRecord[]> => {
+  // 削除されたページを検出
+  const currentIds = await fetchCurrentPageIds(databaseId, filters);
+  const cachedIds = cached.value.map(r => r.id);
+  const removedIds = cachedIds.filter(id => !currentIds.has(id));
+
+  if (removedIds.length > 0) {
+    await cleanupRemovedPages(removedIds);
+    const updatedValue = cached.value.filter(r => !removedIds.includes(r.id));
+    await setCache(cacheKey, { value: updatedValue, lastChange: cached.lastChange, cachedAt: Date.now() });
+    return updatedValue;
+  }
+
+  await setCache(cacheKey, { ...cached, cachedAt: Date.now() });
+  return cached.value;
+};
+
+/**
+ * 変更あり: 変更件数が少なく全体ソートも不要なら部分更新する。
+ * 条件を満たさない場合は null を返し、呼び出し側でフル取得にフォールバックする。
+ */
+const tryPartialUpdate = async (
+  databaseId: string,
+  cached: CacheEntry<NotionRecord[]>,
+  dbProps: DbProps,
+  options: ListOptions | undefined,
+  sorts: ListOptions['sorts'],
+  cacheKey: string,
+): Promise<NotionRecord[] | null> => {
+  const changedIds = await listChangedPageIds(databaseId, cached.lastChange ?? '');
+  const CHANGED_THRESHOLD = 100;
+  const requiresFullSort = (sorts || []).some(sort => 'timestamp' in sort);
+
+  if (changedIds.length > 0 && changedIds.length <= CHANGED_THRESHOLD && !requiresFullSort) {
+    return partialUpdate(cached, changedIds, dbProps, options, sorts, cacheKey);
+  }
+
+  return null;
+};
+
+/**
  * Notion データベースからページ一覧を取得し、キャッシュを更新
  */
 export const fetchNotionPageList = async (
@@ -484,38 +533,12 @@ export const fetchNotionPageList = async (
       const hasChanges = await checkForDatabaseChanges(databaseId, cached.lastChange);
 
       if (!hasChanges) {
-        // 削除されたページを検出
-        const currentIds = await fetchCurrentPageIds(databaseId, filters);
-        const cachedIds = cached.value.map(r => r.id);
-        const removedIds = cachedIds.filter(id => !currentIds.has(id));
-
-        if (removedIds.length > 0) {
-          await cleanupRemovedPages(removedIds);
-          const updatedValue = cached.value.filter(r => !removedIds.includes(r.id));
-          await setCache(cacheKey, { value: updatedValue, lastChange: cached.lastChange, cachedAt: Date.now() });
-          return updatedValue;
-        }
-
-        await setCache(cacheKey, { ...cached, cachedAt: Date.now() });
-        return cached.value;
+        return await reconcileUnchanged(databaseId, filters, cached, cacheKey);
       }
 
-      // 変更があった場合、部分更新を試みる
-      const changedIds = await listChangedPageIds(databaseId, cached.lastChange ?? '');
-      const CHANGED_THRESHOLD = 100;
-      const requiresFullSort = (sorts || []).some(sort => 'timestamp' in sort);
-
-      if (changedIds.length > 0 && changedIds.length <= CHANGED_THRESHOLD && !requiresFullSort) {
-        return await partialUpdate(
-          databaseId,
-          cached,
-          changedIds,
-          dbProps,
-          options,
-          sorts,
-          cacheKey,
-        );
-      }
+      // 変更があった場合、部分更新を試みる（不可なら null でフル取得へ）
+      const partial = await tryPartialUpdate(databaseId, cached, dbProps, options, sorts, cacheKey);
+      if (partial) return partial;
     } catch (error) {
       // エラー時はキャッシュを延長して返す
       await setCache(cacheKey, { ...cached, cachedAt: Date.now() });
@@ -591,8 +614,7 @@ const listChangedPageIds = async (
  * 部分更新
  */
 const partialUpdate = async (
-  _databaseId: string,
-  cached: { value: NotionRecord[]; lastChange?: string; cachedAt: number },
+  cached: CacheEntry<NotionRecord[]>,
   changedIds: string[],
   dbProps: DbProps,
   options: { types?: string[] } | undefined,

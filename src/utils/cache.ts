@@ -55,7 +55,7 @@ export const ensureDir = async (dir: string) => {
  * @param key キャッシュキー
  * @returns SHA-1 ハッシュ文字列
  */
-const keyToFilename = (key: string) => createHash('sha1').update(key).digest('hex');
+const keyToFilename = (key: string) => hashString(key);
 
 /**
  * 開発モード用の JSON キャッシュを読み込む
