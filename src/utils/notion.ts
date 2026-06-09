@@ -14,7 +14,8 @@ import {
   getDevImagePublicPath,
 } from './cache';
 import { ensureImageCached } from './imageCache';
-import { normalizeTagName } from './filterTags';
+import { normalizeTagName } from './tagUtils';
+import { isHttpUrl } from './url';
 import { IMAGE_FORMAT, IMAGE_QUALITY, OGP_IMAGE } from '@/constants';
 import type { NotionRecord, Tag } from '@/types';
 
@@ -53,7 +54,6 @@ const TTL = {
 };
 
 const IMAGE_CAPTURE_REGEX = /!\[[^\]]*]\(([^)]+)\)/g;
-const isHttpUrl = (value: string) => /^https?:\/\//i.test(value);
 const escapeRegex = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /**
@@ -246,6 +246,14 @@ const cleanupRemovedPages = async (removedIds: string[]): Promise<void> => {
   console.log(`Cleaned up caches for ${removedIds.length} removed/unpublished page(s)`);
 };
 
+// Asia/Tokyo の現在日付（YYYY-MM-DD）。publish フィルタの基準に使う
+const getTokyoToday = (): string =>
+  new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Tokyo' });
+
+// 複数フィルタを Notion クエリの filter 形式へまとめる
+const combineFilters = (filters: any[]) =>
+  filters.length === 1 ? filters[0] : { and: filters };
+
 /**
  * 最新の編集時刻を取得
  */
@@ -273,8 +281,7 @@ const buildListFilters = (
 
   // publish が現在日付以前のものを取得
   if (dbProps?.publish?.type === 'date') {
-    const now = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Tokyo' });
-    filters.push({ property: 'publish', date: { on_or_before: now } });
+    filters.push({ property: 'publish', date: { on_or_before: getTokyoToday() } });
   }
 
   // types フィルタ
@@ -304,8 +311,7 @@ const doesPageMatchFilters = (
   // publish が現在日付以前かチェック
   if (dbProps?.publish?.type === 'date') {
     const publishDate = getDate(properties.publish);
-    const now = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Tokyo' });
-    if (publishDate && publishDate > now) return false;
+    if (publishDate && publishDate > getTokyoToday()) return false;
   }
 
   // types フィルタ
@@ -552,7 +558,7 @@ const fetchCurrentPageIds = async (
       page_size: 100,
       start_cursor: cursor,
       ...(filters.length > 0 && {
-        filter: filters.length === 1 ? filters[0] : { and: filters },
+        filter: combineFilters(filters),
       }),
     }),
   );
@@ -656,7 +662,7 @@ const fullFetch = async (
   const queryOptions: any = { database_id: databaseId, page_size: 100 };
 
   if (filters.length > 0) {
-    queryOptions.filter = filters.length === 1 ? filters[0] : { and: filters };
+    queryOptions.filter = combineFilters(filters);
   }
   if (sorts && sorts.length > 0) {
     queryOptions.sorts = sorts;

@@ -7,7 +7,9 @@
     "start": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "typecheck:workers": "tsc -p workers/tsconfig.json",
+    "typecheck:scripts": "tsc -p scripts/tsconfig.json"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
@@ -38,6 +40,9 @@
   },
   "packageManager": "pnpm@9.15.9",
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260609.1",
+    "@types/mdast": "^4.0.4",
+    "@types/node": "^25.9.2",
     "daisyui": "^4.12.24",
     "fast-glob": "^3.3.3"
   },

@@ -19,7 +19,7 @@ importers:
         version: 3.4.2
       '@astrojs/tailwind':
         specifier: ^6.0.2
-        version: 6.0.2(astro@5.12.8)(tailwindcss@3.4.17)
+        version: 6.0.2(astro@5.12.8(@types/node@25.9.2)(jiti@1.21.7)(lightningcss@1.24.1)(rollup@4.44.0)(terser@5.31.0)(typescript@5.8.3)(yaml@2.8.0))(tailwindcss@3.4.17)
       '@aws-sdk/client-s3':
         specifier: ^3.744.0
         version: 3.744.0
@@ -43,10 +43,10 @@ importers:
         version: 2.3.0
       '@playform/compress':
         specifier: 0.0.4
-        version: 0.0.4(typescript@5.8.3)
+        version: 0.0.4(@types/node@25.9.2)(typescript@5.8.3)
       astro:
         specifier: ^5.12.8
-        version: 5.12.8(typescript@5.8.3)
+        version: 5.12.8(@types/node@25.9.2)(jiti@1.21.7)(lightningcss@1.24.1)(rollup@4.44.0)(terser@5.31.0)(typescript@5.8.3)(yaml@2.8.0)
       astro-icon:
         specifier: 1.1.0
         version: 1.1.0
@@ -87,6 +87,15 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
     devDependencies:
+      '@cloudflare/workers-types':
+        specifier: ^4.20260609.1
+        version: 4.20260609.1
+      '@types/mdast':
+        specifier: ^4.0.4
+        version: 4.0.4
+      '@types/node':
+        specifier: ^25.9.2
+        version: 25.9.2
       daisyui:
         specifier: ^4.12.24
         version: 4.12.24(postcss@8.5.6)
@@ -403,6 +412,9 @@ packages:
 
   '@capsizecss/unpack@2.4.0':
     resolution: {integrity: sha512-GrSU71meACqcmIUxPYOJvGKF0yryjN/L1aCuE9DViCTJI7bfkjgYDPD1zbNDcINJwSSP6UaBZY9GAbYDO7re0Q==}
+
+  '@cloudflare/workers-types@4.20260609.1':
+    resolution: {integrity: sha512-krGHtwSApCFBjTe1NTx/TFQ0P5i/bHGQOqCPnCLssb8rOKaAG4JkPFJZsossr0z/ZTMnpP2Tid5jWju+/i0hCA==}
 
   '@emmetio/abbreviation@2.3.3':
     resolution: {integrity: sha512-mgv58UrU3rh4YgbE/TzgLQwJ3pFsHHhCLqY20aJq+9comytTXUDNGG/SMtSeMJdkpxgXSXunBGLD8Boka3JyVA==}
@@ -1437,8 +1449,8 @@ packages:
   '@types/node@20.12.11':
     resolution: {integrity: sha512-vDg9PZ/zi+Nqp6boSOT7plNuthRugEKixDv5sFTIpkE89MmNtEArAShI4mxuX2+UrLEe9pxC1vm2cjm9YlWbJw==}
 
-  '@types/node@24.8.1':
-    resolution: {integrity: sha512-alv65KGRadQVfVcG69MuB4IzdYVpRwMG/mq8KWOaoOdyY617P5ivaDiMCGOFDWD2sAn5Q0mR3mRtUOgm99hL9Q==}
+  '@types/node@25.9.2':
+    resolution: {integrity: sha512-G05zqtJhcDLb8uslf5EjCxXg9G1KQxiV8OS0R26IC//Eoyitzqe8z37I7cqvnZlrlSfgocQRfSn/AHBZJJFyGw==}
 
   '@types/sax@1.2.7':
     resolution: {integrity: sha512-rO73L89PJxeYM3s3pPPjiPgVVcymqU490g0YO5n5By0k2Erzj6tay/4lr1CHAAU4JyOWd1rpQ8bCf6cZfHU96A==}
@@ -3380,8 +3392,8 @@ packages:
   undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
 
-  undici-types@7.14.0:
-    resolution: {integrity: sha512-QQiYxHuyZ9gQUIrmPo3IA+hUl4KYk8uSA7cHrcKd/l3p1OTpZcM0Tbp9x7FAtXdAYhlasd60ncPpgu6ihG6TOA==}
+  undici-types@7.24.6:
+    resolution: {integrity: sha512-WRNW+sJgj5OBN4/0JpHFqtqzhpbnV0GuB+OozA9gCL7a993SmU+1JBZCzLNxYsbMfIeDL+lTsphD5jN5N+n0zg==}
 
   undici@6.21.3:
     resolution: {integrity: sha512-gBLkYIlEnSp8pFbT64yFgGE6UIB9tAkhukC23PmMDCe5Nd+cRqKxSjw5y54MK2AZMgZfJWMaNE4nYUHgi1XEOw==}
@@ -3968,9 +3980,9 @@ snapshots:
       stream-replace-string: 2.0.0
       zod: 3.25.67
 
-  '@astrojs/tailwind@6.0.2(astro@5.12.8)(tailwindcss@3.4.17)':
+  '@astrojs/tailwind@6.0.2(astro@5.12.8(@types/node@25.9.2)(jiti@1.21.7)(lightningcss@1.24.1)(rollup@4.44.0)(terser@5.31.0)(typescript@5.8.3)(yaml@2.8.0))(tailwindcss@3.4.17)':
     dependencies:
-      astro: 5.12.8(typescript@5.8.3)
+      astro: 5.12.8(@types/node@25.9.2)(jiti@1.21.7)(lightningcss@1.24.1)(rollup@4.44.0)(terser@5.31.0)(typescript@5.8.3)(yaml@2.8.0)
       autoprefixer: 10.4.21(postcss@8.5.6)
       postcss: 8.5.6
       postcss-load-config: 4.0.2(postcss@8.5.6)
@@ -4592,6 +4604,8 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
+  '@cloudflare/workers-types@4.20260609.1': {}
+
   '@emmetio/abbreviation@2.3.3':
     dependencies:
       '@emmetio/scanner': 1.0.4
@@ -5015,12 +5029,12 @@ snapshots:
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
-  '@playform/compress@0.0.4(typescript@5.8.3)':
+  '@playform/compress@0.0.4(@types/node@25.9.2)(typescript@5.8.3)':
     dependencies:
       '@playform/pipe': 0.0.3
       '@types/csso': 5.0.4
       '@types/html-minifier-terser': 7.0.2
-      astro: 4.8.1(lightningcss@1.24.1)(terser@5.31.0)(typescript@5.8.3)
+      astro: 4.8.1(@types/node@25.9.2)(lightningcss@1.24.1)(terser@5.31.0)(typescript@5.8.3)
       csso: 5.0.5
       html-minifier-terser: 7.2.0
       kleur: 4.1.5
@@ -5044,11 +5058,13 @@ snapshots:
       deepmerge-ts: 5.1.0
       fast-glob: 3.3.2
 
-  '@rollup/pluginutils@5.2.0':
+  '@rollup/pluginutils@5.2.0(rollup@4.44.0)':
     dependencies:
       '@types/estree': 1.0.8
       estree-walker: 2.0.2
       picomatch: 4.0.2
+    optionalDependencies:
+      rollup: 4.44.0
 
   '@rollup/rollup-android-arm-eabi@4.44.0':
     optional: true
@@ -5556,7 +5572,7 @@ snapshots:
 
   '@types/fontkit@2.0.8':
     dependencies:
-      '@types/node': 24.8.1
+      '@types/node': 25.9.2
 
   '@types/hast@3.0.4':
     dependencies:
@@ -5580,7 +5596,7 @@ snapshots:
 
   '@types/node-fetch@2.6.12':
     dependencies:
-      '@types/node': 24.8.1
+      '@types/node': 25.9.2
       form-data: 4.0.3
 
   '@types/node@17.0.45': {}
@@ -5589,17 +5605,17 @@ snapshots:
     dependencies:
       undici-types: 5.26.5
 
-  '@types/node@24.8.1':
+  '@types/node@25.9.2':
     dependencies:
-      undici-types: 7.14.0
+      undici-types: 7.24.6
 
   '@types/sax@1.2.7':
     dependencies:
-      '@types/node': 24.8.1
+      '@types/node': 25.9.2
 
   '@types/tar@6.1.13':
     dependencies:
-      '@types/node': 24.8.1
+      '@types/node': 25.9.2
       minipass: 4.2.8
 
   '@types/unist@2.0.11': {}
@@ -5608,7 +5624,7 @@ snapshots:
 
   '@types/yauzl@2.10.3':
     dependencies:
-      '@types/node': 24.8.1
+      '@types/node': 25.9.2
     optional: true
 
   '@ungap/structured-clone@1.3.0': {}
@@ -5719,7 +5735,7 @@ snapshots:
       valid-filename: 4.0.0
       zod: 3.25.67
 
-  astro@4.8.1(lightningcss@1.24.1)(terser@5.31.0)(typescript@5.8.3):
+  astro@4.8.1(@types/node@25.9.2)(lightningcss@1.24.1)(terser@5.31.0)(typescript@5.8.3):
     dependencies:
       '@astrojs/compiler': 2.12.2
       '@astrojs/internal-helpers': 0.4.0
@@ -5778,8 +5794,8 @@ snapshots:
       tsconfck: 3.1.6(typescript@5.8.3)
       unist-util-visit: 5.0.0
       vfile: 6.0.3
-      vite: 5.4.19(lightningcss@1.24.1)(terser@5.31.0)
-      vitefu: 0.2.5(vite@5.4.19)
+      vite: 5.4.19(@types/node@25.9.2)(lightningcss@1.24.1)(terser@5.31.0)
+      vitefu: 0.2.5(vite@5.4.19(@types/node@25.9.2)(lightningcss@1.24.1)(terser@5.31.0))
       which-pm: 2.2.0
       yargs-parser: 21.1.1
       zod: 3.25.67
@@ -5798,7 +5814,7 @@ snapshots:
       - terser
       - typescript
 
-  astro@5.12.8(typescript@5.8.3):
+  astro@5.12.8(@types/node@25.9.2)(jiti@1.21.7)(lightningcss@1.24.1)(rollup@4.44.0)(terser@5.31.0)(typescript@5.8.3)(yaml@2.8.0):
     dependencies:
       '@astrojs/compiler': 2.12.2
       '@astrojs/internal-helpers': 0.7.1
@@ -5806,7 +5822,7 @@ snapshots:
       '@astrojs/telemetry': 3.3.0
       '@capsizecss/unpack': 2.4.0
       '@oslojs/encoding': 1.1.0
-      '@rollup/pluginutils': 5.2.0
+      '@rollup/pluginutils': 5.2.0(rollup@4.44.0)
       acorn: 8.15.0
       aria-query: 5.3.2
       axobject-query: 4.1.0
@@ -5854,8 +5870,8 @@ snapshots:
       unist-util-visit: 5.0.0
       unstorage: 1.16.0
       vfile: 6.0.3
-      vite: 6.3.5
-      vitefu: 1.0.7(vite@6.3.5)
+      vite: 6.3.5(@types/node@25.9.2)(jiti@1.21.7)(lightningcss@1.24.1)(terser@5.31.0)(yaml@2.8.0)
+      vitefu: 1.0.7(vite@6.3.5(@types/node@25.9.2)(jiti@1.21.7)(lightningcss@1.24.1)(terser@5.31.0)(yaml@2.8.0))
       xxhash-wasm: 1.1.0
       yargs-parser: 21.1.1
       yocto-spinner: 0.2.3
@@ -6435,7 +6451,7 @@ snapshots:
       pend: 1.2.0
 
   fdir@6.4.6(picomatch@4.0.2):
-    dependencies:
+    optionalDependencies:
       picomatch: 4.0.2
 
   filename-reserved-regex@3.0.0: {}
@@ -7534,8 +7550,9 @@ snapshots:
   postcss-load-config@4.0.2(postcss@8.5.6):
     dependencies:
       lilconfig: 3.1.3
-      postcss: 8.5.6
       yaml: 2.8.0
+    optionalDependencies:
+      postcss: 8.5.6
 
   postcss-nested@6.2.0(postcss@8.5.6):
     dependencies:
@@ -8083,7 +8100,7 @@ snapshots:
   ts-interface-checker@0.1.13: {}
 
   tsconfck@3.1.6(typescript@5.8.3):
-    dependencies:
+    optionalDependencies:
       typescript: 5.8.3
 
   tslib@2.8.1: {}
@@ -8110,7 +8127,7 @@ snapshots:
 
   undici-types@5.26.5: {}
 
-  undici-types@7.14.0: {}
+  undici-types@7.24.6: {}
 
   undici@6.21.3: {}
 
@@ -8271,17 +8288,18 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.2
 
-  vite@5.4.19(lightningcss@1.24.1)(terser@5.31.0):
+  vite@5.4.19(@types/node@25.9.2)(lightningcss@1.24.1)(terser@5.31.0):
     dependencies:
       esbuild: 0.21.5
-      lightningcss: 1.24.1
       postcss: 8.5.6
       rollup: 4.44.0
-      terser: 5.31.0
     optionalDependencies:
+      '@types/node': 25.9.2
       fsevents: 2.3.3
+      lightningcss: 1.24.1
+      terser: 5.31.0
 
-  vite@6.3.5:
+  vite@6.3.5(@types/node@25.9.2)(jiti@1.21.7)(lightningcss@1.24.1)(terser@5.31.0)(yaml@2.8.0):
     dependencies:
       esbuild: 0.25.5
       fdir: 6.4.6(picomatch@4.0.2)
@@ -8290,63 +8308,75 @@ snapshots:
       rollup: 4.44.0
       tinyglobby: 0.2.14
     optionalDependencies:
+      '@types/node': 25.9.2
       fsevents: 2.3.3
+      jiti: 1.21.7
+      lightningcss: 1.24.1
+      terser: 5.31.0
+      yaml: 2.8.0
 
-  vitefu@0.2.5(vite@5.4.19):
-    dependencies:
-      vite: 5.4.19(lightningcss@1.24.1)(terser@5.31.0)
+  vitefu@0.2.5(vite@5.4.19(@types/node@25.9.2)(lightningcss@1.24.1)(terser@5.31.0)):
+    optionalDependencies:
+      vite: 5.4.19(@types/node@25.9.2)(lightningcss@1.24.1)(terser@5.31.0)
 
-  vitefu@1.0.7(vite@6.3.5):
-    dependencies:
-      vite: 6.3.5
+  vitefu@1.0.7(vite@6.3.5(@types/node@25.9.2)(jiti@1.21.7)(lightningcss@1.24.1)(terser@5.31.0)(yaml@2.8.0)):
+    optionalDependencies:
+      vite: 6.3.5(@types/node@25.9.2)(jiti@1.21.7)(lightningcss@1.24.1)(terser@5.31.0)(yaml@2.8.0)
 
   volar-service-css@0.0.62(@volar/language-service@2.4.14):
     dependencies:
-      '@volar/language-service': 2.4.14
       vscode-css-languageservice: 6.3.6
       vscode-languageserver-textdocument: 1.0.12
       vscode-uri: 3.1.0
+    optionalDependencies:
+      '@volar/language-service': 2.4.14
 
   volar-service-emmet@0.0.62(@volar/language-service@2.4.14):
     dependencies:
       '@emmetio/css-parser': 0.4.0
       '@emmetio/html-matcher': 1.3.0
-      '@volar/language-service': 2.4.14
       '@vscode/emmet-helper': 2.11.0
       vscode-uri: 3.1.0
+    optionalDependencies:
+      '@volar/language-service': 2.4.14
 
   volar-service-html@0.0.62(@volar/language-service@2.4.14):
     dependencies:
-      '@volar/language-service': 2.4.14
       vscode-html-languageservice: 5.5.0
       vscode-languageserver-textdocument: 1.0.12
       vscode-uri: 3.1.0
+    optionalDependencies:
+      '@volar/language-service': 2.4.14
 
   volar-service-prettier@0.0.62(@volar/language-service@2.4.14):
     dependencies:
-      '@volar/language-service': 2.4.14
       vscode-uri: 3.1.0
+    optionalDependencies:
+      '@volar/language-service': 2.4.14
 
   volar-service-typescript-twoslash-queries@0.0.62(@volar/language-service@2.4.14):
     dependencies:
-      '@volar/language-service': 2.4.14
       vscode-uri: 3.1.0
+    optionalDependencies:
+      '@volar/language-service': 2.4.14
 
   volar-service-typescript@0.0.62(@volar/language-service@2.4.14):
     dependencies:
-      '@volar/language-service': 2.4.14
       path-browserify: 1.0.1
       semver: 7.7.2
       typescript-auto-import-cache: 0.3.6
       vscode-languageserver-textdocument: 1.0.12
       vscode-nls: 5.2.0
       vscode-uri: 3.1.0
+    optionalDependencies:
+      '@volar/language-service': 2.4.14
 
   volar-service-yaml@0.0.62(@volar/language-service@2.4.14):
     dependencies:
-      '@volar/language-service': 2.4.14
       vscode-uri: 3.1.0
       yaml-language-server: 1.15.0
+    optionalDependencies:
+      '@volar/language-service': 2.4.14
 
   vscode-css-languageservice@6.3.6:
     dependencies:

@@ -1,4 +1,9 @@
 /**
+ * タグフィルタリングのブラウザ側（DOM 依存）処理。
+ * 一覧ページの <script> からのみ読み込む。純粋関数は tagUtils.ts を参照。
+ */
+
+/**
  * カードのフィルタリングを行う
  * @param cards - フィルタリング対象のカード要素
  * @param tag - フィルタリングするタグ
@@ -40,7 +45,7 @@ const setActiveButton = (buttons: NodeListOf<HTMLButtonElement>, tag: string): v
  * @param cards - フィルタリング対象のカード要素
  */
 const setupButtonListeners = (
-  buttons: NodeListOf<HTMLButtonElement>, 
+  buttons: NodeListOf<HTMLButtonElement>,
   cards: NodeListOf<HTMLElement>
 ): void => {
   buttons.forEach(button => {
@@ -57,39 +62,6 @@ const setupButtonListeners = (
 };
 
 /**
- * タグ名・カテゴリ名を ID 用に正規化
- * @param name - タグ名・カテゴリ名
- * @returns 正規化された ID
- */
-export const normalizeTagName = (name?: string): string => {
-  if (!name) return '';
-
-  return name
-    .trim()
-    .toLowerCase()
-    .replace(/[/\s]+/g, '-')  // スラッシュ・空白をハイフンに変換
-    .replace(/-+/g, '-');     // 連続したハイフンを 1 つにまとめる
-};
-
-/**
- * タグ名やカテゴリ名を正規化して data-tags 属性を生成
- * @param tags - NotionRecord の tags プロパティ
- * @param category - NotionRecord の category プロパティ
- * @returns data-tags 属性に埋め込むためのカンマ区切り文字列
- */
-export const generateTagString = (
-  tags?: { name?: string }[],
-  category?: string,
-): string => {
-  const normalizedTags = [
-    ...(tags ?? []).map(tag => normalizeTagName(tag.name)),
-    normalizeTagName(category),
-  ].filter((tag): tag is string => Boolean(tag));
-
-  return normalizedTags.join(',');
-};
-
-/**
  * フィルタリングに関する全設定を行う
  */
 export const filterTags = (): void => {
@@ -101,7 +73,7 @@ export const filterTags = (): void => {
   // 初期状態の設定
   filterCards(cards, initialTag);
   setActiveButton(buttons, initialTag);
-  
+
   // イベントリスナーの設定
   setupButtonListeners(buttons, cards);
 };
