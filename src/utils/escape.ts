@@ -1,16 +1,24 @@
 /**
- * 改行とHTMLエスケープを行い、\nを<br />に変換する関数
+ * HTML特殊文字をエスケープする
  * @param input 入力文字列
- * @returns エスケープおよび改行変換後の文字列
+ * @returns エスケープ後の文字列
  */
-export function escapeAndNl2br(input: string): string {
+function escapeHtml(input: string): string {
   return (input || '')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
-    .replace(/\r?\n/g, '<br />');
+    .replace(/'/g, '&#39;');
+}
+
+/**
+ * 改行とHTMLエスケープを行い、\nを<br />に変換する関数
+ * @param input 入力文字列
+ * @returns エスケープおよび改行変換後の文字列
+ */
+export function escapeAndNl2br(input: string): string {
+  return escapeHtml(input).replace(/\r?\n/g, '<br />');
 }
 
 /**
@@ -20,14 +28,7 @@ export function escapeAndNl2br(input: string): string {
  * @returns エスケープおよび段落変換後の文字列
  */
 export function escapeAndNl2p(input: string): string {
-  const escaped = (input || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-
-  const paragraphs = escaped.split(/\r?\n/);
+  const paragraphs = escapeHtml(input).split(/\r?\n/);
   return paragraphs
     .map((p, i, arr) => {
       const isLast = i === arr.length - 1;

@@ -1,14 +1,9 @@
 ---
-import { fetchNotionPage, fetchNotionPageList } from '@/utils/notion';
+import { fetchNotionPage, fetchActivities } from '@/utils/notion';
 import { markdownToHtml } from '@/utils/markdown';
-import { formatDateShort } from '@/utils/dateFormat';
-import { getIconName } from '@/utils/icon';
-import { normalizeTagName } from '@/utils/filterTags';
-import Layout from '@/layouts/Layout.astro';
-import Breadcrumb from '@/components/Breadcrumb.astro';
-import Button from '@/components/Button.astro';
-import { MARKDOWN_STYLES, SITE_URL, AUTHOR } from '@/constants';
-import { Icon } from 'astro-icon/components';
+import { siteUrl, resolveAbsoluteUrl } from '@/utils/url';
+import PortfolioDetail from '@/components/PortfolioDetail.astro';
+import { AUTHOR } from '@/constants';
 import type { Tag } from '@/types/Tag';
 
 type StaticPath = {
@@ -29,11 +24,7 @@ type StaticPath = {
 };
 
 export const getStaticPaths = async (): Promise<StaticPath[]> => {
-  const PORTFOLIO_DATABASE_ID = import.meta.env.PORTFOLIO_DATABASE_ID;
-  const pages = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, {
-    types: ['活動'],
-    sorts: [{ property: 'event', direction: 'descending' }]
-  });
+  const pages = await fetchActivities();
 
   return pages.map((page) => ({
     params: { pagePath: page.slug as string },
@@ -57,20 +48,8 @@ const content = pageData ? pageData.content : null;
 const ogImage = pageData?.ogImage;
 const htmlContent = content ? await markdownToHtml(content) : null;
 
-const breadcrumbItems = [
-  { label: 'ホーム', href: '/', isHome: true },
-  { label: '活動', href: '/activities' },
-  { label: title }
-];
-
-const shouldShowUpdatedDate = updated && publish &&
-  new Date(updated).toDateString() !== new Date(publish).toDateString() &&
-  new Date(updated) > new Date(publish);
-
-const siteUrl = SITE_URL.replace(/\/+$/, '');
 const canonicalUrl = `${siteUrl}${Astro.url.pathname}`;
-const resolveUrl = (img: string) => /^https?:\/\//.test(img) ? img : `${siteUrl}${img.startsWith('/') ? '' : '/'}${img}`;
-const ogImageUrl = ogImage ? resolveUrl(ogImage) : undefined;
+const ogImageUrl = ogImage ? resolveAbsoluteUrl(ogImage) : undefined;
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -80,88 +59,28 @@ const jsonLd = {
   author: { '@type': 'Person', name: AUTHOR },
   url: canonicalUrl,
   datePublished: publish || undefined,
-  ...(shouldShowUpdatedDate && { dateModified: updated }),
+  ...(updated && publish &&
+    new Date(updated).toDateString() !== new Date(publish).toDateString() &&
+    new Date(updated) > new Date(publish) && { dateModified: updated }),
   ...(ogImageUrl && { image: { '@type': 'ImageObject', url: ogImageUrl } }),
 };
 ---
 
-<Layout title={title} description={summary} ogImage={ogImage} ogType="article" jsonLd={jsonLd}>
-  <div class="pt-36 pb-40 px-0 md:px-16 min-h-screen bg-content-bg">
-
-    <!-- ヘッダーセクション -->
-    <div class="max-w-4xl mx-auto px-4 md:px-0">
-      
-      <!-- パンくずリスト -->
-      <Breadcrumb items={breadcrumbItems} />
-
-      <!-- タイトル -->
-      <div>
-        <h1 class="text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary pb-2">
-          {title}
-        </h1>
-
-        <div class="my-6">
-
-          <!-- 日付 -->
-          <div class="text-light-text text-sm inline-flex items-center gap-2 flex-wrap mb-4">
-            <time class="inline-flex items-center gap-1" datetime={event}>
-              <Icon name="material-symbols-light:calendar-month" class="w-5 h-5" />
-              実施日: {formatDateShort(event)}
-            </time>
-            <time class="inline-flex items-center gap-1" datetime={publish}>
-              <Icon name="material-symbols-light:public" class="w-5 h-5" />
-              公開日: {formatDateShort(publish)}
-            </time>
-            {shouldShowUpdatedDate && (
-              <time class="inline-flex items-center gap-1" datetime={updated}>
-                <Icon name="material-symbols-light:update" class="w-5 h-5" />
-                更新日: {formatDateShort(updated)}
-              </time>
-            )}
-          </div>
-
-          <!-- カテゴリ・タグ -->
-          {(category || (tags && tags.length > 0)) && (
-            <div class="flex flex-wrap gap-2">
-              {[category, ...(tags ?? []).map(tag => tag.name)]
-                .filter(Boolean)
-                .map((name) => (
-                  <a
-                    class="text-primary bg-primary-content hover:bg-primary hover:text-primary-content px-3 py-1 border border-button-border rounded-full shadow-md transition-colors duration-200 cursor-pointer select-none"
-                    href={`/activities?tag=${normalizeTagName(name)}`}
-                  >
-                    {name}
-                  </a>
-                ))}
-            </div>
-          )}
-        </div>
-
-        <!-- Divider -->
-        <div class="w-full h-1 bg-gradient-to-r from-primary to-secondary"></div>
-      </div>
-    </div>
-
-    <!-- コンテンツセクション -->
-    <div class="max-w-4xl mx-auto my-16">
-      {htmlContent && (
-        <div class="px-4 py-8 md:p-8 bg-primary-content border border-button-border rounded-0 md:rounded-lg shadow-lg">
-          <div class={`prose prose-slate max-w-none ${MARKDOWN_STYLES}`} set:html={htmlContent} />
-          {link && (
-            <div class="mt-8 flex justify-center">
-              <Button text="活動を見る！" href={link} target="_blank" rel="noopener noreferrer" />
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-
-    <!-- ボタン -->
-    <div class="mt-12 flex justify-center">
-      <a href="/activities" class="inline-flex items-center font-bold text-primary bg-primary-content px-16 py-4 border border-button-border rounded-full shadow-lg transition hover:bg-primary hover:text-primary-content">
-        <Icon name={getIconName('material-symbols-light', 'arrow-back')} class="w-6 h-6 mt-0.5 mr-2 relative z-10" />
-        活動一覧に戻る！
-      </a>
-    </div>
-  </div>
-</Layout>
+<PortfolioDetail
+  title={title}
+  summary={summary}
+  category={category}
+  tags={tags}
+  link={link}
+  event={event}
+  publish={publish}
+  updated={updated}
+  htmlContent={htmlContent}
+  ogImage={ogImage}
+  jsonLd={jsonLd}
+  basePath="/activities"
+  sectionLabel="活動"
+  eventLabel="実施日"
+  linkButtonText="活動を見る！"
+  backLabel="活動一覧に戻る！"
+/>

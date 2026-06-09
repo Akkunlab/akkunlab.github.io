@@ -1,8 +1,8 @@
 ---
 import { AUTHOR_ENGLISH, NAV_ITEMS } from '@/constants';
+import { scrollAttr } from '@/utils/nav';
 
 const currentPath = Astro.url.pathname;
-const isHomePage = currentPath === '/' || currentPath === '';
 ---
 
 <header id="header" class="fixed top-0 left-0 right-0 h-16 flex justify-center md:justify-between items-center px-6 z-50 backdrop-blur-lg bg-header-bg border-b border-header-border shadow-xl transition-transform duration-300">
@@ -12,7 +12,7 @@ const isHomePage = currentPath === '/' || currentPath === '';
       <a 
         class="btn btn-ghost text-xl hover:bg-header-hover text-primary-content" 
         href={item.href}
-        data-scroll={isHomePage && item.href.startsWith('/#') ? 'true' : 'false'}
+        data-scroll={scrollAttr(currentPath, item.href)}
       >
         {item.label}
       </a>

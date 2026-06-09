@@ -2,9 +2,10 @@
 import { Icon } from 'astro-icon/components'
 import { getIconName } from '@/utils/icon'
 import { NAV_ITEMS } from '@/constants/siteData'
+import { isHomePath, scrollAttr } from '@/utils/nav';
 
 const currentPath = Astro.url.pathname;
-const isHomePage = currentPath === '/' || currentPath === '';
+const isHomePage = isHomePath(currentPath);
 
 const isRouteActive = (href: string) => {
   if (href.includes('#')) return false;
@@ -33,7 +34,7 @@ const isRouteActive = (href: string) => {
     <a 
       class={`group text-primary-content ${isRouteActive(item.href) ? 'is-active' : ''}`}
       href={item.href}
-      data-scroll={isHomePage && item.href.startsWith('/#') ? 'true' : 'false'}
+      data-scroll={scrollAttr(currentPath, item.href)}
     >
       <Icon
         name={getIconName('material-symbols-light', item.icon)}

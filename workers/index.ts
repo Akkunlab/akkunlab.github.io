@@ -1,7 +1,16 @@
 const NOTION_API_VERSION = '2022-06-28';
+const NOTION_API_BASE = 'https://api.notion.com/v1';
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const SITE_URL = 'https://akkunlab.dev';
 const SITE_TITLE = 'Akkunlab Portfolio Generator';
+
+// types プロパティが「活動」のときは活動用テンプレート、それ以外は作品用
+const ACTIVITY_TYPE = '活動';
+// OpenRouter へのレートリミット対策の待機時間
+const LLM_RATE_LIMIT_MS = 1000;
+// LLM の temperature（slug 生成は決定的寄り、本文生成は創造的寄り）
+const SLUG_TEMPERATURE = 0.3;
+const BODY_TEMPERATURE = 0.7;
 
 interface Env {
   API_KEY: string;
@@ -11,6 +20,36 @@ interface Env {
   ACTIVITIES_SYSTEM_PROMPT: string;
   MODEL: string;
 }
+
+// OpenRouter チャット補完レスポンスのうち利用する部分
+interface OpenRouterResponse {
+  choices?: Array<{ message?: { content?: string } }>;
+}
+
+// Notion ブロックオブジェクト（heading/paragraph などを動的キーで保持）
+type NotionBlock = {
+  object: 'block';
+  type: string;
+  [key: string]: unknown;
+};
+
+// Notion Webhook から渡されるページデータのうち利用する部分
+interface WebhookBody {
+  data?: {
+    id?: string;
+    properties?: {
+      types?: { select?: { name?: string } };
+      title?: { title?: Array<{ plain_text?: string }> };
+      summary?: { rich_text?: Array<{ plain_text?: string }> };
+      category?: { select?: { name?: string } };
+      tags?: { multi_select?: Array<{ name: string }> };
+    };
+  };
+}
+
+// unknown なエラーを表示用文字列に整形する
+const formatError = (err: unknown): string =>
+  err instanceof Error ? (err.stack ?? err.message) : String(err);
 
 const createBaseInfo = (title: string, summary: string, category: string, tags: string[]) => `
 タイトル: 『${title}』
@@ -85,6 +124,22 @@ const createNotionHeaders = (apiKey: string) => ({
 });
 
 /**
+ * Notion API へリクエストし、失敗時はステータスとレスポンスをログに残す
+ */
+const notionFetch = async (env: Env, path: string, init: RequestInit): Promise<Response> => {
+  const res = await fetch(`${NOTION_API_BASE}${path}`, {
+    headers: createNotionHeaders(env.NOTION_API_KEY),
+    ...init,
+  });
+
+  if (!res.ok) {
+    console.error(`[Notion] ${init.method} ${path} failed (${res.status}): ${await res.text().catch(() => '')}`);
+  }
+
+  return res;
+};
+
+/**
  * LLMを呼び出してテキストを生成
  */
 const callLLM = async (
@@ -92,9 +147,9 @@ const callLLM = async (
   model: string,
   systemPrompt: string,
   userPrompt: string,
-  temperature: number = 0.7
+  temperature: number = BODY_TEMPERATURE
 ): Promise<string> => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, LLM_RATE_LIMIT_MS));
 
   let response: Response | undefined;
 
@@ -112,11 +167,11 @@ const callLLM = async (
       }),
     });
 
-    const data = await response.json();
+    const data = (await response.json()) as OpenRouterResponse;
     console.log("[callLLM] OpenRouter response:", JSON.stringify(data, null, 2));
 
     return data.choices?.[0]?.message?.content?.trim() ?? '';
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("[callLLM] fetch error:", err, response ? await response.text().catch(() => "") : "");
     throw err;
   }
@@ -136,9 +191,9 @@ const normalizeSlug = (slug: string): string => {
 /**
  * MarkdownテキストをNotionブロック形式に変換
  */
-const parseMarkdownToNotionBlocks = (markdown: string): any[] => {
+const parseMarkdownToNotionBlocks = (markdown: string): NotionBlock[] => {
   const lines = markdown.split('\n').filter((line: string) => line.trim() !== '');
-  const blocks: any[] = [];
+  const blocks: NotionBlock[] = [];
 
   for (const line of lines) {
     const trimmed = line.trim();
@@ -200,14 +255,14 @@ const parseMarkdownToNotionBlocks = (markdown: string): any[] => {
 /**
  * バックグラウンドで処理を実行
  */
-const processInBackground = async (body: any, env: Env) => {
+const processInBackground = async (body: WebhookBody, env: Env) => {
   try {
     const pageId = body.data?.id;
     const types = body.data?.properties?.types?.select?.name || '';
     const title = body.data?.properties?.title?.title?.[0]?.plain_text || '';
     const summary = body.data?.properties?.summary?.rich_text?.[0]?.plain_text || '';
     const category = body.data?.properties?.category?.select?.name || '';
-    const tags = body.data?.properties?.tags?.multi_select?.map((tag: any) => tag.name) || [];
+    const tags = body.data?.properties?.tags?.multi_select?.map(tag => tag.name) || [];
 
     if (!pageId || !title || !summary) {
       console.error('Missing required fields:', { pageId, title, summary });
@@ -215,11 +270,11 @@ const processInBackground = async (body: any, env: Env) => {
     }
 
     // typesに応じてプロンプトを切り替え
-    const prompt = types === '活動'
+    const prompt = types === ACTIVITY_TYPE
       ? ACTIVITIES_PROMPT_TEMPLATE(title, summary, category, tags)
       : WORKS_PROMPT_TEMPLATE(title, summary, category, tags);
 
-    const systemPrompt = types === '活動'
+    const systemPrompt = types === ACTIVITY_TYPE
       ? env.ACTIVITIES_SYSTEM_PROMPT
       : env.WORKS_SYSTEM_PROMPT;
 
@@ -244,7 +299,7 @@ const processInBackground = async (body: any, env: Env) => {
       model,
       'あなたはURLスラッグ生成の専門家です。与えられた情報から、SEOに適した簡潔で分かりやすいslugを生成してください。',
       slugPrompt,
-      0.3
+      SLUG_TEMPERATURE
     );
     const generatedSlug = normalizeSlug(rawSlug);
 
@@ -254,23 +309,21 @@ const processInBackground = async (body: any, env: Env) => {
       model,
       systemPrompt,
       prompt,
-      0.7
+      BODY_TEMPERATURE
     );
 
     // 3. Notionページの本文を更新
     const blocks = parseMarkdownToNotionBlocks(generatedText);
 
-    await fetch(`https://api.notion.com/v1/blocks/${pageId}/children`, {
+    await notionFetch(env, `/blocks/${pageId}/children`, {
       method: 'PATCH',
-      headers: createNotionHeaders(env.NOTION_API_KEY),
       body: JSON.stringify({ children: blocks }),
     });
 
     // 4. Notionページのslugプロパティを更新
     if (generatedSlug) {
-      await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
+      await notionFetch(env, `/pages/${pageId}`, {
         method: 'PATCH',
-        headers: createNotionHeaders(env.NOTION_API_KEY),
         body: JSON.stringify({
           properties: {
             slug: {
@@ -287,8 +340,8 @@ const processInBackground = async (body: any, env: Env) => {
     }
 
     console.log('Background processing completed successfully:', { title, slug: generatedSlug });
-  } catch (err: any) {
-    console.error("[processInBackground] Error detail:", err && err.stack ? err.stack : err);
+  } catch (err: unknown) {
+    console.error("[processInBackground] Error detail:", formatError(err));
   }
 };
 
@@ -314,7 +367,7 @@ export default {
     }
 
     try {
-      const body = await req.json();
+      const body = (await req.json()) as WebhookBody;
 
       // バックグラウンドで処理
       ctx.waitUntil(processInBackground(body, env));
@@ -323,9 +376,11 @@ export default {
         JSON.stringify({ ok: true }),
         { headers: { 'Content-Type': 'application/json; charset=utf-8' } }
       );
-    } catch (err: any) {
-      console.error("[fetch handler] Error detail:", err && err.stack ? err.stack : err);
-      return new Response(`Error: ${err && err.message ? err.message : err}\n${err && err.stack ? err.stack : ''}`, { status: 500 });
+    } catch (err: unknown) {
+      console.error("[fetch handler] Error detail:", formatError(err));
+      const message = err instanceof Error ? err.message : String(err);
+      const stack = err instanceof Error ? (err.stack ?? '') : '';
+      return new Response(`Error: ${message}\n${stack}`, { status: 500 });
     }
   },
 };

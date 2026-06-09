@@ -203,26 +203,52 @@ const createIntersectionObserver = (heroTexts: NodeListOf<Element>): Intersectio
 };
 
 /**
+ * 要素が現在ビューポート内にあるかを判定
+ * @param element - 判定対象の要素
+ */
+const isInViewport = (element: Element): boolean => {
+  const rect: DOMRect = element.getBoundingClientRect();
+  return (
+    rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
+    rect.bottom >= 0
+  );
+};
+
+/**
+ * 画面内の要素は即時アニメーション、画面外の要素は Observer に登録する
+ * @param elements - 対象となる要素のリスト
+ * @param observer - Intersection Observer
+ * @param animate - 画面内要素に適用するアニメーション関数
+ */
+const setupInViewAnimation = (
+  elements: NodeListOf<Element>,
+  observer: IntersectionObserver,
+  animate: (element: Element) => void
+): void => {
+  elements.forEach((element: Element) => {
+    if (isInViewport(element)) {
+      animate(element);
+    } else {
+      observer.observe(element);
+    }
+  });
+};
+
+/**
  * Workアイテムのアニメーション設定
  * @param workItems - 対象となる要素のリスト
  * @param observer - Intersection Observer
  */
 const setupWorkItemsAnimation = (
-  workItems: NodeListOf<Element>, 
+  workItems: NodeListOf<Element>,
   observer: IntersectionObserver
 ): void => {
   let delay: number = 0;
 
   workItems.forEach((item: Element) => {
 
-    // 要素が画面内にあるかをチェック
-    const rect: DOMRect = item.getBoundingClientRect();
-    const isVisible: boolean = 
-      rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.bottom >= 0;
-    
     // 画面内にある要素は遅延をつけて順番にアニメーション
-    if (isVisible) {
+    if (isInViewport(item)) {
       setTimeout(() => animateWorkItem(item), delay);
       delay += STAGGER_DELAY;
     } else {
@@ -294,78 +320,6 @@ const setupParallaxEffect = (): void => {
 };
 
 /**
- * テキスト要素のアニメーション設定
- * @param textElements - 対象となるテキスト要素のリスト
- * @param observer - Intersection Observer
- */
-const setupTextAnimation = (
-  textElements: NodeListOf<Element>, 
-  observer: IntersectionObserver
-): void => {
-  textElements.forEach((element: Element) => {
-
-    // 要素が画面内にあるかをチェック
-    const rect: DOMRect = element.getBoundingClientRect();
-    const isVisible: boolean = 
-      rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.bottom >= 0;
-    
-    // 画面内にない要素のみ監視対象に追加
-    if (!isVisible) {
-      observer.observe(element);
-    } else {
-      animateTextFadeIn(element);
-    }
-  });
-};
-
-/**
- * スライドインアニメーションの設定
- * @param elements - 対象となる要素のリスト
- * @param observer - Intersection Observer
- */
-const setupSlideInRightAnimation = (
-  elements: NodeListOf<Element>,
-  observer: IntersectionObserver
-): void => {
-  elements.forEach((element: Element) => {
-    const rect: DOMRect = element.getBoundingClientRect();
-    const isVisible: boolean =
-      rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.bottom >= 0;
-
-    if (!isVisible) {
-      observer.observe(element);
-    } else {
-      animateSlideInRight(element);
-    }
-  });
-};
-
-/**
- * セクションヘッディングアニメーションの設定
- * @param elements - 対象となる要素のリスト
- * @param observer - Intersection Observer
- */
-const setupSectionHeadingAnimation = (
-  elements: NodeListOf<Element>,
-  observer: IntersectionObserver
-): void => {
-  elements.forEach((element: Element) => {
-    const rect: DOMRect = element.getBoundingClientRect();
-    const isVisible: boolean =
-      rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.bottom >= 0;
-
-    if (!isVisible) {
-      observer.observe(element);
-    } else {
-      animateSectionHeading(element);
-    }
-  });
-};
-
-/**
  * スクロールに関する全アニメーションの設定を行う
  */
 export const setupScrollAnimations = (): void => {
@@ -388,13 +342,13 @@ export const setupScrollAnimations = (): void => {
   setupHeroImageAndText(heroTextContainer, heroTexts, observer);
 
   // テキストのフェードインアニメーション設定
-  setupTextAnimation(fadeInTexts, observer);
+  setupInViewAnimation(fadeInTexts, observer, animateTextFadeIn);
 
   // 横方向のスライドアニメーション設定
-  setupSlideInRightAnimation(slideInRightElements, observer);
+  setupInViewAnimation(slideInRightElements, observer, animateSlideInRight);
 
   // セクションヘッディングのアニメーション設定
-  setupSectionHeadingAnimation(sectionHeadingElements, observer);
+  setupInViewAnimation(sectionHeadingElements, observer, animateSectionHeading);
 
   // スムーススクロールの設定
   setupSmoothScroll();

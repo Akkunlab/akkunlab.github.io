@@ -2,9 +2,11 @@ import { remark } from 'remark';
 import remarkHtml from 'remark-html';
 import remarkBreaks from 'remark-breaks'
 import { visit } from 'unist-util-visit'
+import type { Root, Image } from 'mdast';
 import sharp from 'sharp';
 import fs from 'fs';
 import path from 'path';
+import { isHttpUrl } from './url';
 
 const DEFAULT_IMAGE_WIDTH = 640;
 const DEFAULT_IMAGE_HEIGHT = 360;
@@ -38,7 +40,7 @@ const getImageIntrinsicSize = async (
   try {
 
     // 外部URL
-    if (/^https?:\/\//.test(imageSource)) {
+    if (isHttpUrl(imageSource)) {
       const response = await fetch(imageSource);
 
       if (!response.ok) throw new Error(`Failed to fetch image: ${imageSource}`);
@@ -73,18 +75,18 @@ const getImageIntrinsicSize = async (
 /**
  * Remark プラグイン： 画像ノードにサイズ・alt・loading 属性を追加
  */
-const enhanceImages = () => async (tree: any): Promise<void> => {
+const enhanceImages = () => async (tree: Root): Promise<void> => {
   const pendingTasks: Promise<void>[] = [];
 
-  visit(tree, 'image', (node: any) => {
+  visit(tree, 'image', (node: Image) => {
     pendingTasks.push(
       (async () => {
         const { width, height } = await getImageIntrinsicSize(node.url);
-        node.data ??= {};
-        node.data.hProperties ??= {};
-        node.data.hProperties.width = width;
-        node.data.hProperties.height = height;
-        node.data.hProperties.loading = 'lazy';
+        const data = (node.data ??= {}) as { hProperties?: Record<string, unknown> };
+        data.hProperties ??= {};
+        data.hProperties.width = width;
+        data.hProperties.height = height;
+        data.hProperties.loading = 'lazy';
 
         // alt テキストが空もしくは汎用的な場合、URLから生成
         const currentAlt = (node.alt || '').trim();

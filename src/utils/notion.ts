@@ -13,17 +13,34 @@ import {
   getDevImageDirectory,
   getDevImagePublicPath,
 } from './cache';
+import type { CacheEntry } from './cache';
 import { ensureImageCached } from './imageCache';
-import { normalizeTagName } from './filterTags';
+import { normalizeTagName } from './tagUtils';
+import { isHttpUrl } from './url';
 import { IMAGE_FORMAT, IMAGE_QUALITY, OGP_IMAGE } from '@/constants';
 import type { NotionRecord, Tag } from '@/types';
+
+// Notion ページの単一プロパティ値（rich_text / select / date など）の型
+type NotionProperty = PageObjectResponse['properties'][string];
+// DB 構造（プロパティ名 -> 構成。type の判定にのみ使用）
+type DbProps = Record<string, { type?: string } | undefined>;
+// 一覧取得のオプション
+type ListOptions = {
+  types?: string[];
+  sorts?: Array<
+    (
+      | { property: string }
+      | { timestamp: 'created_time' | 'last_edited_time' }
+    ) & { direction: 'ascending' | 'descending' }
+  >;
+};
 
 const notion = new Client({ auth: import.meta.env.NOTION_TOKEN });
 const renderer = new MDXRenderer();
 
 // キャッシュキー生成
 const makeCacheKey = {
-  list: (databaseId: string, options?: any) =>
+  list: (databaseId: string, options?: Record<string, unknown>) =>
     `notion:list:${databaseId}:${JSON.stringify(options ?? {})}`,
   page: (pageId: string, isProduction: boolean) =>
     `notion:page:${pageId}:${isProduction ? 'prod' : 'dev'}`,
@@ -38,7 +55,6 @@ const TTL = {
 };
 
 const IMAGE_CAPTURE_REGEX = /!\[[^\]]*]\(([^)]+)\)/g;
-const isHttpUrl = (value: string) => /^https?:\/\//i.test(value);
 const escapeRegex = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /**
@@ -55,24 +71,33 @@ renderer.createBlockTransformer('paragraph', {
 /**
  * Notion プロパティから安全に値を取り出す
  */
-const getProperty = <T>(property: any, type: string, fallback: T, extract: (prop: any) => T): T =>
-  property?.type === type ? extract(property) : fallback;
+// property.type の実行時判定で値を取り出すため、extract 内は型を絞れず any を許容する
+const getProperty = <T>(
+  property: NotionProperty | undefined,
+  type: string,
+  fallback: T,
+  extract: (prop: any) => T,
+): T => (property?.type === type ? extract(property) : fallback);
 
-const getRichText = (p: any) => getProperty(p, 'rich_text', '', prop => prop.rich_text[0]?.plain_text || '');
-const getSelect = (p: any) => getProperty(p, 'select', '', prop => prop.select?.name || '');
-const getTitle = (p: any) => getProperty(p, 'title', '', prop => prop.title[0]?.plain_text || '');
-const getMultiSelect = (p: any) =>
-  getProperty(p, 'multi_select', [], prop => prop.multi_select.map((tag: Tag) => ({ id: tag.id, name: tag.name })));
-const getNumber = (p: any) => getProperty(p, 'number', '', prop => prop.number?.toString() || '');
-const getUrl = (p: any) => getProperty(p, 'url', '', prop => prop.url || '');
-const getDate = (p: any) => getProperty(p, 'date', '', prop => {
+type Prop = NotionProperty | undefined;
+
+const getRichText = (p: Prop) => getProperty(p, 'rich_text', '', prop => prop.rich_text[0]?.plain_text || '');
+const getSelect = (p: Prop) => getProperty(p, 'select', '', prop => prop.select?.name || '');
+const getTitle = (p: Prop) => getProperty(p, 'title', '', prop => prop.title[0]?.plain_text || '');
+const getMultiSelect = (p: Prop): Tag[] =>
+  getProperty<Tag[]>(p, 'multi_select', [], prop =>
+    prop.multi_select.map((tag: { id: string; name: string }) => ({ id: tag.id, name: tag.name })),
+  );
+const getNumber = (p: Prop) => getProperty(p, 'number', '', prop => prop.number?.toString() || '');
+const getUrl = (p: Prop) => getProperty(p, 'url', '', prop => prop.url || '');
+const getDate = (p: Prop) => getProperty(p, 'date', '', prop => {
   const start = prop.date?.start || '';
   const end = prop.date?.end || '';
   if (start && end) return `${start}/${end}`;
   return start;
 });
-const getCheckbox = (p: any) => getProperty(p, 'checkbox', false, prop => prop.checkbox === true);
-const getLastEdited = (p: any) => getProperty(p, 'last_edited_time', '', prop => prop.last_edited_time);
+const getCheckbox = (p: Prop) => getProperty(p, 'checkbox', false, prop => prop.checkbox === true);
+const getLastEdited = (p: Prop) => getProperty(p, 'last_edited_time', '', prop => prop.last_edited_time);
 
 /**
  * 開発環境でキャッシュした画像のローカルパスを要求
@@ -188,9 +213,9 @@ const paginateQuery = async <T>(
 /**
  * DB構造をキャッシュ付きで取得
  */
-const getDatabaseProperties = async (databaseId: string): Promise<any> => {
+const getDatabaseProperties = async (databaseId: string): Promise<DbProps> => {
   const cacheKey = makeCacheKey.dbProps(databaseId);
-  const cached = await getCache<any>(cacheKey);
+  const cached = await getCache<DbProps>(cacheKey);
 
   if (cached && isTTLValid(cached.cachedAt, TTL.dbProps)) {
     return cached.value;
@@ -198,7 +223,7 @@ const getDatabaseProperties = async (databaseId: string): Promise<any> => {
 
   try {
     const dbInfo = await notion.databases.retrieve({ database_id: databaseId });
-    const properties = (dbInfo as any).properties || {};
+    const properties = ((dbInfo as { properties?: DbProps }).properties ?? {}) as DbProps;
     await setCache(cacheKey, { value: properties, cachedAt: Date.now() });
     return properties;
   } catch (error) {
@@ -222,12 +247,20 @@ const cleanupRemovedPages = async (removedIds: string[]): Promise<void> => {
   console.log(`Cleaned up caches for ${removedIds.length} removed/unpublished page(s)`);
 };
 
+// Asia/Tokyo の現在日付（YYYY-MM-DD）。publish フィルタの基準に使う
+const getTokyoToday = (): string =>
+  new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Tokyo' });
+
+// 複数フィルタを Notion クエリの filter 形式へまとめる
+const combineFilters = (filters: any[]) =>
+  filters.length === 1 ? filters[0] : { and: filters };
+
 /**
  * 最新の編集時刻を取得
  */
-const getMaxEditedTime = (pages: any[]): string =>
+const getMaxEditedTime = (pages: Array<{ last_edited_time?: string }>): string =>
   pages
-    .map(p => p.last_edited_time as string | undefined)
+    .map(p => p.last_edited_time)
     .filter(Boolean)
     .sort()
     .pop() ?? '';
@@ -236,7 +269,7 @@ const getMaxEditedTime = (pages: any[]): string =>
  * DB 構造を参照して published/publish/types のフィルタ条件を作成
  */
 const buildListFilters = (
-  dbProps: any,
+  dbProps: DbProps,
   options?: { types?: string[] },
 ): any[] => {
   const { types } = options || {};
@@ -249,8 +282,7 @@ const buildListFilters = (
 
   // publish が現在日付以前のものを取得
   if (dbProps?.publish?.type === 'date') {
-    const now = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Tokyo' });
-    filters.push({ property: 'publish', date: { on_or_before: now } });
+    filters.push({ property: 'publish', date: { on_or_before: getTokyoToday() } });
   }
 
   // types フィルタ
@@ -266,11 +298,11 @@ const buildListFilters = (
  * ページがフィルタ条件に一致するかを評価
  */
 const doesPageMatchFilters = (
-  page: any,
-  dbProps: any,
+  page: PageObjectResponse,
+  dbProps: DbProps,
   options?: { types?: string[] },
 ): boolean => {
-  const properties = page?.properties || {};
+  const properties = page.properties;
 
   // published が true かチェック
   if (dbProps?.published?.type === 'checkbox') {
@@ -280,8 +312,7 @@ const doesPageMatchFilters = (
   // publish が現在日付以前かチェック
   if (dbProps?.publish?.type === 'date') {
     const publishDate = getDate(properties.publish);
-    const now = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Tokyo' });
-    if (publishDate && publishDate > now) return false;
+    if (publishDate && publishDate > getTokyoToday()) return false;
   }
 
   // types フィルタ
@@ -370,7 +401,7 @@ export const fetchNotionPage = async (
 
   let pageMeta: { last_edited_time?: string } | null = null;
   try {
-    pageMeta = (await notion.pages.retrieve({ page_id: pageId })) as any;
+    pageMeta = (await notion.pages.retrieve({ page_id: pageId })) as PageObjectResponse;
   } catch (error) {
     if (cached && assetsReady) {
       console.warn('Failed to retrieve page metadata, using cached content:', error);
@@ -422,19 +453,59 @@ export const fetchNotionPage = async (
 };
 
 /**
+ * 変更なし: 削除されたページだけ反映し、キャッシュの有効期限を延長する
+ */
+const reconcileUnchanged = async (
+  databaseId: string,
+  filters: any[],
+  cached: CacheEntry<NotionRecord[]>,
+  cacheKey: string,
+): Promise<NotionRecord[]> => {
+  // 削除されたページを検出
+  const currentIds = await fetchCurrentPageIds(databaseId, filters);
+  const cachedIds = cached.value.map(r => r.id);
+  const removedIds = cachedIds.filter(id => !currentIds.has(id));
+
+  if (removedIds.length > 0) {
+    await cleanupRemovedPages(removedIds);
+    const updatedValue = cached.value.filter(r => !removedIds.includes(r.id));
+    await setCache(cacheKey, { value: updatedValue, lastChange: cached.lastChange, cachedAt: Date.now() });
+    return updatedValue;
+  }
+
+  await setCache(cacheKey, { ...cached, cachedAt: Date.now() });
+  return cached.value;
+};
+
+/**
+ * 変更あり: 変更件数が少なく全体ソートも不要なら部分更新する。
+ * 条件を満たさない場合は null を返し、呼び出し側でフル取得にフォールバックする。
+ */
+const tryPartialUpdate = async (
+  databaseId: string,
+  cached: CacheEntry<NotionRecord[]>,
+  dbProps: DbProps,
+  options: ListOptions | undefined,
+  sorts: ListOptions['sorts'],
+  cacheKey: string,
+): Promise<NotionRecord[] | null> => {
+  const changedIds = await listChangedPageIds(databaseId, cached.lastChange ?? '');
+  const CHANGED_THRESHOLD = 100;
+  const requiresFullSort = (sorts || []).some(sort => 'timestamp' in sort);
+
+  if (changedIds.length > 0 && changedIds.length <= CHANGED_THRESHOLD && !requiresFullSort) {
+    return partialUpdate(cached, changedIds, dbProps, options, sorts, cacheKey);
+  }
+
+  return null;
+};
+
+/**
  * Notion データベースからページ一覧を取得し、キャッシュを更新
  */
 export const fetchNotionPageList = async (
   databaseId: string,
-  options?: {
-    types?: string[];
-    sorts?: Array<
-      (
-        | { property: string }
-        | { timestamp: 'created_time' | 'last_edited_time' }
-      ) & { direction: 'ascending' | 'descending' }
-    >;
-  },
+  options?: ListOptions,
 ): Promise<NotionRecord[]> => {
   if (!databaseId) {
     throw new Error('databaseId is not defined in the environment variables.');
@@ -462,38 +533,12 @@ export const fetchNotionPageList = async (
       const hasChanges = await checkForDatabaseChanges(databaseId, cached.lastChange);
 
       if (!hasChanges) {
-        // 削除されたページを検出
-        const currentIds = await fetchCurrentPageIds(databaseId, filters);
-        const cachedIds = cached.value.map(r => r.id);
-        const removedIds = cachedIds.filter(id => !currentIds.has(id));
-
-        if (removedIds.length > 0) {
-          await cleanupRemovedPages(removedIds);
-          const updatedValue = cached.value.filter(r => !removedIds.includes(r.id));
-          await setCache(cacheKey, { value: updatedValue, lastChange: cached.lastChange, cachedAt: Date.now() });
-          return updatedValue;
-        }
-
-        await setCache(cacheKey, { ...cached, cachedAt: Date.now() });
-        return cached.value;
+        return await reconcileUnchanged(databaseId, filters, cached, cacheKey);
       }
 
-      // 変更があった場合、部分更新を試みる
-      const changedIds = await listChangedPageIds(databaseId, cached.lastChange ?? '');
-      const CHANGED_THRESHOLD = 100;
-      const requiresFullSort = (sorts || []).some(sort => 'timestamp' in sort);
-
-      if (changedIds.length > 0 && changedIds.length <= CHANGED_THRESHOLD && !requiresFullSort) {
-        return await partialUpdate(
-          databaseId,
-          cached,
-          changedIds,
-          dbProps,
-          options,
-          sorts,
-          cacheKey,
-        );
-      }
+      // 変更があった場合、部分更新を試みる（不可なら null でフル取得へ）
+      const partial = await tryPartialUpdate(databaseId, cached, dbProps, options, sorts, cacheKey);
+      if (partial) return partial;
     } catch (error) {
       // エラー時はキャッシュを延長して返す
       await setCache(cacheKey, { ...cached, cachedAt: Date.now() });
@@ -536,12 +581,12 @@ const fetchCurrentPageIds = async (
       page_size: 100,
       start_cursor: cursor,
       ...(filters.length > 0 && {
-        filter: filters.length === 1 ? filters[0] : { and: filters },
+        filter: combineFilters(filters),
       }),
     }),
   );
 
-  return new Set(pages.map((p: any) => p.id));
+  return new Set(pages.map(p => p.id));
 };
 
 /**
@@ -562,19 +607,18 @@ const listChangedPageIds = async (
     }),
   );
 
-  return [...new Set(pages.map((p: any) => p.id))];
+  return [...new Set(pages.map(p => p.id))];
 };
 
 /**
  * 部分更新
  */
 const partialUpdate = async (
-  _databaseId: string,
-  cached: { value: NotionRecord[]; lastChange?: string; cachedAt: number },
+  cached: CacheEntry<NotionRecord[]>,
   changedIds: string[],
-  dbProps: any,
+  dbProps: DbProps,
   options: { types?: string[] } | undefined,
-  sorts: any[] | undefined,
+  sorts: ListOptions['sorts'],
   cacheKey: string,
 ): Promise<NotionRecord[]> => {
   const byId = new Map<string, NotionRecord>(cached.value.map(r => [r.id, r]));
@@ -585,13 +629,13 @@ const partialUpdate = async (
   await Promise.all(
     changedIds.map(async id => {
       try {
-        const page = (await notion.pages.retrieve({ page_id: id })) as any;
-        const lastEdited = page.last_edited_time as string | undefined;
+        const page = (await notion.pages.retrieve({ page_id: id })) as PageObjectResponse;
+        const lastEdited = page.last_edited_time;
         if (lastEdited && lastEdited > maxEdited) maxEdited = lastEdited;
 
         if (doesPageMatchFilters(page, dbProps, options)) {
           const pageContent = await fetchNotionPage(id);
-          const record = pageToNotionRecord(page as PageObjectResponse, pageContent?.ogImage);
+          const record = pageToNotionRecord(page, pageContent?.ogImage);
           byId.set(record.id, record);
         } else {
           byId.delete(id);
@@ -615,8 +659,8 @@ const partialUpdate = async (
     for (const sort of sorts.slice().reverse()) {
       const direction = sort.direction === 'ascending' ? 1 : -1;
       if ('property' in sort) {
-        const prop = sort.property;
-        merged = merged.sort((a: any, b: any) =>
+        const prop = sort.property as keyof NotionRecord;
+        merged = merged.sort((a, b) =>
           (a[prop] ?? '') > (b[prop] ?? '') ? direction : -direction,
         );
       }
@@ -633,14 +677,14 @@ const partialUpdate = async (
 const fullFetch = async (
   databaseId: string,
   filters: any[],
-  sorts: any[] | undefined,
+  sorts: ListOptions['sorts'],
   cacheKey: string,
   oldRecords?: NotionRecord[],
 ): Promise<NotionRecord[]> => {
   const queryOptions: any = { database_id: databaseId, page_size: 100 };
 
   if (filters.length > 0) {
-    queryOptions.filter = filters.length === 1 ? filters[0] : { and: filters };
+    queryOptions.filter = combineFilters(filters);
   }
   if (sorts && sorts.length > 0) {
     queryOptions.sorts = sorts;
@@ -650,18 +694,18 @@ const fullFetch = async (
     notion.databases.query({ ...queryOptions, start_cursor: cursor }),
   );
 
-  const maxEdited = getMaxEditedTime(pages);
+  const maxEdited = getMaxEditedTime(pages as Array<{ last_edited_time?: string }>);
 
   // 並列でページコンテンツを取得
   const pageContents = await Promise.all(
-    pages.map(async (page: any) => {
+    pages.map(async page => {
       const content = await fetchNotionPage(page.id);
       return { id: page.id, ogImage: content?.ogImage };
     }),
   );
 
   const imageMap = new Map(pageContents.map(p => [p.id, p.ogImage]));
-  const records = pages.map((page: any) =>
+  const records = pages.map(page =>
     pageToNotionRecord(page as PageObjectResponse, imageMap.get(page.id)),
   );
 
@@ -714,3 +758,19 @@ export const buildTagsFromPages = (pages: NotionRecord[]): Tag[] => {
 
   return [allTag, ...sorted];
 };
+
+const PORTFOLIO_DATABASE_ID = import.meta.env.PORTFOLIO_DATABASE_ID;
+
+// 作品一覧（作品・記事）を制作日の降順で取得
+export const fetchWorks = (): Promise<NotionRecord[]> =>
+  fetchNotionPageList(PORTFOLIO_DATABASE_ID, {
+    types: ['作品', '記事'],
+    sorts: [{ property: 'event', direction: 'descending' }],
+  });
+
+// 活動一覧を実施日の降順で取得
+export const fetchActivities = (): Promise<NotionRecord[]> =>
+  fetchNotionPageList(PORTFOLIO_DATABASE_ID, {
+    types: ['活動'],
+    sorts: [{ property: 'event', direction: 'descending' }],
+  });

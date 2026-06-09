@@ -5,12 +5,12 @@ import '@fontsource/noto-sans-jp/700.css';
 import {
   SITE_TITLE,
   SITE_DESCRIPTION,
-  SITE_URL,
   AUTHOR,
   X_ID,
   COLOR,
   OGP_IMAGE
 } from '@/constants';
+import { siteUrl, resolveAbsoluteUrl } from '@/utils/url';
 
 import SplashScreen from '@/components/SplashScreen.astro';
 import Header from '@/components/Header.astro';
@@ -28,17 +28,12 @@ interface Props {
 
 const { title, description, ogImage, ogType, jsonLd, showSplash = false } = Astro.props;
 
-const siteUrl = SITE_URL.replace(/\/+$/, '');
 const pageTitle = title ? `${title} | ${SITE_TITLE}` : SITE_TITLE;
 const pageDescription = description || SITE_DESCRIPTION;
 const canonicalUrl = new URL(Astro.url.pathname, siteUrl).href;
 
 // OGP画像を絶対URLに解決
-const resolveImageUrl = (img: string): string => {
-  if (/^https?:\/\//.test(img)) return img;
-  return `${siteUrl}${img.startsWith('/') ? '' : '/'}${img}`;
-};
-const ogImageUrl = resolveImageUrl(ogImage || OGP_IMAGE);
+const ogImageUrl = resolveAbsoluteUrl(ogImage || OGP_IMAGE);
 ---
 
 <!DOCTYPE html>

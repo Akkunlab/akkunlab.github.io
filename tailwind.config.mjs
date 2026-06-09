@@ -2,13 +2,17 @@
 
 import daisyui from 'daisyui';
 
-module.exports = {
+// 複数箇所（daisyui テーマ・::selection）で共有する色
+const PRIMARY = '#134af0';
+const WHITE = '#ffffff';
+
+export default {
 	content: ['./src/**/*.{astro,html,js,jsx,md,mdx,ts,tsx,vue}'],
   daisyui: {
     themes: [
       {
         theme: {
-          'primary': '#134af0',
+          'primary': PRIMARY,
           'primary-content': '#fff',
           'secondary': '#a133ea',
           'neutral': '#000',
@@ -26,7 +30,7 @@ module.exports = {
       colors: {
         'primary-hover': '#0e285e',
         'light-text': '#212121',
-        'dark-text': ' #dedede',
+        'dark-text': '#dedede',
         'main-bg': '#fff',
         'button-active': '#1f1f1f',
         'button-active-content': '#f2f2f2',
@@ -215,12 +219,12 @@ module.exports = {
     function({ addBase, addUtilities }) {
       addBase({
         '::selection': {
-          backgroundColor: '#134af0',
-          color: '#ffffff',
+          backgroundColor: PRIMARY,
+          color: WHITE,
         },
         '::-moz-selection': {
-          backgroundColor: '#134af0',
-          color: '#ffffff',
+          backgroundColor: PRIMARY,
+          color: WHITE,
         },
       });
 

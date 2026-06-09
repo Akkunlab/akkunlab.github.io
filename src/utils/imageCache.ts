@@ -4,6 +4,7 @@ import * as path from 'path';
 import sharp from 'sharp';
 import { S3Client, HeadObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import {
+  ensureDir,
   getDevImageDirectory,
   getDevImagePublicPath,
   getR2Config,
@@ -24,16 +25,6 @@ const MAX_WIDTH = 1920;
 const MAX_HEIGHT = 1080;
 
 let r2Client: S3Client | null = null;
-
-/**
- * 指定したディレクトリが存在しない場合は作成
- * @param dir ディレクトリパス
- */
-const ensureDir = async (dir: string) => {
-  if (!fssync.existsSync(dir)) {
-    await fs.mkdir(dir, { recursive: true });
-  }
-};
 
 /**
  * URL 由来の文字列をスラッグ化して安全なファイル名を作成

@@ -9,6 +9,6 @@ export const INTEREST_COLOR_MAP: Record<string, string> = {
  * @param name Interest name
  * @returns Tailwind CSS color classes
  */
-export const getInterestColor = (name: string) => {
-  return INTEREST_COLOR_MAP[name]
+export const getInterestColor = (name: string): string | undefined => {
+  return INTEREST_COLOR_MAP[name];
 };
