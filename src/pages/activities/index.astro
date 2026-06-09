@@ -1,46 +1,27 @@
 ---
-import { Image } from 'astro:assets';
 import Layout from '@/layouts/Layout.astro';
-import { buildTagsFromPages, fetchNotionPageList } from '@/utils/notion';
+import { buildTagsFromPages, fetchActivities } from '@/utils/notion';
 import { generateTagString } from '@/utils/filterTags';
-import { IMAGE_FORMAT, IMAGE_QUALITY } from '@/constants';
 import SectionHeading from '@/components/SectionHeading.astro';
-import AnimatedImage from '@/components/AnimatedImage.astro';
+import SectionBackground from '@/components/SectionBackground.astro';
+import PortfolioCard from '@/components/PortfolioCard.astro';
 
 import activityImage from '@/assets/images/activity-image.jpg';
 
-const PORTFOLIO_DATABASE_ID = import.meta.env.PORTFOLIO_DATABASE_ID;
-const pages = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, { 
-  types: ['活動'],
-  sorts: [{ property: 'event', direction: 'descending' }]
-});
+const pages = await fetchActivities();
 const tags = buildTagsFromPages(pages);
 ---
 
 <Layout title="活動">
   <section class="pt-36 pb-40">
-    
-    <!-- 背景画像 -->
-    <div class="absolute inset-0 h-[600px] z-0 parallax-bg overflow-hidden">
-      <Image 
-        src={activityImage} 
-        alt="活動背景画像" 
-        class="w-full h-full object-cover transform transition-transform ease-out duration-1000 will-change-transform"
-        loading="eager"
-        widths={[640, 960, 1280, 1536, 1920]}
-        sizes="100vw"
-        format={IMAGE_FORMAT}
-        quality={IMAGE_QUALITY}
-        fetchpriority="high"
-      />
-      <div class="absolute inset-0 bg-gradient-to-b from-white/10 via-white/80 to-white"></div>
-    </div>
-    
+
+    <SectionBackground src={activityImage} alt="活動背景画像" eager />
+
     <!-- ヘッダー -->
     <div class="px-4 md:px-16">
       <SectionHeading title="活動" />
     </div>
-    
+
     <!-- タグ -->
     <div class="mt-8 px-4 md:px-16 pb-8 overflow-x-auto md:overflow-visible whitespace-nowrap md:whitespace-normal scrollbar-hide">
       {tags.map((tag) => (
@@ -56,21 +37,11 @@ const tags = buildTagsFromPages(pages);
     <!-- 活動コンテンツ -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12 px-4 md:px-16">
       {pages.map((page) => (
-        <article
-          class="work-item"
-          data-tags={generateTagString(page.tags, page.category)}
-        >
-          <a
-            href={`/activities/${page.slug}`}
-            class="card card-item"
-          >
-            <AnimatedImage src={page.image ?? ''} alt={page.title ?? ''} class="aspect-video" />
-            <div class="card-body p-0 pt-2">
-              <h2 class="card-title fade-in-text opacity-0 translate-y-8">{page.title}</h2>
-              <p class="fade-in-text opacity-0 translate-y-8">{page.summary}</p>
-            </div>
-          </a>
-        </article>
+        <PortfolioCard
+          page={page}
+          basePath="/activities"
+          dataTags={generateTagString(page.tags, page.category)}
+        />
       ))}
     </div>
   </section>

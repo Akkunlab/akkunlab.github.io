@@ -1,13 +1,14 @@
 ---
-import { Image } from 'astro:assets';
 import { Icon } from 'astro-icon/components';
 import { getIconName } from '@/utils/icon'
-import { fetchNotionPageList } from '@/utils/notion';
+import { fetchNotionPageList, fetchWorks, fetchActivities } from '@/utils/notion';
 
 import Layout from '@/layouts/Layout.astro';
 import { escapeAndNl2p } from '@/utils/escape';
 import HeroCarousel from '@/components/HeroCarousel.astro';
 import SectionHeading from '@/components/SectionHeading.astro';
+import SectionBackground from '@/components/SectionBackground.astro';
+import PortfolioCard from '@/components/PortfolioCard.astro';
 import Button from '@/components/Button.astro';
 import AnimatedImage from '@/components/AnimatedImage.astro';
 import CyberInfoGraphics from '@/components/CyberInfographics.astro';
@@ -28,8 +29,6 @@ import {
   AUTHOR_ENGLISH,
   AUTHOR_SUMMARY,
   HERO_TITLE_LINES,
-  IMAGE_FORMAT,
-  IMAGE_QUALITY,
   PREVIEW_ITEMS_COUNT
 } from '@/constants';
 
@@ -39,14 +38,8 @@ const CERTIFICATIONS_DATABASE_ID = import.meta.env.CERTIFICATIONS_DATABASE_ID;
 const SKILLS_INTERESTS_DATABASE_ID = import.meta.env.SKILLS_INTERESTS_DATABASE_ID;
 const SOCIAL_LINKS_DATABASE_ID = import.meta.env.SOCIAL_LINKS_DATABASE_ID;
 
-const works = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, {
-  types: ['作品', '記事'],
-  sorts: [{ property: 'event', direction: 'descending' }]
-});
-const activities = await fetchNotionPageList(PORTFOLIO_DATABASE_ID, { 
-  types: ['活動'],
-  sorts: [{ property: 'event', direction: 'descending' }]
-});
+const works = await fetchWorks();
+const activities = await fetchActivities();
 const careers = await fetchNotionPageList(EDUCATION_CAREER_DATABASE_ID, {
   types: ['career'],
   sorts: [{ property: 'start', direction: 'descending' }]
@@ -108,36 +101,15 @@ const skillsCount = (skillInterests ?? []).filter(r => (r.name?.trim())).length;
     <!-- 作品セクション -->
     <section id="works" class=`${sectionClass} relative`>
 
-      <!-- 背景画像 -->
-      <div class="absolute inset-0 h-[600px] z-0 parallax-bg overflow-hidden">
-        <Image 
-          src={heroImage_1} 
-          alt="作品背景画像" 
-          class="w-full h-full object-cover transform transition-transform ease-out duration-1000 will-change-transform" 
-          widths={[640, 960, 1280, 1536, 1920]}
-          sizes="100vw"
-          format={IMAGE_FORMAT}
-          quality={IMAGE_QUALITY}
-          loading="lazy"
-        />
-        <div class="absolute inset-0 bg-gradient-to-b from-white/10 via-white/80 to-white"></div>
-      </div>
-    
+      <SectionBackground src={heroImage_1} alt="作品背景画像" />
+
       <!-- ヘッダー -->
       <SectionHeading title="作品" />
 
       <!-- 作品コンテンツ -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20 mb-12">
         {works.slice(0, PREVIEW_ITEMS_COUNT).map((work) => (
-          <article class="work-item">
-            <a href={`/works/${work.slug}`} class="card card-item">
-              <AnimatedImage src={work.image ?? ''} alt={work.title ?? ''} class="aspect-video" />
-              <div class="card-body p-0 pt-2">
-                <h2 class="card-title fade-in-text opacity-0 translate-y-8">{work.title}</h2>
-                <p class="fade-in-text opacity-0 translate-y-8">{work.summary}</p>
-              </div>
-            </a>
-          </article>
+          <PortfolioCard page={work} basePath="/works" />
         ))}
       </div>
       <div class="flex justify-center">
@@ -148,20 +120,7 @@ const skillsCount = (skillInterests ?? []).filter(r => (r.name?.trim())).length;
     <!-- 活動セクション -->
     <section id="activities" class=`${sectionClass} relative`>
 
-      <!-- 背景画像 -->
-      <div class="absolute inset-0 h-[600px] z-0 parallax-bg overflow-hidden">
-        <Image 
-          src={activityImage} 
-          alt="活動背景画像" 
-          class="w-full h-full object-cover transform transition-transform ease-out duration-1000 will-change-transform" 
-          widths={[640, 960, 1280, 1536, 1920]}
-          sizes="100vw"
-          format={IMAGE_FORMAT}
-          quality={IMAGE_QUALITY}
-          loading="lazy"
-        />
-        <div class="absolute inset-0 bg-gradient-to-b from-white/10 via-white/80 to-white"></div>
-      </div>
+      <SectionBackground src={activityImage} alt="活動背景画像" />
 
       <!-- ヘッダー -->
       <SectionHeading title="活動" />
@@ -169,15 +128,7 @@ const skillsCount = (skillInterests ?? []).filter(r => (r.name?.trim())).length;
       <!-- 活動コンテンツ -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20 mb-12">
         {activities.slice(0, PREVIEW_ITEMS_COUNT).map((activity) => (
-          <article class="work-item">
-            <a href={`/activities/${activity.slug}`} class="card card-item">
-              <AnimatedImage src={activity.image ?? ''} alt={activity.title ?? ''} class="aspect-video" />
-              <div class="card-body p-0 pt-2">
-                <h2 class="card-title fade-in-text opacity-0 translate-y-8">{activity.title}</h2>
-                <p class="fade-in-text opacity-0 translate-y-8">{activity.summary}</p>
-              </div>
-            </a>
-          </article>
+          <PortfolioCard page={activity} basePath="/activities" />
         ))}
       </div>
       <div class="flex justify-center">
@@ -252,20 +203,7 @@ const skillsCount = (skillInterests ?? []).filter(r => (r.name?.trim())).length;
     <!-- 連絡先セクション -->
     <section id="links" class=`${sectionClass} relative`>
 
-      <!-- 背景画像 -->
-      <div class="absolute inset-0 h-[600px] z-0 parallax-bg overflow-hidden">
-        <Image 
-          src={linkImage} 
-          alt="連絡先背景画像" 
-          class="w-full h-full object-cover transform transition-transform ease-out duration-1000 will-change-transform" 
-          widths={[640, 960, 1280, 1536, 1920]}
-          sizes="100vw"
-          format={IMAGE_FORMAT}
-          quality={IMAGE_QUALITY}
-          loading="lazy"
-        />
-        <div class="absolute inset-0 bg-gradient-to-b from-white/10 via-white/80 to-white"></div>
-      </div>
+      <SectionBackground src={linkImage} alt="連絡先背景画像" />
 
       <!-- ヘッダー -->
       <SectionHeading title="連絡先" />

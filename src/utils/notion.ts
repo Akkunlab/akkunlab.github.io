@@ -714,3 +714,19 @@ export const buildTagsFromPages = (pages: NotionRecord[]): Tag[] => {
 
   return [allTag, ...sorted];
 };
+
+const PORTFOLIO_DATABASE_ID = import.meta.env.PORTFOLIO_DATABASE_ID;
+
+// 作品一覧（作品・記事）を制作日の降順で取得
+export const fetchWorks = (): Promise<NotionRecord[]> =>
+  fetchNotionPageList(PORTFOLIO_DATABASE_ID, {
+    types: ['作品', '記事'],
+    sorts: [{ property: 'event', direction: 'descending' }],
+  });
+
+// 活動一覧を実施日の降順で取得
+export const fetchActivities = (): Promise<NotionRecord[]> =>
+  fetchNotionPageList(PORTFOLIO_DATABASE_ID, {
+    types: ['活動'],
+    sorts: [{ property: 'event', direction: 'descending' }],
+  });
