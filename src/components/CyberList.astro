@@ -10,20 +10,18 @@ const { items, class: className } = Astro.props;
 const records = items.filter(item => item.name);
 ---
 
-<ul class:list={['cyber-list grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-x-8 pl-4', className]}>
+<ul class:list={['cyber-list grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-x-8 sm:pl-4', className]}>
   {records.map((item) => (
     <li class="cyber-list-item relative slide-in-right opacity-0 translate-x-8 group">
 
       {/* 背景グロー効果 */}
       <div class="absolute -inset-1 bg-gradient-to-r from-blue-600/20 via-cyan-600/20 to-blue-600/20 rounded-lg blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-      {/* メインコンテナ */}
       <div class="relative flex items-center">
 
         {/* 左のライン */}
         <div class="absolute left-6 top-0 w-px h-full bg-gradient-to-b from-blue-400/30 via-cyan-400/50 to-blue-400/30"></div>
 
-        {/* アイコン/ブレット */}
         <div class="cyber-bullet relative z-10 w-3 h-3 mr-4 flex-shrink-0">
 
           {/* メインブレット */}
@@ -41,7 +39,6 @@ const records = items.filter(item => item.name);
           <div class="absolute -inset-3 rounded-full bg-blue-400/10 group-hover:bg-cyan-400/20 group-hover:scale-300 transition-all duration-1000 opacity-0 group-hover:opacity-100"></div>
         </div>
 
-        {/* コンテンツボックス */}
         <div class="cyber-content flex-1 relative overflow-hidden rounded-lg border border-slate-600/50 bg-gradient-to-r from-slate-800/90 via-slate-900/90 to-slate-800/90 backdrop-blur-sm group-hover:border-blue-400/70 group-hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] group-hover:translate-x-1 transition-all duration-300">
 
           {/* 上部のスキャンライン */}
@@ -57,22 +54,21 @@ const records = items.filter(item => item.name);
           <div class="absolute top-1 left-0 w-0 h-px bg-gradient-to-r from-blue-400 to-cyan-400 group-hover:w-full transition-all duration-500 delay-200"></div>
           <div class="absolute bottom-1 right-0 w-0 h-px bg-gradient-to-l from-blue-400 to-cyan-400 group-hover:w-full transition-all duration-500 delay-400"></div>
 
-          {/* コンテンツ */}
-          <div class="relative z-10 p-5 flex items-center justify-between gap-3">
+          <div class="relative z-10 p-4 sm:p-5 flex items-center justify-between gap-3">
 
-            {/* テキスト */}
-            <span class="text-primary-content group-hover:[text-shadow:0_0_8px_rgba(255,255,255,0.5)] transition-all duration-300">
+            {/* keep-all: 資格名が単語の途中で折り返されるのを防ぐ */}
+            <span class="text-primary-content [word-break:keep-all] group-hover:[text-shadow:0_0_8px_rgba(255,255,255,0.5)] transition-all duration-300">
               {item.name}
             </span>
 
-            {/* 取得年・ステータスインジケーター */}
             <div class="flex items-center gap-3 flex-shrink-0">
               {item.date && (
                 <time datetime={item.date} class="text-sm text-cyan-300/80 font-mono tracking-wider">
                   {item.date.split('-')[0]}
                 </time>
               )}
-              <div class="flex items-center space-x-2">
+              {/* ホバー時にしか見えない装飾のため、タッチ端末では表示しない */}
+              <div class="hidden sm:flex items-center space-x-2">
 
                 {/* データドット */}
                 <div class="w-1 h-1 bg-green-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-300 animate-pulse"></div>
