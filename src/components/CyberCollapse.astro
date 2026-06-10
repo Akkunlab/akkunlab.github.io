@@ -13,7 +13,7 @@ interface Props {
 const { title, items, class: className } = Astro.props;
 ---
 
-<div class={`cyber-collapse max-w-[575px] slide-in-right opacity-0 translate-x-8 group ${className}`}>
+<div class:list={['cyber-collapse slide-in-right opacity-0 translate-x-8 group', className]}>
   <div class="collapse bg-transparent">
     <input type="checkbox" aria-label="checkbox" />
     
@@ -50,10 +50,10 @@ const { title, items, class: className } = Astro.props;
     
     <!-- コンテンツ部分 -->
     <div class="collapse-content px-0 pb-4">
-      <div class="cyber-collapse-content mt-2 py-4 pl-4 bg-white rounded-lg relative overflow-hidden">
-        
+      <div class="cyber-collapse-content mt-2 py-4 px-4 bg-white rounded-lg relative overflow-hidden">
+
         <!-- リスト -->
-        <ul class="space-y-3">
+        <ul class="grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-x-8">
           {items.map((item) => (
             <li class="cyber-list-item slide-in-right opacity-0 translate-x-8 relative group/item">
               <CyberListItem scope="item" bold>{`${item.date ? item.date.split('-')[0] + '年' : ''} ${item.name || ''}`}</CyberListItem>
