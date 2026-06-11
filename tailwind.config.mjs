@@ -142,6 +142,12 @@ export default {
             opacity: '1'
           }
         },
+        scanY: {
+          '0%': { top: '0%', opacity: '0' },
+          '15%': { opacity: '1' },
+          '85%': { opacity: '1' },
+          '100%': { top: '100%', opacity: '0' }
+        },
         dataFlow: {
           '0%, 100%': {
             opacity: '0.3',
@@ -207,6 +213,7 @@ export default {
         glowPulse: 'glowPulse 4s ease-in-out infinite',
         glowStart: 'glowStart 0.5s ease-out both',
         scanLine: 'scanLine 2s ease-in-out infinite',
+        scanY: 'scanY 1.8s linear infinite',
         dataFlow: 'dataFlow 1.5s ease-in-out infinite',
         glow: 'glow 2s ease-in-out infinite',
         bounce: 'bounce 2s infinite',

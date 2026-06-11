@@ -41,7 +41,7 @@ const colorConfig = {
 const config = colorConfig[color];
 ---
 
-<h3 class={`relative text-2xl font-bold mt-20 mb-4 text-primary-content bg-gradient-to-r ${config.background} ${config.backgroundHover} transition-all duration-500 px-4 py-2 rounded-lg border ${config.border} ${config.borderHover} shadow-lg ${className}`}>
+<h3 class:list={[`relative text-2xl font-bold mt-20 mb-4 text-primary-content bg-gradient-to-r ${config.background} ${config.backgroundHover} transition-all duration-500 px-4 py-2 rounded-lg border ${config.border} ${config.borderHover} shadow-lg`, className]}>
   <span class="relative z-10">{text}</span>
   <div class={`absolute inset-0 bg-gradient-to-r ${config.gradientOverlay} rounded-lg`}></div>
 </h3>

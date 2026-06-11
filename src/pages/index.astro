@@ -16,7 +16,6 @@ import CyberHeading from '@/components/CyberHeading.astro';
 import CyberTimeline from '@/components/CyberTimeline.astro';
 import CyberList from '@/components/CyberList.astro';
 import CyberMediaList from '@/components/CyberMediaList.astro';
-import CyberCollapse from '@/components/CyberCollapse.astro';
 import CyberSkills from '@/components/CyberSkills.astro';
 
 import heroImage_1 from '@/assets/images/hero-image_1.jpg';
@@ -185,8 +184,7 @@ const skillsCount = (skillInterests ?? []).filter(r => (r.name?.trim())).length;
 
         <!-- 資格 -->
         <CyberHeading text="資格" color="green" />
-        <CyberList items={certifications.filter(item => item.mark && item.name).map(item => item.name!)} />
-        <CyberCollapse title="全て見てみる！" items={certifications} />
+        <CyberList items={certifications} />
 
         <!-- メディア -->
         <CyberHeading text="メディア" color="red" />
