@@ -5,8 +5,8 @@ import { fetchNotionPageList } from '@/utils/notion';
 import {
   AUTHOR,
   AUTHOR_ENGLISH,
-  NAV_ITEMS,
 } from '@/constants';
+import { getLangFromUrl, getLanguageSwitch, getNavItems, useTranslations } from '@/i18n';
 import CyberInfoPanel from './CyberInfoPanel.astro';
 import { scrollAttr } from '@/utils/nav';
 
@@ -18,6 +18,10 @@ const socialLinks = await fetchNotionPageList(SOCIAL_LINKS_DATABASE_ID, {
 
 const currentYear = new Date().toLocaleDateString('en-US', { timeZone: 'Asia/Tokyo', year: 'numeric' });
 const currentPath = Astro.url.pathname;
+const locale = getLangFromUrl(Astro.url);
+const t = useTranslations(locale);
+const navItems = getNavItems(locale);
+const langSwitch = getLanguageSwitch(Astro.url);
 ---
 
 <footer class="relative bg-footer-bg text-dark-text pt-16 pb-8 md:pb-8 z-10">
@@ -28,8 +32,8 @@ const currentPath = Astro.url.pathname;
       <div class="md:col-span-1">
         <h2 class="text-2xl font-bold mb-3">{AUTHOR_ENGLISH.toUpperCase()}</h2>
         <p class="mb-4">
-          テクノロジーとデザインの融合で<br />
-          人々に感動と幸せを届けるクリエイター
+          {t.footer.catchphraseLines[0]}<br />
+          {t.footer.catchphraseLines[1]}
         </p>
         <div class="flex space-x-2">
           {socialLinks.map(item => (
@@ -52,9 +56,9 @@ const currentPath = Astro.url.pathname;
       
       <!-- リンク -->
       <div class="md:col-span-1 pl-0 lg:pl-4">
-        <h3 class="text-xl font-bold mb-3">リンク</h3>
+        <h3 class="text-xl font-bold mb-3">{t.footer.linksTitle}</h3>
         <ul class="space-y-0">
-          {NAV_ITEMS.map(item => (
+          {navItems.map(item => (
             <li class="mb-0">
               <a
                 href={item.href}
@@ -65,40 +69,48 @@ const currentPath = Astro.url.pathname;
               </a>
             </li>
           ))}
+          <li class="mb-0">
+            <a
+              href={langSwitch.href}
+              lang={langSwitch.target}
+              hreflang={langSwitch.target}
+              aria-label={langSwitch.aria}
+              class="btn btn-ghost hover:bg-header-hover transition-colors h-9 min-h-9 text-base"
+            >
+              {langSwitch.label}
+            </a>
+          </li>
         </ul>
       </div>
 
       <!-- サイバーインフォメーション -->
       <CyberInfoPanel
-        title="思考システム"
-        systemMessage="システム起動中..."
-        statusItems={[
-          { id: "01", name: "ハッカー思考", status: "稼働中", statusColor: "text-green-400" },
-          { id: "02", name: "デザイン思考", status: "同期中", statusColor: "text-amber-400" },
-          { id: "03", name: "創発エンジン", status: "出力中", statusColor: "text-green-400" }
-        ]}
+        title={t.footer.infoPanel.title}
+        systemMessage={t.footer.infoPanel.systemMessage}
+        statusItems={t.footer.infoPanel.items}
       />
     </div>
     
     <!-- Copyright -->
     <div class="border-t border-gray-700 mt-12 pt-8 text-center">
-      <p 
+      <p
         id="copyright"
         class="cursor-pointer hover:text-primary transition-all duration-300 select-none transform hover:scale-105"
-        title="何かが起こるかも...?"
+        title={t.footer.copyrightHint}
       >
         &copy; {currentYear} {AUTHOR} / {AUTHOR_ENGLISH}
       </p>
-      <div 
-        id="copyright-container" 
+      <div
+        id="copyright-container"
         class="fixed inset-0 pointer-events-none z-[9999] hidden bg-black bg-opacity-80 animate-rainbow-bg"
+        data-messages={JSON.stringify(t.footer.surpriseMessages)}
       >
         <div class="absolute inset-0 flex items-center justify-center">
-          <div 
-            id="surprise-text" 
+          <div
+            id="surprise-text"
             class="text-2xl md:text-6xl font-bold text-transparent bg-gradient-to-r from-cyan-200 via-purple-200 to-pink-200 bg-clip-text transition-all duration-300 ease-out"
           >
-            🎉 サプライズ！ 🎉
+            {t.footer.surpriseMessages[0]}
           </div>
         </div>
 
@@ -131,14 +143,8 @@ const currentPath = Astro.url.pathname;
     if (!copyrightEl || !easterEggContainer || !surpriseText || !fireworksContainer) return;
     
     let isEasterEggActive: boolean = false;
-    
-    const messages: string[] = [
-      '🎉 サプライズ！ 🎉',
-      '🤖 テックの匠 🤖',
-      '⚒️ 未来を創るクリエイター ⚒️',
-      '★ 感性のエンジニア ★',
-      '💻 革新のイノベーター 💻'
-    ];
+
+    const messages: string[] = JSON.parse(easterEggContainer.dataset.messages || '[]');
     
     const sparkColors: string[] = [
       'bg-red-400', 'bg-blue-400', 'bg-green-400', 'bg-yellow-400', 
@@ -254,7 +260,7 @@ const currentPath = Astro.url.pathname;
         if (fireworksContainer) fireworksContainer.innerHTML = '';
 
         // 初期状態に戻す
-        surpriseText.textContent = '🎉 サプライズ！ 🎉';
+        surpriseText.textContent = messages[0] ?? '';
         surpriseText.className = 'text-2xl md:text-6xl font-bold text-transparent bg-gradient-to-r from-cyan-200 via-purple-200 to-pink-200 bg-clip-text transition-all duration-300 ease-out';
         surpriseText.style.opacity = '1';
         surpriseText.style.transform = 'translateY(0)';

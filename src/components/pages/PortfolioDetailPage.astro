@@ -1,0 +1,83 @@
+---
+import { fetchNotionPage } from '@/utils/notion';
+import { markdownToHtml, splitContentByLanguage } from '@/utils/markdown';
+import { siteUrl, resolveAbsoluteUrl } from '@/utils/url';
+import PortfolioDetail from '@/components/PortfolioDetail.astro';
+import { localizePath, localizeRecord, useTranslations, type Locale } from '@/i18n';
+import type { NotionRecord } from '@/types';
+
+interface Props {
+  locale: Locale;
+  kind: 'works' | 'activities';
+  page: NotionRecord;
+}
+
+const { locale, kind, page } = Astro.props;
+const t = useTranslations(locale);
+const td = t.detail[kind];
+
+const record = localizeRecord(page, locale);
+const title = record.title ?? '';
+const summary = record.summary ?? '';
+const category = record.category ?? '';
+const tags = record.tags ?? [];
+const link = record.link ?? '';
+const event = record.event ?? '';
+const publish = record.publish ?? '';
+const updated = record.updated ?? '';
+
+const pageData = page.id ? await fetchNotionPage(page.id) : null;
+const parts = pageData ? splitContentByLanguage(pageData.content) : { ja: null, en: null };
+const content = locale === 'ja' ? parts.ja : parts.en ?? parts.ja;
+const ogImage = pageData?.ogImage;
+const htmlContent = content ? await markdownToHtml(content) : null;
+
+const canonicalUrl = `${siteUrl}${Astro.url.pathname}`;
+const ogImageUrl = ogImage ? resolveAbsoluteUrl(ogImage) : undefined;
+const basePath = localizePath(kind === 'works' ? '/works' : '/activities', locale);
+
+const titleLang = locale !== 'ja' && !page.title_en ? ('ja' as const) : undefined;
+const contentLang = locale !== 'ja' && !parts.en ? ('ja' as const) : undefined;
+
+const dateModified = kind === 'works'
+  ? (updated || publish || undefined)
+  : (updated && publish &&
+      new Date(updated).toDateString() !== new Date(publish).toDateString() &&
+      new Date(updated) > new Date(publish)
+        ? updated
+        : undefined);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': kind === 'works' ? 'CreativeWork' : 'Article',
+  headline: title,
+  description: summary || `${title}${td.fallbackDescriptionSuffix}`,
+  inLanguage: locale,
+  author: { '@type': 'Person', name: t.author },
+  url: canonicalUrl,
+  datePublished: publish || undefined,
+  ...(dateModified && { dateModified }),
+  ...(ogImageUrl && { image: { '@type': 'ImageObject', url: ogImageUrl } }),
+};
+---
+
+<PortfolioDetail
+  title={title}
+  summary={summary}
+  category={category}
+  tags={tags}
+  link={link}
+  event={event}
+  publish={publish}
+  updated={updated}
+  htmlContent={htmlContent}
+  ogImage={ogImage}
+  jsonLd={jsonLd}
+  basePath={basePath}
+  sectionLabel={td.section}
+  eventLabel={td.eventLabel}
+  linkButtonText={td.viewButton}
+  backLabel={td.backButton}
+  titleLang={titleLang}
+  contentLang={contentLang}
+/>

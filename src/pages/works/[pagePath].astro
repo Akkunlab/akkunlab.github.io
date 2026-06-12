@@ -1,84 +1,15 @@
 ---
-import { fetchNotionPage, fetchWorks } from '@/utils/notion';
-import { markdownToHtml } from '@/utils/markdown';
-import { siteUrl, resolveAbsoluteUrl } from '@/utils/url';
-import PortfolioDetail from '@/components/PortfolioDetail.astro';
-import { AUTHOR } from '@/constants';
-import type { Tag } from '@/types/Tag';
+import PortfolioDetailPage from '@/components/pages/PortfolioDetailPage.astro';
+import { buildDetailStaticPaths } from '@/utils/notion';
+import type { NotionRecord } from '@/types';
 
-type StaticPath = {
-  params: {
-    pagePath: string
-  },
-  props: {
-    id: string,
-    title: string,
-    summary: string,
-    category: string,
-    tags: Tag[],
-    link: string,
-    event: string,
-    publish: string,
-    updated: string
-  }
-};
+export const getStaticPaths = () => buildDetailStaticPaths('works');
 
-export const getStaticPaths = async (): Promise<StaticPath[]> => {
-  const pages = await fetchWorks();
+interface Props {
+  page: NotionRecord;
+}
 
-  return pages.map((page) => ({
-    params: { pagePath: page.slug as string },
-    props: {
-      id: page.id as string,
-      title: page.title as string,
-      summary: (page.summary as string) || '',
-      category: page.category as string,
-      tags: page.tags as Tag[],
-      link: page.link as string,
-      event: page.event as string,
-      publish: page.publish as string,
-      updated: page.updated as string
-    }
-  }));
-};
-
-const { id: pageId, title, summary, category, tags, link, event, publish, updated } = Astro.props;
-const pageData = pageId ? await fetchNotionPage(pageId) : null;
-const content = pageData ? pageData.content : null;
-const ogImage = pageData?.ogImage;
-const htmlContent = content ? await markdownToHtml(content) : null;
-
-const canonicalUrl = `${siteUrl}${Astro.url.pathname}`;
-const ogImageUrl = ogImage ? resolveAbsoluteUrl(ogImage) : undefined;
-
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'CreativeWork',
-  headline: title,
-  description: summary || `${title} - ${AUTHOR}のポートフォリオ`,
-  author: { '@type': 'Person', name: AUTHOR },
-  url: canonicalUrl,
-  datePublished: publish || undefined,
-  dateModified: updated || publish || undefined,
-  ...(ogImageUrl && { image: { '@type': 'ImageObject', url: ogImageUrl } }),
-};
+const { page } = Astro.props;
 ---
 
-<PortfolioDetail
-  title={title}
-  summary={summary}
-  category={category}
-  tags={tags}
-  link={link}
-  event={event}
-  publish={publish}
-  updated={updated}
-  htmlContent={htmlContent}
-  ogImage={ogImage}
-  jsonLd={jsonLd}
-  basePath="/works"
-  sectionLabel="作品"
-  eventLabel="制作日"
-  linkButtonText="作品を見る！"
-  backLabel="作品一覧に戻る！"
-/>
+<PortfolioDetailPage locale="ja" kind="works" page={page} />

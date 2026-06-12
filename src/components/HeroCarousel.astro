@@ -1,18 +1,22 @@
 ---
 import { Image } from 'astro:assets';
 import { IMAGE_FORMAT, IMAGE_QUALITY } from '@/constants';
+import { getLangFromUrl, useTranslations } from '@/i18n';
 
 import heroImage_1 from '@/assets/images/hero-image_1.jpg';
 import heroImage_2 from '@/assets/images/hero-image_2.jpg';
 
+const locale = getLangFromUrl(Astro.url);
+const t = useTranslations(locale);
+
 const heroImages = [
   {
     src: heroImage_1,
-    alt: 'メインビジュアル 1',
+    alt: `${t.hero.visualAlt} 1`,
   },
   {
     src: heroImage_2,
-    alt: 'メインビジュアル 2',
+    alt: `${t.hero.visualAlt} 2`,
   }
 ];
 const carouselDuration = 14; // seconds
@@ -20,7 +24,7 @@ const carouselDuration = 14; // seconds
 
 <div class="relative inset-0">
   {[0, 1, 0].map((imageIndex, sequenceIndex) => (
-    <Image 
+    <Image
       src={heroImages[imageIndex].src}
       alt={heroImages[imageIndex].alt}
       class="absolute animate-carousel h-screen w-full object-cover opacity-0"

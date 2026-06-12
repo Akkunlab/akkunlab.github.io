@@ -60,7 +60,7 @@ const { items } = Astro.props;
           <div class="absolute bottom-2 left-2 w-1.5 h-1.5 bg-blue-400 rounded-full animate-[dataFlow_2s_ease-in-out_infinite] [animation-delay:0.5s]"></div>
           
           {/* コンテンツ */}
-          <div class="relative z-10">
+          <div class="relative z-10" lang={item.textLang}>
             <time class="inline-block text-sm text-cyan-300 font-mono bg-cyan-400/15 px-3 py-1.5 rounded-full border border-cyan-400/30 shadow-[0_0_5px_rgba(34,211,238,0.3)] [&_a]:no-underline [&_a]:text-inherit [&_a]:pointer-events-none">
               <span aria-hidden="true">
                 {item.start ? item.start.split('-').slice(0, 2).join('/') : ''}

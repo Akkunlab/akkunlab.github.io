@@ -1,0 +1,20 @@
+---
+import { Icon } from 'astro-icon/components';
+import { getIconName } from '@/utils/icon';
+import { getLanguageSwitch } from '@/i18n';
+
+// ブラウザ言語による自動リダイレクトは SEO 上のアンチパターンのため、明示的な切り替えのみ提供する
+const { target, href, label, aria } = getLanguageSwitch(Astro.url);
+---
+
+<a
+  href={href}
+  lang={target}
+  hreflang={target}
+  aria-label={aria}
+  class="btn btn-ghost btn-sm md:btn-md px-2 md:px-3 text-sm md:text-base font-normal text-primary-content hover:bg-header-hover inline-flex items-center gap-1 whitespace-nowrap"
+>
+  <Icon name={getIconName('material-symbols-light', 'language')} class="w-5 h-5" />
+  {/* sm 未満では中央寄せのロゴと重なるため、ラベルを隠してアイコンのみにする */}
+  <span class="hidden sm:inline">{label}</span>
+</a>

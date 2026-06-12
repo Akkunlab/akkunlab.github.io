@@ -11,6 +11,13 @@ import playformCompress from "@playform/compress";
 // https://astro.build/config
 export default defineConfig({
   site: SITE_URL,
+  i18n: {
+    defaultLocale: 'ja',
+    locales: ['ja', 'en'],
+    routing: {
+      prefixDefaultLocale: false,
+    },
+  },
   integrations: [
     tailwind(),
     icon({

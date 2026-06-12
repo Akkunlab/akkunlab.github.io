@@ -57,7 +57,7 @@ const records = items.filter(item => item.name);
           <div class="relative z-10 p-4 sm:p-5 flex items-center justify-between gap-3">
 
             {/* keep-all: 資格名が単語の途中で折り返されるのを防ぐ */}
-            <span class="text-primary-content [word-break:keep-all] group-hover:[text-shadow:0_0_8px_rgba(255,255,255,0.5)] transition-all duration-300">
+            <span class="text-primary-content [word-break:keep-all] group-hover:[text-shadow:0_0_8px_rgba(255,255,255,0.5)] transition-all duration-300" lang={item.textLang}>
               {item.name}
             </span>
 

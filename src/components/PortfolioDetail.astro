@@ -6,6 +6,7 @@ import Layout from '@/layouts/Layout.astro';
 import Breadcrumb from '@/components/Breadcrumb.astro';
 import Button from '@/components/Button.astro';
 import { MARKDOWN_STYLES } from '@/constants';
+import { getLangFromUrl, localizeContentLabel, localizePath, useTranslations } from '@/i18n';
 import { Icon } from 'astro-icon/components';
 import type { Tag } from '@/types/Tag';
 
@@ -26,16 +27,22 @@ interface Props {
   eventLabel: string;     // イベント日のラベル（例: 制作日）
   linkButtonText: string; // 外部リンクボタンの文言（例: 作品を見る！）
   backLabel: string;      // 一覧に戻るボタンの文言（例: 作品一覧に戻る！）
+  titleLang?: 'ja';       // タイトルが日本語フォールバックの場合のみ 'ja'
+  contentLang?: 'ja';     // 本文が日本語フォールバックの場合のみ 'ja'
 }
 
 const {
   title, summary, category, tags, link, event, publish, updated,
   htmlContent, ogImage, jsonLd,
   basePath, sectionLabel, eventLabel, linkButtonText, backLabel,
+  titleLang, contentLang,
 } = Astro.props;
 
+const locale = getLangFromUrl(Astro.url);
+const t = useTranslations(locale);
+
 const breadcrumbItems = [
-  { label: 'ホーム', href: '/', isHome: true },
+  { label: t.detail.home, href: localizePath('/', locale), isHome: true },
   { label: sectionLabel, href: basePath },
   { label: title }
 ];
@@ -56,7 +63,7 @@ const shouldShowUpdatedDate = updated && publish &&
 
       <!-- タイトル -->
       <div>
-        <h1 class="text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary pb-2">
+        <h1 class="text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary pb-2" lang={titleLang}>
           {title}
         </h1>
 
@@ -70,12 +77,12 @@ const shouldShowUpdatedDate = updated && publish &&
             </time>
             <time class="inline-flex items-center gap-1" datetime={publish}>
               <Icon name="material-symbols-light:public" class="w-5 h-5" />
-              公開日: {formatDateShort(publish)}
+              {t.detail.published}: {formatDateShort(publish)}
             </time>
             {shouldShowUpdatedDate && (
               <time class="inline-flex items-center gap-1" datetime={updated}>
                 <Icon name="material-symbols-light:update" class="w-5 h-5" />
-                更新日: {formatDateShort(updated)}
+                {t.detail.updated}: {formatDateShort(updated)}
               </time>
             )}
           </div>
@@ -83,6 +90,7 @@ const shouldShowUpdatedDate = updated && publish &&
           <!-- カテゴリ・タグ -->
           {(category || (tags && tags.length > 0)) && (
             <div class="flex flex-wrap gap-2">
+              {/* ?tag= の値は言語間で共通にするため、元の値から ID を生成し表示名のみ変換する */}
               {[category, ...(tags ?? []).map(tag => tag.name)]
                 .filter(Boolean)
                 .map((name) => (
@@ -90,7 +98,7 @@ const shouldShowUpdatedDate = updated && publish &&
                     class="text-primary bg-primary-content hover:bg-primary hover:text-primary-content px-3 py-1 border border-button-border rounded-full shadow-md transition-colors duration-200 cursor-pointer select-none"
                     href={`${basePath}?tag=${normalizeTagName(name)}`}
                   >
-                    {name}
+                    {localizeContentLabel(name, locale)}
                   </a>
                 ))}
             </div>
@@ -104,9 +112,16 @@ const shouldShowUpdatedDate = updated && publish &&
 
     <!-- コンテンツセクション -->
     <div class="max-w-4xl mx-auto my-16">
+      {contentLang && t.detail.jaOnlyNote && htmlContent && (
+        <div class="mb-4 px-4 md:px-0">
+          <p class="text-sm text-light-text border border-button-border rounded-lg px-4 py-3 bg-primary-content shadow-md">
+            🌐 {t.detail.jaOnlyNote}
+          </p>
+        </div>
+      )}
       {htmlContent && (
         <div class="px-4 py-8 md:p-8 bg-primary-content border border-button-border rounded-0 md:rounded-lg shadow-lg">
-          <div class={`prose prose-slate max-w-none ${MARKDOWN_STYLES}`} set:html={htmlContent} />
+          <div class={`prose prose-slate max-w-none ${MARKDOWN_STYLES}`} lang={contentLang} set:html={htmlContent} />
           {link && (
             <div class="mt-8 flex justify-center">
               <Button text={linkButtonText} href={link} target="_blank" rel="noopener noreferrer" />

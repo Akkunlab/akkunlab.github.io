@@ -1,6 +1,8 @@
 import type { APIRoute } from 'astro';
 import { fetchNotionPage, fetchNotionPageList } from '@/utils/notion';
+import { splitContentByLanguage } from '@/utils/markdown';
 import { SITE_URL } from '@/constants';
+import { DEFAULT_LOCALE, LOCALES, localizePath, localizeRecord } from '@/i18n';
 
 const IMAGE_URL_REGEX = /!\[[^\]]*]\(([^)]+)\)/g;
 
@@ -46,25 +48,32 @@ export const GET: APIRoute = async () => {
     const pageData = await fetchNotionPage(page.id);
     if (!pageData?.content) continue;
 
-    const imageUrls = extractImageUrls(pageData.content);
-    if (imageUrls.length === 0) continue;
+    const parts = splitContentByLanguage(pageData.content);
 
-    const pageUrl = escapeXml(`${siteUrl}${page.basePath}/${page.slug}/`);
-    const imageTags = imageUrls
-      .map((url) => {
-        const absoluteUrl = escapeXml(resolveUrl(url, siteUrl));
-        const title = escapeXml(page.title || '');
-        return `      <image:image>
+    for (const locale of LOCALES) {
+      const content = locale === DEFAULT_LOCALE ? parts.ja : parts.en ?? parts.ja;
+      const imageUrls = extractImageUrls(content);
+      if (imageUrls.length === 0) continue;
+
+      const localized = localizeRecord(page, locale);
+      const pagePath = localizePath(`${page.basePath}/${page.slug}/`, locale);
+      const pageUrl = escapeXml(`${siteUrl}${pagePath}`);
+      const imageTags = imageUrls
+        .map((url) => {
+          const absoluteUrl = escapeXml(resolveUrl(url, siteUrl));
+          const title = escapeXml(localized.title || '');
+          return `      <image:image>
         <image:loc>${absoluteUrl}</image:loc>
         ${title ? `<image:title>${title}</image:title>` : ''}
       </image:image>`;
-      })
-      .join('\n');
+        })
+        .join('\n');
 
-    entries.push(`  <url>
+      entries.push(`  <url>
     <loc>${pageUrl}</loc>
 ${imageTags}
   </url>`);
+    }
   }
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>

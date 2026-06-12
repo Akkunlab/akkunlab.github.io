@@ -57,6 +57,9 @@ const TTL = {
 const IMAGE_CAPTURE_REGEX = /!\[[^\]]*]\(([^)]+)\)/g;
 const escapeRegex = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+// 自前 CDN（R2）の公開ベース URL。ここ配信の画像は既にキャッシュ済みなので再処理しない
+const R2_PUBLIC_BASE = ((import.meta.env.CF_R2_PUBLIC_BASE_URL as string | undefined) ?? '').replace(/\/+$/, '');
+
 /**
  * 空段落を &nbsp; に変換するトランスフォーマを設定
  */
@@ -158,6 +161,11 @@ const processMarkdownImages = async (
     if (!originalUrl || replacements.has(originalUrl)) continue;
 
     if (!isHttpUrl(originalUrl)) {
+      if (ogImage === OGP_IMAGE) ogImage = originalUrl;
+      continue;
+    }
+
+    if (R2_PUBLIC_BASE && originalUrl.startsWith(`${R2_PUBLIC_BASE}/`)) {
       if (ogImage === OGP_IMAGE) ogImage = originalUrl;
       continue;
     }
@@ -357,7 +365,6 @@ const pageToNotionRecord = (
 
     // Certifications
     date: getDate(properties.date),
-    mark: getCheckbox(properties.mark),
 
     // EducationCareer
     start: getDate(properties.start),
@@ -366,6 +373,12 @@ const pageToNotionRecord = (
 
     // SocialLinks
     color: getRichText(properties.color),
+
+    // 多言語対応（Notion 側の任意プロパティ。未定義なら空文字になり cleaned で除去される）
+    title_en: getRichText(properties.title_en),
+    summary_en: getRichText(properties.summary_en),
+    name_en: getRichText(properties.name_en),
+    dept_prog_en: getRichText(properties.dept_prog_en),
   };
 
   // 空の値を除去
@@ -774,3 +787,15 @@ export const fetchActivities = (): Promise<NotionRecord[]> =>
     types: ['活動'],
     sorts: [{ property: 'event', direction: 'descending' }],
   });
+
+// 詳細ページの getStaticPaths 共通化
+export const buildDetailStaticPaths = async (
+  kind: 'works' | 'activities',
+): Promise<Array<{ params: { pagePath: string }; props: { page: NotionRecord } }>> => {
+  const pages = await (kind === 'works' ? fetchWorks() : fetchActivities());
+
+  return pages.map(page => ({
+    params: { pagePath: page.slug as string },
+    props: { page },
+  }));
+};

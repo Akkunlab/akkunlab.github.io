@@ -3,14 +3,34 @@ import { Image } from 'astro:assets';
 import Layout from '@/layouts/Layout.astro';
 import Button from '@/components/Button.astro';
 import notFoundImage from '@/assets/images/404.png';
+import { LOCALE_LABELS, SWITCH_LABELS, getNavItems, useTranslations } from '@/i18n';
 
 import { IMAGE_FORMAT, IMAGE_QUALITY } from '@/constants';
+
+// 静的ホスティングでは 404 ページは 1 つしか持てないため、日本語で出力し、
+// /en/ 配下へのアクセス時はクライアント側で英語文言に差し替える
+const t = useTranslations('ja');
+const en = useTranslations('en');
+const enStrings = {
+  title: `404 | ${en.site.title}`,
+  heading: en.notFound.heading,
+  body: en.notFound.body,
+  back: en.notFound.back,
+  imageAlt: en.notFound.imageAlt,
+  // 日本語の href からの置換マップ（ヘッダー・フッター・ボトムナビ共通）
+  nav: getNavItems('ja').map((jaItem, i) => {
+    const enItem = getNavItems('en')[i];
+    return { from: jaItem.href, label: enItem.label, href: enItem.href };
+  }),
+  switchLabel: LOCALE_LABELS.ja,
+  switchAria: SWITCH_LABELS.ja,
+};
 ---
 
-<Layout title="404">
+<Layout title="404" noAlternate={true}>
   <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 relative overflow-hidden">
     <div class="text-center">
-      
+
       <!-- タイトル -->
       <div class="mb-8 opacity-0 translate-y-8 animate-fadeInUp">
         <h1 class="text-5xl mb-8 font-bold text-dark-text">
@@ -24,20 +44,21 @@ import { IMAGE_FORMAT, IMAGE_QUALITY } from '@/constants';
 
         <!-- 説明文 -->
         <div class="text-center md:text-left opacity-0 translate-y-8 animate-fadeInUp">
-          <h2 class="text-xl md:text-3xl mb-6 font-bold text-dark-text">
-            リンクが家出しました
+          <h2 id="nf-heading" class="text-xl md:text-3xl mb-6 font-bold text-dark-text">
+            {t.notFound.heading}
           </h2>
-          <p class="text-base md:text-xl text-dark-text leading-relaxed">
-            置き手紙すら残さず旅に出たようです...<br>
-            行き先のヒントはホームに貼ってあります。
+          <p id="nf-body" class="text-base md:text-xl text-dark-text leading-relaxed">
+            {t.notFound.body[0]}<br>
+            {t.notFound.body[1]}
           </p>
         </div>
 
         <!-- 画像 -->
         <div class="flex-shrink-0 opacity-0 translate-y-8 animate-fadeInUp">
-          <Image 
-            src={notFoundImage} 
-            alt="家出したキャラクター" 
+          <Image
+            id="nf-image"
+            src={notFoundImage}
+            alt={t.notFound.imageAlt}
             class="w-48 h-48 md:w-64 md:h-64 object-contain"
             loading="eager"
             widths={[192, 256]}
@@ -49,8 +70,67 @@ import { IMAGE_FORMAT, IMAGE_QUALITY } from '@/constants';
         </div>
       </div>
 
-    <div class="flex justify-center">
-      <Button text="ホームに戻る" href="/" type="arrow-back" />
+    <div id="nf-back" class="flex justify-center">
+      <Button text={t.notFound.back} href="/" type="arrow-back" />
     </div>
   </div>
 </Layout>
+
+<script is:inline define:vars={{ enStrings }}>
+  if (location.pathname === '/en' || location.pathname.startsWith('/en/')) {
+    // アイコン等を含むリンク内の表示テキストだけを差し替える
+    const replaceLabel = (el, text) => {
+      for (const node of el.childNodes) {
+        if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim()) {
+          node.nodeValue = text;
+          return;
+        }
+      }
+      const span = el.querySelector('span');
+      if (span) span.textContent = text;
+    };
+
+    document.documentElement.lang = 'en';
+    document.title = enStrings.title;
+
+    const heading = document.getElementById('nf-heading');
+    const body = document.getElementById('nf-body');
+    const image = document.getElementById('nf-image');
+    const back = document.querySelector('#nf-back a');
+
+    if (heading) heading.textContent = enStrings.heading;
+    if (body) {
+      body.textContent = '';
+      enStrings.body.forEach((line, index) => {
+        if (index > 0) body.appendChild(document.createElement('br'));
+        body.appendChild(document.createTextNode(line));
+      });
+    }
+    if (image) image.setAttribute('alt', enStrings.imageAlt);
+    if (back) {
+      back.setAttribute('href', '/en/');
+      replaceLabel(back, enStrings.back);
+    }
+
+    document.querySelectorAll('a[data-scroll]').forEach((a) => {
+      const item = enStrings.nav.find((n) => n.from === a.getAttribute('href'));
+      if (!item) return;
+      a.setAttribute('href', item.href);
+      const navLabel = a.querySelector('.btm-nav-label');
+      if (navLabel) {
+        navLabel.textContent = item.label;
+      } else {
+        replaceLabel(a, item.label);
+      }
+    });
+
+    // ビルド時に日本語ページとして焼き込まれた言語スイッチャーを「日本語へ戻る」リンクに反転する
+    document.querySelectorAll('a[hreflang]').forEach((a) => {
+      a.setAttribute('href', location.pathname.replace(/^\/en(\/|$)/, '/'));
+      a.setAttribute('hreflang', 'ja');
+      a.setAttribute('lang', 'ja');
+      a.setAttribute('aria-label', enStrings.switchAria);
+      replaceLabel(a, enStrings.switchLabel);
+    });
+  }
+</script>

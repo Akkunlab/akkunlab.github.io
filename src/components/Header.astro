@@ -1,21 +1,29 @@
 ---
-import { AUTHOR_ENGLISH, NAV_ITEMS } from '@/constants';
+import { AUTHOR_ENGLISH } from '@/constants';
+import { getLangFromUrl, getNavItems, localizePath } from '@/i18n';
 import { scrollAttr } from '@/utils/nav';
+import LanguageSwitcher from '@/components/LanguageSwitcher.astro';
 
 const currentPath = Astro.url.pathname;
+const locale = getLangFromUrl(Astro.url);
+const navItems = getNavItems(locale);
 ---
 
 <header id="header" class="fixed top-0 left-0 right-0 h-16 flex justify-center md:justify-between items-center px-6 z-50 backdrop-blur-lg bg-header-bg border-b border-header-border shadow-xl transition-transform duration-300">
-  <a class="btn btn-ghost text-xl text-primary-content" href="/">{AUTHOR_ENGLISH.toUpperCase()}</a>
-  <nav class="hidden md:flex gap-4">
-    {NAV_ITEMS.map(item => (
-      <a 
-        class="btn btn-ghost text-xl hover:bg-header-hover text-primary-content" 
-        href={item.href}
-        data-scroll={scrollAttr(currentPath, item.href)}
-      >
-        {item.label}
-      </a>
-    ))}
-  </nav>
+  <a class="btn btn-ghost text-xl text-primary-content" href={localizePath('/', locale)}>{AUTHOR_ENGLISH.toUpperCase()}</a>
+
+  <div class="absolute inset-y-0 right-2 flex items-center md:static md:inset-auto md:right-auto gap-1 md:gap-2">
+    <nav class="hidden md:flex gap-4">
+      {navItems.map(item => (
+        <a
+          class="btn btn-ghost text-xl hover:bg-header-hover text-primary-content"
+          href={item.href}
+          data-scroll={scrollAttr(currentPath, item.href)}
+        >
+          {item.label}
+        </a>
+      ))}
+    </nav>
+    <LanguageSwitcher />
+  </div>
 </header>

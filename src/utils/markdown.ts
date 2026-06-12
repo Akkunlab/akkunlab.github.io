@@ -103,6 +103,24 @@ const enhanceImages = () => async (tree: Root): Promise<void> => {
   await Promise.all(pendingTasks);
 };
 
+// 「区切り線 + 見出し English」を英語セクションの開始マーカーとする
+const EN_SECTION_MARKER = /\n[ \t]*(?:---|\*\*\*|___)[ \t]*\n(?:[ \t]*(?:&nbsp;)?[ \t]*\n)*[ \t]*#{1,6}[ \t]+English[ \t]*\n/i;
+
+/**
+ * Notion ページ本文を日本語パートと英語パートに分割
+ * @param content Markdown形式の本文
+ * @returns ja: 日本語本文 / en: 英語本文（マーカーがなければ null）
+ */
+export const splitContentByLanguage = (content: string): { ja: string; en: string | null } => {
+  const match = content.match(EN_SECTION_MARKER);
+  if (!match || match.index === undefined) return { ja: content, en: null };
+
+  return {
+    ja: content.slice(0, match.index).trimEnd(),
+    en: content.slice(match.index + match[0].length).trim() || null,
+  };
+};
+
 /**
  * Markdown形式の文字列をHTMLに変換
  * @param markdownContent Markdown形式の文字列

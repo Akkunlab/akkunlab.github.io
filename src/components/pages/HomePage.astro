@@ -1,0 +1,240 @@
+---
+import { Icon } from 'astro-icon/components';
+import { getIconName } from '@/utils/icon'
+import { fetchNotionPageList, fetchWorks, fetchActivities } from '@/utils/notion';
+import { localizePath, localizeRecords, useTranslations, type Locale } from '@/i18n';
+
+import Layout from '@/layouts/Layout.astro';
+import { escapeAndNl2p } from '@/utils/escape';
+import HeroCarousel from '@/components/HeroCarousel.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import SectionBackground from '@/components/SectionBackground.astro';
+import PortfolioCard from '@/components/PortfolioCard.astro';
+import Button from '@/components/Button.astro';
+import AnimatedImage from '@/components/AnimatedImage.astro';
+import CyberInfoGraphics from '@/components/CyberInfographics.astro';
+import CyberHeading from '@/components/CyberHeading.astro';
+import CyberTimeline from '@/components/CyberTimeline.astro';
+import CyberList from '@/components/CyberList.astro';
+import CyberMediaList from '@/components/CyberMediaList.astro';
+import CyberSkills from '@/components/CyberSkills.astro';
+
+import heroImage_1 from '@/assets/images/hero-image_1.jpg';
+import activityImage from '@/assets/images/activity-image.jpg';
+import linkImage from '@/assets/images/link-image.jpg';
+import profile from '@/assets/images/profile.jpg';
+
+import { PREVIEW_ITEMS_COUNT } from '@/constants';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const PORTFOLIO_DATABASE_ID = import.meta.env.PORTFOLIO_DATABASE_ID;
+const EDUCATION_CAREER_DATABASE_ID = import.meta.env.EDUCATION_CAREER_DATABASE_ID;
+const CERTIFICATIONS_DATABASE_ID = import.meta.env.CERTIFICATIONS_DATABASE_ID;
+const SKILLS_INTERESTS_DATABASE_ID = import.meta.env.SKILLS_INTERESTS_DATABASE_ID;
+const SOCIAL_LINKS_DATABASE_ID = import.meta.env.SOCIAL_LINKS_DATABASE_ID;
+
+const works = localizeRecords(await fetchWorks(), locale);
+const activities = localizeRecords(await fetchActivities(), locale);
+const careers = localizeRecords(await fetchNotionPageList(EDUCATION_CAREER_DATABASE_ID, {
+  types: ['career'],
+  sorts: [{ property: 'start', direction: 'descending' }]
+}), locale);
+const educations = localizeRecords(await fetchNotionPageList(EDUCATION_CAREER_DATABASE_ID, {
+  types: ['education'],
+  sorts: [{ property: 'start', direction: 'descending' }]
+}), locale);
+const certifications = localizeRecords(await fetchNotionPageList(CERTIFICATIONS_DATABASE_ID, {
+  sorts: [{ property: 'date', direction: 'descending' }]
+}), locale);
+const mediaCoverage = localizeRecords(await fetchNotionPageList(PORTFOLIO_DATABASE_ID, {
+  types: ['掲載'],
+  sorts: [{ property: 'event', direction: 'descending' }]
+}), locale);
+const skillInterests = localizeRecords(await fetchNotionPageList(SKILLS_INTERESTS_DATABASE_ID, {
+  sorts: [
+    { property: 'category', direction: 'ascending' },
+    { property: 'subcategory', direction: 'ascending' },
+    { property: 'name', direction: 'ascending' },
+  ],
+}), locale);
+const socialLinks = localizeRecords(await fetchNotionPageList(SOCIAL_LINKS_DATABASE_ID, {
+  sorts: [{ timestamp: 'created_time', direction: 'descending' }]
+}), locale);
+
+const worksPath = localizePath('/works', locale);
+const activitiesPath = localizePath('/activities', locale);
+
+const sectionClass = 'py-40 px-4 md:px-16';
+const skillsCount = (skillInterests ?? []).filter(r => (r.name?.trim())).length;
+const heroLinePadding = locale === 'ja' ? 'pb-1 sm:pb-3' : 'pb-[0.3em]';
+const heroTitleSize = locale === 'ja' ? 'text-4xl' : 'text-3xl';
+---
+
+<Layout showSplash={true}>
+
+  <!-- ヒーローセクション -->
+  <section class="relative h-screen">
+    <HeroCarousel />
+    <div class="absolute inset-0 flex items-end pl-[3%] pb-[200px] md:pb-8">
+      <h2 class={`${heroTitleSize} sm:text-6xl lg:text-8xl font-bold text-primary-content hero-text`}>
+        {t.hero.titleLines.map((line, index) => (
+          <span class={`block bg-base-300 pt-0 ${heroLinePadding} px-2 sm:px-5 m-3 w-fit invisible`} style={`animation-delay: ${0.5 + index * 0.7}s;`} data-index={index}>
+            {line}
+          </span>
+        ))}
+      </h2>
+    </div>
+  </section>
+
+  <!-- コンテンツラッパー -->
+  <div class="relative bg-main-bg z-10">
+
+    <!-- インフォグラフィックスセクション -->
+    <section id="infographics" class={sectionClass.replace('md:px-16', 'max-w-[1300px] mx-auto')}>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 xl:gap-12">
+        <CyberInfoGraphics title={t.home.stats.works} icon="work" count={works.length} color="cyan" href="#works" />
+        <CyberInfoGraphics title={t.home.stats.activities} icon="event-available-rounded" count={activities.length} color="purple" href="#activities" />
+        <CyberInfoGraphics title={t.home.stats.skills} icon="workspace-premium" count={skillsCount} color="orange" href="#skills" />
+      </div>
+    </section>
+
+    <!-- 作品セクション -->
+    <section id="works" class=`${sectionClass} relative`>
+
+      <SectionBackground src={heroImage_1} alt={t.home.alts.worksBg} />
+
+      <!-- ヘッダー -->
+      <SectionHeading title={t.home.sections.works} />
+
+      <!-- 作品コンテンツ -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20 mb-12">
+        {works.slice(0, PREVIEW_ITEMS_COUNT).map((work) => (
+          <PortfolioCard page={work} basePath={worksPath} />
+        ))}
+      </div>
+      <div class="flex justify-center">
+        <Button text={t.home.seeMore} href={worksPath} type="arrow-forward" />
+      </div>
+    </section>
+
+    <!-- 活動セクション -->
+    <section id="activities" class=`${sectionClass} relative`>
+
+      <SectionBackground src={activityImage} alt={t.home.alts.activitiesBg} />
+
+      <!-- ヘッダー -->
+      <SectionHeading title={t.home.sections.activities} />
+
+      <!-- 活動コンテンツ -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20 mb-12">
+        {activities.slice(0, PREVIEW_ITEMS_COUNT).map((activity) => (
+          <PortfolioCard page={activity} basePath={activitiesPath} />
+        ))}
+      </div>
+      <div class="flex justify-center">
+        <Button text={t.home.seeMore} href={activitiesPath} type="arrow-forward" />
+      </div>
+    </section>
+
+    <!-- プロフィールセクション -->
+    <section id="profile" class={sectionClass.replace('md:px-16', 'max-w-[1300px] mx-auto')}>
+      <SectionHeading title={t.home.sections.profile} />
+      <div class="flex flex-col lg:flex-row mt-20">
+
+        <!-- プロフィール写真 -->
+        <div class="avatar flex justify-center lg:w-1/3 work-item">
+          <AnimatedImage
+            src={profile}
+            alt={t.home.alts.profilePhoto}
+            noScale={true}
+            widths={[256, 384, 512]}
+            loading="eager"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 60vw, 423px"
+          />
+        </div>
+
+        <!-- プロフィール情報 -->
+        <div class="lg:w-2/3 lg:pl-12 mt-8 lg:mt-0">
+
+          <!-- 名前 -->
+          <h3 class="text-3xl sm:text-4xl font-bold mb-8 slide-in-right opacity-0 translate-x-8">
+            {t.home.profileName.main}
+            <span class="hidden xl:inline">/</span>
+            <span class="hidden xl:inline">{t.home.profileName.sub}</span>
+            <span class="block xl:hidden text-xl font-normal mt-2">{t.home.profileName.sub}</span>
+          </h3>
+
+          <!-- 概要 -->
+          <div class="slide-in-right opacity-0 translate-x-8" set:html={escapeAndNl2p(t.home.summary)}></div>
+        </div>
+      </div>
+
+      <div class="flex flex-col">
+
+        <!-- 学歴・職歴 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div>
+            <CyberHeading text={t.home.headings.career} color="blue" />
+            <CyberTimeline items={careers} />
+          </div>
+          <div>
+            <CyberHeading text={t.home.headings.education} color="blue" />
+            <CyberTimeline items={educations} />
+          </div>
+        </div>
+
+        <!-- 資格 -->
+        <CyberHeading text={t.home.headings.certifications} color="green" />
+        <CyberList items={certifications} />
+
+        <!-- メディア -->
+        <CyberHeading text={t.home.headings.media} color="red" />
+        <CyberMediaList items={mediaCoverage} />
+
+        <!-- スキル -->
+        <div id="skills">
+          <CyberHeading text={t.home.headings.skills} color="purple"/>
+          <CyberSkills items={skillInterests} />
+        </div>
+      </div>
+    </section>
+
+    <!-- 連絡先セクション -->
+    <section id="links" class=`${sectionClass} relative`>
+
+      <SectionBackground src={linkImage} alt={t.home.alts.linksBg} />
+
+      <!-- ヘッダー -->
+      <SectionHeading title={t.home.sections.links} />
+
+      <!-- 連絡先コンテンツ -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 my-20">
+        {socialLinks.map((item) => (
+          <article class="fade-in-text opacity-0 translate-y-8">
+            <a href={item.link} class="group" target={item.name !== 'Email' ? "_blank" : undefined} rel={item.name !== 'Email' ? "noopener noreferrer" : undefined}>
+              <div class={'text-primary-content py-4 aspect-video relative overflow-hidden rounded-xl transition-transform duration-500 transform group-hover:scale-105 group-hover:rotate-3 group-hover:shadow-2xl flex flex-col items-center justify-center'} style={`background-color: ${item.color}`}>
+                <Icon
+                  name={getIconName('prime', item.icon ?? '')}
+                  size={128}
+                  style={{ transform: item.icon === 'twitter' ? 'scale(0.625)' : 'scale(1)' }}
+                />
+                <p class="text-2xl xl:text-3xl font-bold">{item.name}</p>
+                <div class="absolute inset-0 bg-gradient-to-t from-black opacity-0 group-hover:opacity-30 transition-opacity duration-500"></div>
+              </div>
+              <div class="pt-2 text-center">
+                <p class="fade-in-text opacity-0 translate-y-8" lang={item.textLang}>{item.summary}</p>
+              </div>
+            </a>
+          </article>
+        ))}
+      </div>
+    </section>
+  </div>
+
+</Layout>

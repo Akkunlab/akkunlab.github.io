@@ -3,7 +3,7 @@ import PortfolioDetailPage from '@/components/pages/PortfolioDetailPage.astro';
 import { buildDetailStaticPaths } from '@/utils/notion';
 import type { NotionRecord } from '@/types';
 
-export const getStaticPaths = () => buildDetailStaticPaths('activities');
+export const getStaticPaths = () => buildDetailStaticPaths('works');
 
 interface Props {
   page: NotionRecord;
@@ -12,4 +12,4 @@ interface Props {
 const { page } = Astro.props;
 ---
 
-<PortfolioDetailPage locale="ja" kind="activities" page={page} />
+<PortfolioDetailPage locale="en" kind="works" page={page} />

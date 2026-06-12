@@ -26,7 +26,7 @@ const { skill } = Astro.props;
       class="sm:w-9 sm:h-9 md:transition-all md:duration-500 group-hover:scale-110 group-hover:rotate-3 filter group-hover:drop-shadow-lg group-hover:drop-shadow-cyan-400/50"
     />
   </div>
-  <p class="sm:text-base text-center text-slate-300 group-hover:text-white transition-all duration-300 relative z-20 group-hover:tracking-wide leading-relaxed break-all whitespace-normal">{skill.name}</p>
+  <p class="sm:text-base text-center text-slate-300 group-hover:text-white transition-all duration-300 relative z-20 group-hover:tracking-wide leading-relaxed break-words text-balance whitespace-normal">{skill.name}</p>
   <div class={`absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r ${skill.color} group-hover:w-full transition-all duration-700 ease-out`}></div>
   <div class="absolute top-1 left-1 w-2 h-2 sm:w-3 sm:h-3 border-t-2 border-l-2 border-cyan-400/60 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100"></div>
   <div class="absolute top-1 right-1 w-2 h-2 sm:w-3 sm:h-3 border-t-2 border-r-2 border-cyan-400/60 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100"></div>

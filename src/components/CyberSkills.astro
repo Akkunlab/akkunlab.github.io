@@ -1,6 +1,7 @@
 ---
 import type { NotionRecord, Skill, CategoryGroup } from '@/types';
 import { getInterestColor } from '@/constants';
+import { getLangFromUrl, localizeContentLabel } from '@/i18n';
 import SkillCard from './SkillCard.astro';
 
 interface Props {
@@ -8,6 +9,9 @@ interface Props {
 }
 
 const { items } = Astro.props as Props;
+
+// getInterestColor のキーは Notion の元の値のため、ローカライズは表示時のみ行う
+const locale = getLangFromUrl(Astro.url);
 
 // NotionRecord の配列を カテゴリ → サブカテゴリ へ集約
 const categories: CategoryGroup[] = Array.from(
@@ -54,7 +58,7 @@ const categories: CategoryGroup[] = Array.from(
       {/* カテゴリヘッダー */}
       <div class="flex items-center mb-6">
         <div class={`w-1 h-8 bg-gradient-to-b ${category.color} mr-4 rounded-full`}></div>
-        <h4 class="text-lg sm:text-xl font-bold text-white tracking-wide bg-gradient-to-r from-white via-cyan-400 to-white bg-[length:200%_100%] bg-clip-text text-transparent">{category.name}</h4>
+        <h4 class="text-lg sm:text-xl font-bold text-white tracking-wide bg-gradient-to-r from-white via-cyan-400 to-white bg-[length:200%_100%] bg-clip-text text-transparent">{localizeContentLabel(category.name, locale)}</h4>
         <div class="flex-1 ml-4 h-px bg-gradient-to-r from-slate-600 to-transparent"></div>
       </div>
 
@@ -77,7 +81,7 @@ const categories: CategoryGroup[] = Array.from(
             <div>
               <div class="flex items-center mb-3">
                 <div class={`w-1 h-5 bg-gradient-to-b ${category.color} mr-3 rounded-full`}></div>
-                <h5 class="text-base sm:text-lg font-semibold text-slate-200 tracking-wide">{sub.name}</h5>
+                <h5 class="text-base sm:text-lg font-semibold text-slate-200 tracking-wide">{localizeContentLabel(sub.name, locale)}</h5>
                 <div class="flex-1 ml-3 h-px bg-gradient-to-r from-slate-600 to-transparent"></div>
               </div>
               <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8 gap-3 sm:gap-4">

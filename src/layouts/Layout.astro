@@ -3,14 +3,21 @@ import '@fontsource/noto-sans-jp/500.css';
 import '@fontsource/noto-sans-jp/700.css';
 
 import {
-  SITE_TITLE,
-  SITE_DESCRIPTION,
-  AUTHOR,
   X_ID,
   COLOR,
   OGP_IMAGE
 } from '@/constants';
 import { siteUrl, resolveAbsoluteUrl } from '@/utils/url';
+import {
+  DEFAULT_LOCALE,
+  LOCALES,
+  OG_LOCALES,
+  getLangFromUrl,
+  localizePath,
+  otherLocale,
+  stripLocale,
+  useTranslations,
+} from '@/i18n';
 
 import SplashScreen from '@/components/SplashScreen.astro';
 import Header from '@/components/Header.astro';
@@ -24,13 +31,25 @@ interface Props {
   ogType?: string;
   jsonLd?: Record<string, any>;
   showSplash?: boolean;
+  // 404 など言語別 URL が存在しないページでは hreflang を出力しない
+  noAlternate?: boolean;
 }
 
-const { title, description, ogImage, ogType, jsonLd, showSplash = false } = Astro.props;
+const { title, description, ogImage, ogType, jsonLd, showSplash = false, noAlternate = false } = Astro.props;
 
-const pageTitle = title ? `${title} | ${SITE_TITLE}` : SITE_TITLE;
-const pageDescription = description || SITE_DESCRIPTION;
+const locale = getLangFromUrl(Astro.url);
+const t = useTranslations(locale);
+
+const pageTitle = title ? `${title} | ${t.site.title}` : t.site.title;
+const pageDescription = description || t.site.description;
 const canonicalUrl = new URL(Astro.url.pathname, siteUrl).href;
+
+const basePath = stripLocale(Astro.url.pathname);
+const alternateUrls = LOCALES.map(l => ({
+  locale: l,
+  href: new URL(localizePath(basePath, l), siteUrl).href,
+}));
+const xDefaultUrl = alternateUrls.find(alt => alt.locale === DEFAULT_LOCALE)?.href;
 
 // OGP画像を絶対URLに解決
 const ogImageUrl = resolveAbsoluteUrl(ogImage || OGP_IMAGE);
@@ -48,7 +67,7 @@ const ogImageUrl = resolveAbsoluteUrl(ogImage || OGP_IMAGE);
 ============================================================
 
 -->
-<html lang="ja" class="overflow-x-hidden min-h-screen">
+<html lang={locale} class="overflow-x-hidden min-h-screen">
 
   <head>
     <meta charset="UTF-8">
@@ -64,14 +83,15 @@ const ogImageUrl = resolveAbsoluteUrl(ogImage || OGP_IMAGE);
     <title>{pageTitle}</title>
 
     <meta name="description" content={pageDescription}>
-    <meta name="author" content={AUTHOR}>
+    <meta name="author" content={t.author}>
     <meta name="theme-color" content={COLOR}>
 
-    <meta property="og:locale" content="ja_JP">
+    <meta property="og:locale" content={OG_LOCALES[locale]}>
+    <meta property="og:locale:alternate" content={OG_LOCALES[otherLocale(locale)]}>
     <meta property="og:type" content={ogType || 'website'}>
     <meta property="og:title" content={pageTitle}>
     <meta property="og:description" content={pageDescription}>
-    <meta property="og:site_name" content={SITE_TITLE}>
+    <meta property="og:site_name" content={t.site.title}>
     <meta property="og:url" content={canonicalUrl}>
     <meta property="og:image" content={ogImageUrl}>
 
@@ -81,6 +101,12 @@ const ogImageUrl = resolveAbsoluteUrl(ogImage || OGP_IMAGE);
     <meta name="twitter:site" content={X_ID}>
 
     <link rel="canonical" href={canonicalUrl}>
+    {!noAlternate && alternateUrls.map(alt => (
+      <link rel="alternate" hreflang={alt.locale} href={alt.href}>
+    ))}
+    {!noAlternate && xDefaultUrl && (
+      <link rel="alternate" hreflang="x-default" href={xDefaultUrl}>
+    )}
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
     <link rel="icon" type="image/png" href="/android-touch-icon.png" sizes="192x192">
@@ -97,10 +123,10 @@ const ogImageUrl = resolveAbsoluteUrl(ogImage || OGP_IMAGE);
     </main>
     <Footer />
     <BottomNavigation />
-    
+
     <script>
       import { setupScrollAnimations } from '../utils/scrollAnimation';
-      
+
       window.addEventListener('load', setupScrollAnimations);
     </script>
   </body>

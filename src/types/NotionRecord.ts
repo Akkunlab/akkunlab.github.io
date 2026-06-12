@@ -25,7 +25,6 @@ export interface NotionRecord {
   
   // certifications
   date?: string;
-  mark?: boolean;
 
   // EducationCareer
   start?: string;
@@ -34,4 +33,13 @@ export interface NotionRecord {
 
   // SocialLinks
   color?: string;
+
+  // 多言語対応（Notion 側の任意プロパティ）
+  title_en?: string;
+  summary_en?: string;
+  name_en?: string;
+  dept_prog_en?: string;
+
+  // 英語ページで日本語フォールバックした場合に 'ja'（表示要素の lang 属性用、WCAG 3.1.2）
+  textLang?: 'ja';
 }

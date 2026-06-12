@@ -1,0 +1,70 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { buildTagsFromPages, fetchWorks, fetchActivities } from '@/utils/notion';
+import { generateTagString } from '@/utils/tagUtils';
+import { localizeContentLabel, localizePath, localizeRecords, useTranslations, type Locale } from '@/i18n';
+import SectionHeading from '@/components/SectionHeading.astro';
+import SectionBackground from '@/components/SectionBackground.astro';
+import PortfolioCard from '@/components/PortfolioCard.astro';
+
+import heroImage_1 from '@/assets/images/hero-image_1.jpg';
+import activityImage from '@/assets/images/activity-image.jpg';
+
+interface Props {
+  locale: Locale;
+  kind: 'works' | 'activities';
+}
+
+const { locale, kind } = Astro.props;
+const t = useTranslations(locale);
+const tl = t.list[kind];
+
+// タグ ID と data-tags は ?tag= クエリを言語間で共通にするため、ローカライズ前の値から生成する
+const rawPages = kind === 'works' ? await fetchWorks() : await fetchActivities();
+const tags = buildTagsFromPages(rawPages);
+const pages = localizeRecords(rawPages, locale);
+
+const basePath = localizePath(kind === 'works' ? '/works' : '/activities', locale);
+const bgImage = kind === 'works' ? heroImage_1 : activityImage;
+---
+
+<Layout title={tl.title}>
+  <section class="pt-36 pb-40">
+
+    <SectionBackground src={bgImage} alt={tl.bgAlt} eager />
+
+    <!-- ヘッダー -->
+    <div class="px-4 md:px-16">
+      <SectionHeading title={tl.title} />
+    </div>
+
+    <!-- タグ -->
+    <div class="mt-8 px-4 md:px-16 pb-8 overflow-x-auto md:overflow-visible whitespace-nowrap md:whitespace-normal scrollbar-hide">
+      {tags.map((tag) => (
+        <button
+          class="btn filter-btn btn-outline rounded-full btn-md m-1.5 text-base hover:bg-button-active hover:text-button-active-content backdrop-blur-lg shadow-xl border border-button-border"
+          data-tag={tag.id}
+        >
+          {localizeContentLabel(tag.name, locale)}
+        </button>
+      ))}
+    </div>
+
+    <!-- コンテンツ -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12 px-4 md:px-16">
+      {pages.map((page) => (
+        <PortfolioCard
+          page={page}
+          basePath={basePath}
+          dataTags={generateTagString(page.tags, page.category)}
+        />
+      ))}
+    </div>
+  </section>
+</Layout>
+
+<script>
+  import { filterTags } from '@/utils/filterTags';
+
+  window.addEventListener('load', filterTags);
+</script>

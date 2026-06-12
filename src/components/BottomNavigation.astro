@@ -1,16 +1,20 @@
 ---
 import { Icon } from 'astro-icon/components'
 import { getIconName } from '@/utils/icon'
-import { NAV_ITEMS } from '@/constants/siteData'
+import { getLangFromUrl, getNavItems, stripLocale } from '@/i18n';
 import { isHomePath, scrollAttr } from '@/utils/nav';
 
 const currentPath = Astro.url.pathname;
+const locale = getLangFromUrl(Astro.url);
+const navItems = getNavItems(locale);
 const isHomePage = isHomePath(currentPath);
 
 const isRouteActive = (href: string) => {
   if (href.includes('#')) return false;
-  if (href === '/') return isHomePage;
-  return currentPath === href || currentPath.startsWith(href);
+  const path = stripLocale(currentPath);
+  const target = stripLocale(href);
+  if (target === '/') return isHomePage;
+  return path === target || path.startsWith(target);
 };
 ---
 
@@ -29,8 +33,9 @@ const isRouteActive = (href: string) => {
     height: calc(64px + env(safe-area-inset-bottom));
     padding-bottom: env(safe-area-inset-bottom);
   "
+  data-home={isHomePage ? 'true' : 'false'}
 >
-  {NAV_ITEMS.map((item) => (
+  {navItems.map((item) => (
     <a 
       class={`group text-primary-content ${isRouteActive(item.href) ? 'is-active' : ''}`}
       href={item.href}
@@ -51,13 +56,14 @@ const isRouteActive = (href: string) => {
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const nav = document.querySelector('.btm-nav');
+    const nav = document.querySelector<HTMLElement>('.btm-nav');
 
     if (!nav) return;
 
     const allLinks = Array.from(nav.querySelectorAll('a'));
     const hashLinks = allLinks.filter(a => (a.getAttribute('href') || '').includes('#'));
-    const isHome = location.pathname === '/' || location.pathname === '';
+    // location.pathname では /en/ をホームと判定できないため、サーバー側の判定結果を使う
+    const isHome = nav.dataset.home === 'true';
 
     const updateActiveForHash = () => {
       if (!isHome) return;
