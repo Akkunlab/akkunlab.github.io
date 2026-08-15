@@ -237,6 +237,15 @@ export default {
 
       addUtilities({
 
+        // 背景テクスチャユーティリティ
+        '.texture-grid-light': {
+          backgroundImage: [
+            `linear-gradient(to right, rgba(19, 74, 240, 0.055) 1px, transparent 1px)`,
+            `linear-gradient(to bottom, rgba(19, 74, 240, 0.055) 1px, transparent 1px)`,
+          ].join(', '),
+          backgroundSize: '56px 56px',
+        },
+
         // カスタムbox-shadowユーティリティ
         '.shadow-skill-card': {
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1)',

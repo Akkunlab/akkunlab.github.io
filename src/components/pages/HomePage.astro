@@ -71,6 +71,8 @@ const worksPath = localizePath('/works', locale);
 const activitiesPath = localizePath('/activities', locale);
 
 const sectionClass = 'py-40 px-4 md:px-16';
+const fullBleedSectionClass = 'py-40 px-4';
+const containerClass = 'max-w-[1300px] mx-auto';
 const skillsCount = (skillInterests ?? []).filter(r => (r.name?.trim())).length;
 const heroLinePadding = locale === 'ja' ? 'pb-1 sm:pb-3' : 'pb-[0.3em]';
 const heroTitleSize = locale === 'ja' ? 'text-4xl' : 'text-3xl';
@@ -96,11 +98,16 @@ const heroTitleSize = locale === 'ja' ? 'text-4xl' : 'text-3xl';
   <div class="relative bg-main-bg z-10">
 
     <!-- インフォグラフィックスセクション -->
-    <section id="infographics" class={sectionClass.replace('md:px-16', 'max-w-[1300px] mx-auto')}>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 xl:gap-12">
-        <CyberInfoGraphics title={t.home.stats.works} icon="work" count={works.length} color="cyan" href="#works" />
-        <CyberInfoGraphics title={t.home.stats.activities} icon="event-available-rounded" count={activities.length} color="purple" href="#activities" />
-        <CyberInfoGraphics title={t.home.stats.skills} icon="workspace-premium" count={skillsCount} color="orange" href="#skills" />
+    <section id="infographics" class={`${fullBleedSectionClass} relative overflow-hidden`}>
+
+      <div class="absolute inset-0 texture-grid-light pointer-events-none"></div>
+
+      <div class={`relative ${containerClass}`}>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 xl:gap-12">
+          <CyberInfoGraphics title={t.home.stats.works} icon="work" count={works.length} color="cyan" href="#works" />
+          <CyberInfoGraphics title={t.home.stats.activities} icon="event-available-rounded" count={activities.length} color="purple" href="#activities" />
+          <CyberInfoGraphics title={t.home.stats.skills} icon="workspace-premium" count={skillsCount} color="orange" href="#skills" />
+        </div>
       </div>
     </section>
 
@@ -143,64 +150,67 @@ const heroTitleSize = locale === 'ja' ? 'text-4xl' : 'text-3xl';
     </section>
 
     <!-- プロフィールセクション -->
-    <section id="profile" class={sectionClass.replace('md:px-16', 'max-w-[1300px] mx-auto')}>
-      <SectionHeading title={t.home.sections.profile} />
-      <div class="flex flex-col lg:flex-row mt-20">
+    <section id="profile" class={`${fullBleedSectionClass} relative bg-slate-100`}>
 
-        <!-- プロフィール写真 -->
-        <div class="avatar flex justify-center lg:w-1/3 work-item">
-          <AnimatedImage
-            src={profile}
-            alt={t.home.alts.profilePhoto}
-            noScale={true}
-            widths={[256, 384, 512]}
-            loading="eager"
-            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 60vw, 423px"
-          />
-        </div>
+      <div class={containerClass}>
+        <SectionHeading title={t.home.sections.profile} />
+        <div class="flex flex-col lg:flex-row mt-20">
 
-        <!-- プロフィール情報 -->
-        <div class="lg:w-2/3 lg:pl-12 mt-8 lg:mt-0">
-
-          <!-- 名前 -->
-          <h3 class="text-3xl sm:text-4xl font-bold mb-8 slide-in-right opacity-0 translate-x-8">
-            {t.home.profileName.main}
-            <span class="hidden xl:inline">/</span>
-            <span class="hidden xl:inline">{t.home.profileName.sub}</span>
-            <span class="block xl:hidden text-xl font-normal mt-2">{t.home.profileName.sub}</span>
-          </h3>
-
-          <!-- 概要 -->
-          <div class="slide-in-right opacity-0 translate-x-8" set:html={escapeAndNl2p(t.home.summary)}></div>
-        </div>
-      </div>
-
-      <div class="flex flex-col">
-
-        <!-- 学歴・職歴 -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div>
-            <CyberHeading text={t.home.headings.career} color="blue" />
-            <CyberTimeline items={careers} />
+          <!-- プロフィール写真 -->
+          <div class="avatar flex justify-center lg:w-1/3 work-item">
+            <AnimatedImage
+              src={profile}
+              alt={t.home.alts.profilePhoto}
+              noScale={true}
+              widths={[256, 384, 512]}
+              loading="eager"
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 60vw, 423px"
+            />
           </div>
-          <div>
-            <CyberHeading text={t.home.headings.education} color="blue" />
-            <CyberTimeline items={educations} />
+
+          <!-- プロフィール情報 -->
+          <div class="lg:w-2/3 lg:pl-12 mt-8 lg:mt-0">
+
+            <!-- 名前 -->
+            <h3 class="text-3xl sm:text-4xl font-bold mb-8 slide-in-right opacity-0 translate-x-8">
+              {t.home.profileName.main}
+              <span class="hidden xl:inline">/</span>
+              <span class="hidden xl:inline">{t.home.profileName.sub}</span>
+              <span class="block xl:hidden text-xl font-normal mt-2">{t.home.profileName.sub}</span>
+            </h3>
+
+            <!-- 概要 -->
+            <div class="slide-in-right opacity-0 translate-x-8" set:html={escapeAndNl2p(t.home.summary)}></div>
           </div>
         </div>
 
-        <!-- 資格 -->
-        <CyberHeading text={t.home.headings.certifications} color="green" />
-        <CyberList items={certifications} />
+        <div class="flex flex-col">
 
-        <!-- メディア -->
-        <CyberHeading text={t.home.headings.media} color="red" />
-        <CyberMediaList items={mediaCoverage} />
+          <!-- 学歴・職歴 -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div>
+              <CyberHeading text={t.home.headings.career} color="blue" />
+              <CyberTimeline items={careers} />
+            </div>
+            <div>
+              <CyberHeading text={t.home.headings.education} color="blue" />
+              <CyberTimeline items={educations} />
+            </div>
+          </div>
 
-        <!-- スキル -->
-        <div id="skills">
-          <CyberHeading text={t.home.headings.skills} color="purple"/>
-          <CyberSkills items={skillInterests} />
+          <!-- 資格 -->
+          <CyberHeading text={t.home.headings.certifications} color="green" />
+          <CyberList items={certifications} />
+
+          <!-- メディア -->
+          <CyberHeading text={t.home.headings.media} color="red" />
+          <CyberMediaList items={mediaCoverage} />
+
+          <!-- スキル -->
+          <div id="skills">
+            <CyberHeading text={t.home.headings.skills} color="purple"/>
+            <CyberSkills items={skillInterests} />
+          </div>
         </div>
       </div>
     </section>
