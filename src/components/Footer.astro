@@ -100,23 +100,6 @@ const langSwitch = getLanguageSwitch(Astro.url);
       >
         &copy; {currentYear} {AUTHOR} / {AUTHOR_ENGLISH}
       </p>
-      <div
-        id="copyright-container"
-        class="fixed inset-0 pointer-events-none z-[9999] hidden bg-black bg-opacity-80 animate-rainbow-bg"
-        data-messages={JSON.stringify(t.footer.surpriseMessages)}
-      >
-        <div class="absolute inset-0 flex items-center justify-center">
-          <div
-            id="surprise-text"
-            class="text-2xl md:text-6xl font-bold text-transparent bg-gradient-to-r from-cyan-200 via-purple-200 to-pink-200 bg-clip-text transition-all duration-300 ease-out"
-          >
-            {t.footer.surpriseMessages[0]}
-          </div>
-        </div>
-
-        <!-- 花火エフェクト -->
-        <div id="fireworks-container" class="absolute inset-0"></div>
-      </div>
     </div>
   </div>
 
@@ -132,6 +115,24 @@ const langSwitch = getLanguageSwitch(Astro.url);
   >
   </div>
 </footer>
+
+<div
+  id="copyright-container"
+  class="fixed inset-0 pointer-events-none z-[9999] hidden bg-black bg-opacity-80 animate-rainbow-bg"
+  data-messages={JSON.stringify(t.footer.surpriseMessages)}
+>
+  <div class="absolute inset-0 flex items-center justify-center">
+    <div
+      id="surprise-text"
+      class="text-2xl md:text-6xl font-bold text-transparent bg-gradient-to-r from-cyan-200 via-purple-200 to-pink-200 bg-clip-text transition-all duration-300 ease-out"
+    >
+      {t.footer.surpriseMessages[0]}
+    </div>
+  </div>
+
+  <!-- 花火エフェクト -->
+  <div id="fireworks-container" class="absolute inset-0"></div>
+</div>
 
 <script>
   document.addEventListener('DOMContentLoaded', (): void => {
