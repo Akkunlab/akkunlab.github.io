@@ -11,6 +11,7 @@ interface ImportMetaEnv {
 	readonly MEDIA_COVERAGE_DATABASE_ID: string;
 	readonly SKILLS_INTERESTS_DATABASE_ID: string;
 	readonly SOCIAL_LINKS_DATABASE_ID: string;
+	readonly PUBLICATIONS_DATABASE_ID: string;
 
 	// Cloudflare KV
 	readonly CF_ACCOUNT_ID: string;

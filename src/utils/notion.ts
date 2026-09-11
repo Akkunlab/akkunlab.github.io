@@ -366,6 +366,10 @@ const pageToNotionRecord = (
     // Certifications
     date: getDate(properties.date),
 
+    // Publications
+    authors: getRichText(properties.authors),
+    venue: getRichText(properties.venue),
+
     // EducationCareer
     start: getDate(properties.start),
     end: getDate(properties.end),

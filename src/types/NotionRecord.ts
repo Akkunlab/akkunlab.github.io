@@ -26,6 +26,10 @@ export interface NotionRecord {
   // certifications
   date?: string;
 
+  // Publications
+  authors?: string;
+  venue?: string;
+
   // EducationCareer
   start?: string;
   end?: string;

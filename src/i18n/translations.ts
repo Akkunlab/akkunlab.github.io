@@ -31,6 +31,7 @@ const ja = {
     headings: {
       career: '職歴',
       education: '学歴',
+      publications: '研究業績',
       certifications: '資格',
       media: 'メディア',
       skills: 'スキル',
@@ -148,6 +149,7 @@ const en: Translation = {
     headings: {
       career: 'Career',
       education: 'Education',
+      publications: 'Publications',
       certifications: 'Certifications',
       media: 'Media',
       skills: 'Skills',

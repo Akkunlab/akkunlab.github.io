@@ -1,0 +1,83 @@
+---
+import type { NotionRecord } from '@/types/NotionRecord';
+
+interface Props {
+  items: NotionRecord[];
+}
+
+const { items } = Astro.props;
+const records = items.filter(item => item.title);
+
+// 学術 CV の作法に倣い、著者リスト中の本人名だけを強調する
+const SELF_AUTHORS = ['岸本篤', '岸本 篤', 'A. Kishimoto', 'Atsushi Kishimoto'];
+
+// 会期が複数日ある学会は getDate が "start/end" 形式で返すため、初日だけを取り出す
+const startOf = (date?: string) => (date ?? '').split('/')[0];
+
+// 引用は原語のまま載せる（*_en を持たない）ので、lang はタイトルの字種から判定する
+const isJapanese = (text?: string) => /[぀-ヿ㐀-鿿]/.test(text ?? '');
+
+const toTail = (item: NotionRecord) =>
+  [`“${item.title}”`, item.venue, startOf(item.date).split('-')[0]].filter(Boolean).join(', ') + '.';
+---
+
+<ul class="cyber-publications flex flex-col gap-3 sm:pl-4">
+  {records.map((item) => (
+    <li class="cyber-publication-item relative slide-in-right opacity-0 translate-x-8 group">
+
+      <div class="relative flex items-center">
+
+        {/* 左のライン */}
+        <div class="absolute left-6 top-0 w-px h-full bg-gradient-to-b from-amber-400/30 via-orange-400/50 to-amber-400/30"></div>
+
+        <div class="cyber-bullet relative z-10 w-3 h-3 mr-4 flex-shrink-0">
+
+          {/* メインブレット */}
+          <div class="absolute inset-0 bg-gradient-to-br from-amber-400 via-orange-400 to-amber-500 rounded-full shadow-[0_0_8px_rgba(251,191,36,0.7)] animate-pulse">
+            <div class="absolute inset-0.5 bg-gradient-to-br from-white/40 via-amber-200/30 to-transparent rounded-full"></div>
+          </div>
+
+          {/* 外側のリング */}
+          <div class="absolute -inset-1 rounded-full border border-amber-400/40"></div>
+        </div>
+
+        <div class="flex-1 relative">
+
+          {/* 背景グロー効果。ドットまで光らないようカードの内側に閉じる */}
+          <div class="absolute -inset-1 bg-gradient-to-r from-amber-600/20 via-orange-600/20 to-amber-600/20 rounded-lg blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+          <div class="cyber-content relative overflow-hidden rounded-lg border border-slate-600/50 border-l-2 border-l-amber-400/60 bg-gradient-to-r from-slate-800/90 via-slate-900/90 to-slate-800/90 backdrop-blur-sm group-hover:border-amber-400/70 group-hover:shadow-[0_0_20px_rgba(251,191,36,0.25)] group-hover:translate-x-1 transition-all duration-300">
+
+            {/* メインホログラフィック効果 */}
+            <div class="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-transparent to-orange-500/10 pointer-events-none"></div>
+
+            {/* アニメーション付きスキャンライン */}
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-amber-400/20 to-transparent w-0 group-hover:w-full transition-all duration-700 ease-out"></div>
+
+            <p class="relative z-10 p-4 sm:p-5 text-base text-dark-text leading-relaxed" lang={isJapanese(item.title) ? 'ja' : 'en'}>
+              {item.authors && (
+                <>
+                  {item.authors.split(',').map((author, i) => {
+                    const name = author.trim();
+                    return (
+                      <>
+                        {i > 0 && ', '}
+                        <span class={SELF_AUTHORS.includes(name) ? 'font-bold text-primary-content' : ''}>{name}</span>
+                      </>
+                    );
+                  })}
+                  {', '}
+                </>
+              )}
+              {toTail(item)}
+            </p>
+
+            {/* コーナーアクセント */}
+            <div class="absolute top-1 right-1 w-2 h-2 border-t border-r border-amber-400/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-amber-400/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+        </div>
+      </div>
+    </li>
+  ))}
+</ul>

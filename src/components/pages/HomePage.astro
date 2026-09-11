@@ -18,6 +18,7 @@ import CyberTimeline from '@/components/CyberTimeline.astro';
 import CyberList from '@/components/CyberList.astro';
 import CyberMediaList from '@/components/CyberMediaList.astro';
 import CyberSkills from '@/components/CyberSkills.astro';
+import CyberPublications from '@/components/CyberPublications.astro';
 
 import heroImage_1 from '@/assets/images/hero-image_1.jpg';
 import activityImage from '@/assets/images/activity-image.jpg';
@@ -38,6 +39,7 @@ const EDUCATION_CAREER_DATABASE_ID = import.meta.env.EDUCATION_CAREER_DATABASE_I
 const CERTIFICATIONS_DATABASE_ID = import.meta.env.CERTIFICATIONS_DATABASE_ID;
 const SKILLS_INTERESTS_DATABASE_ID = import.meta.env.SKILLS_INTERESTS_DATABASE_ID;
 const SOCIAL_LINKS_DATABASE_ID = import.meta.env.SOCIAL_LINKS_DATABASE_ID;
+const PUBLICATIONS_DATABASE_ID = import.meta.env.PUBLICATIONS_DATABASE_ID;
 
 const works = localizeRecords(await fetchWorks(), locale);
 const activities = localizeRecords(await fetchActivities(), locale);
@@ -49,6 +51,10 @@ const educations = localizeRecords(await fetchNotionPageList(EDUCATION_CAREER_DA
   types: ['education'],
   sorts: [{ property: 'start', direction: 'descending' }]
 }), locale);
+// 引用は原語のまま載せるため localizeRecords を通さない（通すと英語論文が日本語フォールバック扱いになる）
+const publications = await fetchNotionPageList(PUBLICATIONS_DATABASE_ID, {
+  sorts: [{ property: 'date', direction: 'descending' }]
+});
 const certifications = localizeRecords(await fetchNotionPageList(CERTIFICATIONS_DATABASE_ID, {
   sorts: [{ property: 'date', direction: 'descending' }]
 }), locale);
@@ -197,6 +203,10 @@ const heroTitleSize = locale === 'ja' ? 'text-4xl' : 'text-3xl';
               <CyberTimeline items={educations} />
             </div>
           </div>
+
+          <!-- 研究業績 -->
+          <CyberHeading text={t.home.headings.publications} color="amber" />
+          <CyberPublications items={publications} />
 
           <!-- 資格 -->
           <CyberHeading text={t.home.headings.certifications} color="green" />
