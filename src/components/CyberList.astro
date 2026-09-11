@@ -14,9 +14,6 @@ const records = items.filter(item => item.name);
   {records.map((item) => (
     <li class="cyber-list-item relative slide-in-right opacity-0 translate-x-8 group">
 
-      {/* 背景グロー効果 */}
-      <div class="absolute -inset-1 bg-gradient-to-r from-blue-600/20 via-cyan-600/20 to-blue-600/20 rounded-lg blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
       <div class="relative flex items-center">
 
         {/* 左のライン */}
@@ -29,17 +26,16 @@ const records = items.filter(item => item.name);
             <div class="absolute inset-0.5 bg-gradient-to-br from-white/40 via-cyan-300/30 to-transparent rounded-full"></div>
           </div>
 
-          {/* 外側のリング1 */}
-          <div class="absolute -inset-1 rounded-full border border-blue-400/40 group-hover:border-cyan-400/60 group-hover:scale-150 transition-all duration-500"></div>
-
-          {/* 外側のリング2 */}
-          <div class="absolute -inset-2 rounded-full border border-blue-400/20 group-hover:border-cyan-400/40 group-hover:scale-200 transition-all duration-700 delay-100"></div>
-
-          {/* パルス効果 */}
-          <div class="absolute -inset-3 rounded-full bg-blue-400/10 group-hover:bg-cyan-400/20 group-hover:scale-300 transition-all duration-1000 opacity-0 group-hover:opacity-100"></div>
+          {/* 外側のリング */}
+          <div class="absolute -inset-1 rounded-full border border-blue-400/40"></div>
         </div>
 
-        <div class="cyber-content flex-1 relative overflow-hidden rounded-lg border border-slate-600/50 bg-gradient-to-r from-slate-800/90 via-slate-900/90 to-slate-800/90 backdrop-blur-sm group-hover:border-blue-400/70 group-hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] group-hover:translate-x-1 transition-all duration-300">
+        <div class="flex-1 relative">
+
+          {/* 背景グロー効果。ドットまで光らないようカードの内側に閉じる */}
+          <div class="absolute -inset-1 bg-gradient-to-r from-blue-600/20 via-cyan-600/20 to-blue-600/20 rounded-lg blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+          <div class="cyber-content relative overflow-hidden rounded-lg border border-slate-600/50 bg-gradient-to-r from-slate-800/90 via-slate-900/90 to-slate-800/90 backdrop-blur-sm group-hover:border-blue-400/70 group-hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] group-hover:translate-x-1 transition-all duration-300">
 
           {/* 上部のスキャンライン */}
           <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-400/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -87,6 +83,7 @@ const records = items.filter(item => item.name);
           {/* コーナーアクセント */}
           <div class="absolute top-1 left-1 w-2 h-2 border-t border-l border-cyan-400/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           <div class="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-cyan-400/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        </div>
         </div>
       </div>
     </li>
