@@ -73,6 +73,13 @@ const { items } = Astro.props;
             <p class="text-dark-text leading-relaxed">
               <span set:html={escapeAndNl2br(item.dept_prog || '')}></span>
             </p>
+
+            {/* 業務内容・卒業研究 */}
+            {item.summary && (
+              <p class="mt-2 text-dark-text/80 leading-relaxed">
+                <span set:html={escapeAndNl2br(item.summary)}></span>
+              </p>
+            )}
           </div>
         </div>
       </div>
