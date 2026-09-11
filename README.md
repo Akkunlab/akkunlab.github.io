@@ -10,7 +10,7 @@ Notion をコンテンツ源にした、Astro 製の日英バイリンガル・�
 [![Cloudflare Pages](https://img.shields.io/badge/Cloudflare-Pages-F38020?logo=cloudflare&logoColor=white)](https://pages.cloudflare.com/)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Website-222222?logo=googlechrome&logoColor=white)](https://akkunlab.dev/)
 
-<img src="docs/hero.png" alt="トップページのヒーロー表示" width="100%">
+<img src="docs/hero.webp" alt="トップページのヒーロー表示" width="100%">
 
 </div>
 
