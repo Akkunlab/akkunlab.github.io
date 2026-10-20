@@ -168,9 +168,16 @@ const MODE_TEXT = 'MODE: PROD';
       exitCircle.classList.add('animate-circleExpand');
       exitCircle.addEventListener('animationend',
         () => {
+          // フェード中も下のヘッダー等を操作できるよう、クリックを即座に透過させる
+          splashScreen.style.pointerEvents = 'none';
           splashScreen.classList.add('animate-fadeOut');
           document.dispatchEvent(new CustomEvent('splashScreenComplete'));
-          setTimeout(() => splashScreen.remove(), animationDuration);
+          // フェード完了で削除（子要素の animationend は無視、発火しない場合の保険も用意）
+          const removeSplash = () => splashScreen.remove();
+          splashScreen.addEventListener('animationend', (e) => {
+            if (e.target === splashScreen) removeSplash();
+          });
+          setTimeout(removeSplash, animationDuration);
         },
         { once: true }
       );
