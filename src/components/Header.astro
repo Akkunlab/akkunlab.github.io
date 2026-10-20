@@ -9,7 +9,7 @@ const locale = getLangFromUrl(Astro.url);
 const navItems = getNavItems(locale);
 ---
 
-<header id="header" class="fixed top-0 left-0 right-0 h-16 flex justify-center md:justify-between items-center px-6 z-50 backdrop-blur-lg bg-header-bg border-b border-header-border shadow-xl transition-transform duration-300">
+<header id="header" class="fixed top-0 left-0 right-0 h-16 flex justify-center md:justify-between items-center px-6 z-50 backdrop-blur-lg bg-header-bg border-b border-header-border shadow-xl transition-transform duration-300 [view-transition-name:site-header] [&_.btn]:animate-none">
   <a class="btn btn-ghost text-xl text-primary-content" href={localizePath('/', locale)}>{AUTHOR_ENGLISH.toUpperCase()}</a>
 
   <div class="absolute inset-y-0 right-2 flex items-center md:static md:inset-auto md:right-auto gap-1 md:gap-2">

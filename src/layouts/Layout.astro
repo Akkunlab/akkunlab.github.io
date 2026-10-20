@@ -111,6 +111,53 @@ const ogImageUrl = resolveAbsoluteUrl(ogImage || OGP_IMAGE);
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
     <link rel="icon" type="image/png" href="/android-touch-icon.png" sizes="192x192">
 
+    <style is:global>
+      /* ページ遷移。site-header / site-btm-nav は各コンポーネントで命名し、遷移中も残す */
+      @media (prefers-reduced-motion: no-preference) {
+        @view-transition {
+          navigation: auto;
+        }
+
+        /* 新旧が両方透明になる瞬間の下地 */
+        ::view-transition {
+          background-color: #fff;
+        }
+
+        ::view-transition-old(root) {
+          animation: page-blur-out 0.45s ease both;
+        }
+
+        ::view-transition-new(root) {
+          animation: page-blur-in 0.7s ease-out 0.1s both;
+        }
+
+        ::view-transition-old(site-header),
+        ::view-transition-old(site-btm-nav) {
+          animation: none;
+          opacity: 0;
+        }
+
+        ::view-transition-new(site-header),
+        ::view-transition-new(site-btm-nav) {
+          animation: none;
+        }
+
+        @keyframes page-blur-out {
+          to {
+            opacity: 0;
+            filter: blur(0.5rem);
+          }
+        }
+
+        @keyframes page-blur-in {
+          from {
+            opacity: 0;
+            filter: blur(0.5rem);
+          }
+        }
+      }
+    </style>
+
     {jsonLd && (
       <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     )}
