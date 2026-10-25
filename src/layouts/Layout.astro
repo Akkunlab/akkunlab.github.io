@@ -176,6 +176,16 @@ const ogImageUrl = resolveAbsoluteUrl(ogImage || OGP_IMAGE);
 
       window.addEventListener('load', setupScrollAnimations);
     </script>
+
+    <script is:inline>
+      addEventListener('load', () => {
+        try {
+          if (performance.getEntriesByType('navigation')[0]?.type !== 'navigate') return;
+          if (document.referrer && new URL(document.referrer).host === location.host) return;
+          navigator.sendBeacon('/api/visit');
+        } catch {}
+      });
+    </script>
   </body>
 
 </html>

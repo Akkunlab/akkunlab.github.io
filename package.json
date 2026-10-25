@@ -9,7 +9,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "typecheck:workers": "tsc -p workers/tsconfig.json",
-    "typecheck:scripts": "tsc -p scripts/tsconfig.json"
+    "typecheck:scripts": "tsc -p scripts/tsconfig.json",
+    "typecheck:functions": "tsc -p functions/tsconfig.json"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",

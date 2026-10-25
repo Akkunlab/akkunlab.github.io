@@ -5,5 +5,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "exclude": ["workers", "scripts"]
+  "exclude": ["workers", "scripts", "functions"]
 }

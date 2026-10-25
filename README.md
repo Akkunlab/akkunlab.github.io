@@ -59,5 +59,7 @@ src/
   utils/            Notion 取得・キャッシュ・画像変換・Markdown 変換
 scripts/            KV キャッシュ削除・SNS 投稿
 workers/            Notion Webhook 用 Cloudflare Worker
+functions/api/      訪問数の計測（Pages Functions + D1）
+migrations/         D1 のスキーマ
 .github/workflows/  日次リビルド
 ```
