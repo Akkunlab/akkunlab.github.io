@@ -1,13 +1,11 @@
 import { onCLS, onINP, onLCP } from 'web-vitals';
 
-// payload の制約は functions/api/e.ts と揃える。1 つでも外れると、そのページビューは丸ごと捨てられる
-// 流入元と UTM は訪問者側で決まるので、外れた値はここで落としてから送る
+// 制約は functions/api/e.ts と揃える
 const ENDPOINT = '/api/e';
 const MAX_EVENTS = 60;
 const ORIGIN = /^https?:\/\/[a-z0-9.-]{1,253}(:[0-9]{1,5})?$/;
 const UTM = /^[A-Za-z0-9_.-]{1,64}$/;
 const MIN_VISIBLE_MS = 500;
-// 隣り合う閾値を 2 倍以内に保ち、判定に使う「画面の半分」を跨ぐ通知が必ず来るようにする
 const THRESHOLDS = [0, 0.05, 0.1, 0.2, 0.4, 0.8, 1];
 
 type Tracked = { ms: number; seen: number; since: number | null; inView: boolean };
@@ -17,7 +15,6 @@ const start = (): void => {
   const opened = performance.now();
   const at = () => Math.round(performance.now() - opened);
 
-  // どこにも保存しない。開くたびに変わり、訪問者を追いかける ID にならない
   const vid = (crypto.randomUUID?.() ?? `${Math.random()}`)
     .replace(/[^0-9a-z]/g, '')
     .padEnd(8, '0')
@@ -34,7 +31,6 @@ const start = (): void => {
   let activeSince: number | null = document.visibilityState === 'visible' ? opened : null;
   let sent = '';
 
-  // タブが前面にある時間だけを積む。節は画面に入っている間だけ数える
   const sync = () => {
     const now = performance.now();
     const pageVisible = document.visibilityState === 'visible';
@@ -59,7 +55,6 @@ const start = (): void => {
     return value && UTM.test(value) ? value : undefined;
   };
 
-  // 外部サイトのクエリには個人情報が乗り得る。origin だけを送る
   const referrer = () => {
     try {
       const origin = document.referrer ? new URL(document.referrer).origin : '';
@@ -74,7 +69,7 @@ const start = (): void => {
     const visible = [...sections]
       .filter(([, tracked]) => tracked.ms >= MIN_VISIBLE_MS)
       .map(([id, tracked]) => ({ t: 'section', id, ms: Math.round(tracked.ms), seen: tracked.seen }));
-    // hidden と pagehide が続けて来る。中身が変わっていなければ 2 回目を送らない
+    // 離脱時は 2 回呼ばれるので、変化が無ければ送らない
     const signature = `${events.length}|${visible.length}|${last}|${Math.round(active / 1000)}`;
     if (signature === sent) return;
 
@@ -98,7 +93,6 @@ const start = (): void => {
       for (const entry of entries) {
         const tracked = sections.get((entry.target as HTMLElement).id);
         if (!tracked) continue;
-        // 画面より高い節でも判定できるよう、節の高さと画面の半分の小さいほうを閾値にする
         const enough = Math.min(entry.boundingClientRect.height, innerHeight * 0.5);
         const inView = entry.isIntersecting && entry.intersectionRect.height >= enough;
         if (inView && !tracked.inView) tracked.seen++;
@@ -129,7 +123,6 @@ const start = (): void => {
     { passive: true },
   );
 
-  // 外へ出るリンクだけを残す。宛先はドメインまでで、メールアドレスは送らない
   document.addEventListener(
     'click',
     (event) => {
@@ -151,7 +144,7 @@ const start = (): void => {
   onINP(vital('INP'));
   onCLS(vital('CLS'));
 
-  // web-vitals より後に登録する。同じイベントは登録順に発火し、INP と CLS は hidden で最終値を出す
+  // hidden で出る web-vitals の最終値を拾うため、web-vitals より後に登録する
   document.addEventListener('visibilitychange', () => {
     sync();
     if (document.visibilityState === 'hidden') flush();
@@ -159,7 +152,6 @@ const start = (): void => {
   addEventListener('pagehide', flush);
 };
 
-// 計測の失敗をページの動作へ波及させない
 try {
   start();
 } catch {}

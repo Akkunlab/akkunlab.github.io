@@ -33,12 +33,10 @@ const fits = (value: unknown, fields: Record<string, Check>, required: string[])
   Object.entries(value).every(([key, item]) => Object.hasOwn(fields, key) && fields[key](item));
 
 const NAME = /^[A-Za-z0-9_-]{1,64}$/;
-// 記録は無期限に残し、後で LLM も読む。空白・改行・山括弧など、命令文や HTML になり得る文字を入口で通さない
 const PATH = /^\/(?!\/)[A-Za-z0-9\-._~%!$&'()*+,;=:@/]{0,511}$/;
 const ORIGIN = /^https?:\/\/[a-z0-9.-]{1,253}(:[0-9]{1,5})?$/;
 const UTM = /^[A-Za-z0-9_.-]{1,64}$/;
 
-// 型ごとに許すキーを固定する。表の区切りや改行、外部サイトのクエリを入口で落とす
 const EVENTS: Record<string, { fields: Record<string, Check>; required: string[] }> = {
   section: {
     fields: { t: oneOf('section'), id: match(NAME), ms: int(MAX_MS), seen: int(100_000) },
@@ -131,7 +129,6 @@ const sha256 = async (...parts: string[]): Promise<string> => {
 
 let cachedSalt: { day: string; value: string } | null = null;
 
-// その日のソルトを作るのは 1 日 1 回。前日までのソルトはそのとき消す
 const dailySalt = async (db: D1Database, today: string): Promise<string> => {
   if (cachedSalt?.day === today) return cachedSalt.value;
   const read = () => db.prepare('SELECT value FROM salt WHERE day = ?1').bind(today).first<{ value: string }>();
@@ -156,12 +153,11 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const userAgent = request.headers.get('user-agent') ?? '';
   if (!COUNTED_HOSTS.includes(url.hostname) || !userAgent || BOT_UA.test(userAgent)) return done(204);
 
-  // sendBeacon は経路によって Origin を落とす。値があるときだけ一致を求める
+  // sendBeacon は Origin を付けないことがある
   const origin = request.headers.get('origin');
   if (origin && origin !== url.origin) return done(403);
   if (Number(request.headers.get('content-length')) > MAX_BODY_BYTES) return done(413);
 
-  // ソルト無しの sid は IP と UA から総当たりで戻せる。保存せずに捨てる
   if (!env.SALT_SECRET) return done(503);
 
   const body = await readCapped(request.body);
@@ -187,9 +183,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       await dailySalt(env.VISITS_DB, today),
       env.SALT_SECRET,
     );
-    // 累積値で丸ごと置き換える。同じページビューの再送が二重に数えられない
-    // 離脱時は pagehide と visibilitychange の 2 通がほぼ同時に届き、総滞在がミリ秒まで同じこともある
-    // exit（末尾）の総滞在が長いほうを残し、同じなら出来事の多いほう（後から送った表示速度入り）を残す
+    // 離脱時の 2 通は順不同で届くので、新しいほうだけを残す
     await env.VISITS_DB.prepare(
       `INSERT INTO session (sid, vid, day, started_at, ended_at, path, referrer, utm, device, viewport, events)
        VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
