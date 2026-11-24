@@ -94,7 +94,11 @@ const BEACON: Record<string, Check> = {
   r: match(/^https?:\/\/[^/?#\s]{1,253}$/),
   u: (value) => fits(value, { source: text(64), medium: text(64), campaign: text(64) }, []),
   vp: match(/^[0-9]{1,5}x[0-9]{1,5}$/),
-  e: (value) => Array.isArray(value) && value.length <= MAX_EVENTS && value.every(validEvent),
+  e: (value) =>
+    Array.isArray(value) &&
+    value.length <= MAX_EVENTS &&
+    value.every(validEvent) &&
+    (value.at(-1) as { t?: unknown } | undefined)?.t === 'exit',
 };
 
 const isBeacon = (value: unknown): value is Beacon => fits(value, BEACON, ['v', 'vid', 'p', 'ts', 'e']);
@@ -192,10 +196,12 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       env.SALT_SECRET,
     );
     // 累積値で丸ごと置き換える。同じページビューの再送が二重に数えられない
+    // 離脱時は pagehide と visibilitychange の 2 通がほぼ同時に届く。exit（末尾）の総滞在が長いほうだけを残す
     await env.VISITS_DB.prepare(
       `INSERT INTO session (sid, vid, day, started_at, ended_at, path, referrer, utm, device, viewport, events)
        VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
-       ON CONFLICT (sid, vid) DO UPDATE SET ended_at = excluded.ended_at, events = excluded.events`,
+       ON CONFLICT (sid, vid) DO UPDATE SET ended_at = excluded.ended_at, events = excluded.events
+       WHERE json_extract(excluded.events, '$[#-1].total') >= json_extract(session.events, '$[#-1].total')`,
     )
       .bind(
         sid,
