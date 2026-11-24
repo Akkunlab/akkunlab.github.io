@@ -188,12 +188,15 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       env.SALT_SECRET,
     );
     // 累積値で丸ごと置き換える。同じページビューの再送が二重に数えられない
-    // 離脱時は pagehide と visibilitychange の 2 通がほぼ同時に届く。exit（末尾）の総滞在が長いほうだけを残す
+    // 離脱時は pagehide と visibilitychange の 2 通がほぼ同時に届き、総滞在がミリ秒まで同じこともある
+    // exit（末尾）の総滞在が長いほうを残し、同じなら出来事の多いほう（後から送った表示速度入り）を残す
     await env.VISITS_DB.prepare(
       `INSERT INTO session (sid, vid, day, started_at, ended_at, path, referrer, utm, device, viewport, events)
        VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
        ON CONFLICT (sid, vid) DO UPDATE SET ended_at = excluded.ended_at, events = excluded.events
-       WHERE json_extract(excluded.events, '$[#-1].total') >= json_extract(session.events, '$[#-1].total')`,
+       WHERE json_extract(excluded.events, '$[#-1].total') > json_extract(session.events, '$[#-1].total')
+          OR (json_extract(excluded.events, '$[#-1].total') = json_extract(session.events, '$[#-1].total')
+              AND json_array_length(excluded.events) >= json_array_length(session.events))`,
     )
       .bind(
         sid,
