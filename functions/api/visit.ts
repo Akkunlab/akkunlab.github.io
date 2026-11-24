@@ -2,11 +2,11 @@ interface Env {
   VISITS_DB: D1Database;
 }
 
-const COUNTED_HOSTS = ['akkunlab.dev'];
+export const COUNTED_HOSTS = ['akkunlab.dev'];
 const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
-const BOT_UA = /bot|crawl|spider|slurp|lighthouse|headless|pagespeed|preview|facebookexternalhit|embedly|quora link/i;
+export const BOT_UA = /bot|crawl|spider|slurp|lighthouse|headless|pagespeed|preview|facebookexternalhit|embedly|quora link/i;
 
-const jstDay = (ms: number): string => new Date(ms + JST_OFFSET_MS).toISOString().slice(0, 10);
+export const jstDay = (ms: number): string => new Date(ms + JST_OFFSET_MS).toISOString().slice(0, 10);
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const host = new URL(request.url).hostname;
