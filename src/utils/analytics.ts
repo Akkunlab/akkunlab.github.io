@@ -1,9 +1,11 @@
 import { onCLS, onINP, onLCP } from 'web-vitals';
 
 // payload の制約は functions/api/e.ts と揃える。1 つでも外れると、そのページビューは丸ごと捨てられる
+// 流入元と UTM は訪問者側で決まるので、外れた値はここで落としてから送る
 const ENDPOINT = '/api/e';
-const MAX_EVENTS = 200;
-const MAX_TEXT = 64;
+const MAX_EVENTS = 60;
+const ORIGIN = /^https?:\/\/[a-z0-9.-]{1,253}(:[0-9]{1,5})?$/;
+const UTM = /^[A-Za-z0-9_.-]{1,64}$/;
 const MIN_VISIBLE_MS = 500;
 // 隣り合う閾値を 2 倍以内に保ち、判定に使う「画面の半分」を跨ぐ通知が必ず来るようにする
 const THRESHOLDS = [0, 0.05, 0.1, 0.2, 0.4, 0.8, 1];
@@ -52,12 +54,16 @@ const start = (): void => {
     }
   };
 
-  const query = (key: string) => new URLSearchParams(location.search).get(key)?.slice(0, MAX_TEXT) || undefined;
+  const query = (key: string) => {
+    const value = new URLSearchParams(location.search).get(key);
+    return value && UTM.test(value) ? value : undefined;
+  };
 
   // 外部サイトのクエリには個人情報が乗り得る。origin だけを送る
   const referrer = () => {
     try {
-      return document.referrer ? new URL(document.referrer).origin : undefined;
+      const origin = document.referrer ? new URL(document.referrer).origin : '';
+      return ORIGIN.test(origin) ? origin : undefined;
     } catch {
       return undefined;
     }

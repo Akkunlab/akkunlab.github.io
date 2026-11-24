@@ -5,10 +5,8 @@ interface Env {
   SALT_SECRET?: string;
 }
 
-const DAY_MS = 86_400_000;
-const SESSION_RETENTION_DAYS = 90;
-const MAX_BODY_BYTES = 64 * 1024;
-const MAX_EVENTS = 200;
+const MAX_BODY_BYTES = 16 * 1024;
+const MAX_EVENTS = 60;
 const MAX_MS = 2_592_000_000;
 const MAX_TS = 4_102_444_800_000;
 
@@ -26,11 +24,6 @@ const oneOf =
   (...allowed: unknown[]): Check =>
   (value) =>
     allowed.includes(value);
-const text =
-  (max: number): Check =>
-  (value) =>
-    typeof value === 'string' && value.length <= max;
-
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
@@ -40,6 +33,10 @@ const fits = (value: unknown, fields: Record<string, Check>, required: string[])
   Object.entries(value).every(([key, item]) => Object.hasOwn(fields, key) && fields[key](item));
 
 const NAME = /^[A-Za-z0-9_-]{1,64}$/;
+// 記録は無期限に残し、後で LLM も読む。空白・改行・山括弧など、命令文や HTML になり得る文字を入口で通さない
+const PATH = /^\/(?!\/)[A-Za-z0-9\-._~%!$&'()*+,;=:@/]{0,511}$/;
+const ORIGIN = /^https?:\/\/[a-z0-9.-]{1,253}(:[0-9]{1,5})?$/;
+const UTM = /^[A-Za-z0-9_.-]{1,64}$/;
 
 // 型ごとに許すキーを固定する。表の区切りや改行、外部サイトのクエリを入口で落とす
 const EVENTS: Record<string, { fields: Record<string, Check>; required: string[] }> = {
@@ -89,10 +86,10 @@ interface Beacon {
 const BEACON: Record<string, Check> = {
   v: oneOf(1),
   vid: match(/^[0-9a-z]{8}$/),
-  p: (value) => text(512)(value) && (value as string).startsWith('/'),
+  p: match(PATH),
   ts: int(MAX_TS),
-  r: match(/^https?:\/\/[^/?#\s]{1,253}$/),
-  u: (value) => fits(value, { source: text(64), medium: text(64), campaign: text(64) }, []),
+  r: match(ORIGIN),
+  u: (value) => fits(value, { source: match(UTM), medium: match(UTM), campaign: match(UTM) }, []),
   vp: match(/^[0-9]{1,5}x[0-9]{1,5}$/),
   e: (value) =>
     Array.isArray(value) &&
@@ -134,8 +131,8 @@ const sha256 = async (...parts: string[]): Promise<string> => {
 
 let cachedSalt: { day: string; value: string } | null = null;
 
-// その日のソルトを作るのは 1 日 1 回。前日までのソルトと保持期間切れの行をそのとき消す
-const dailySalt = async (db: D1Database, today: string, now: number): Promise<string> => {
+// その日のソルトを作るのは 1 日 1 回。前日までのソルトはそのとき消す
+const dailySalt = async (db: D1Database, today: string): Promise<string> => {
   if (cachedSalt?.day === today) return cachedSalt.value;
   const read = () => db.prepare('SELECT value FROM salt WHERE day = ?1').bind(today).first<{ value: string }>();
   let row = await read();
@@ -144,12 +141,7 @@ const dailySalt = async (db: D1Database, today: string, now: number): Promise<st
       .prepare('INSERT INTO salt (day, value) VALUES (?1, ?2) ON CONFLICT DO NOTHING')
       .bind(today, crypto.randomUUID())
       .run();
-    if (meta.changes > 0) {
-      await db.batch([
-        db.prepare('DELETE FROM salt WHERE day < ?1').bind(today),
-        db.prepare('DELETE FROM session WHERE started_at < ?1').bind(now - SESSION_RETENTION_DAYS * DAY_MS),
-      ]);
-    }
+    if (meta.changes > 0) await db.prepare('DELETE FROM salt WHERE day < ?1').bind(today).run();
     row = await read();
   }
   if (!row?.value) throw new Error('daily salt unavailable');
@@ -192,7 +184,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       request.headers.get('cf-connecting-ip') ?? '',
       userAgent,
       today,
-      await dailySalt(env.VISITS_DB, today, now),
+      await dailySalt(env.VISITS_DB, today),
       env.SALT_SECRET,
     );
     // 累積値で丸ごと置き換える。同じページビューの再送が二重に数えられない
