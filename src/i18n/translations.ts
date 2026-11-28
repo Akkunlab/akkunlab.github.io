@@ -20,7 +20,7 @@ const ja = {
     stats: {
       works: '制作した作品数',
       activities: '参加したイベント数',
-      skills: '習得したスキル数',
+      skills: '触れてきた技術',
     },
     sections: {
       works: '作品',
@@ -138,7 +138,7 @@ const en: Translation = {
     stats: {
       works: 'Works Created',
       activities: 'Events Attended',
-      skills: 'Skills Acquired',
+      skills: 'Tech Explored',
     },
     sections: {
       works: 'Works',
